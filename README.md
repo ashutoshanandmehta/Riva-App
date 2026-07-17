@@ -7,6 +7,15 @@ medication to monitor weight, medication levels, nutrition, and wellbeing.
 - **Toolchain:** Xcode 26, Swift 5 mode
 - **Bundle ID:** `in.adsys.riva`
 
+## Repository layout
+
+- `Riva/` + `Riva.xcodeproj` — the iOS app (this README).
+- `scan-service/` — the Riva Snap backend: FastAPI scan pipeline, Supabase
+  integration, SQL migrations, and the mobile web tester. It has its own
+  README and ARCHITECTURE docs. Note for maintainers: production deploys
+  come from a mirror repo (Riva-Snap) that Render watches; sync it when
+  changing `scan-service/`.
+
 ## Running
 
 Open `Riva.xcodeproj` in Xcode and run the `Riva` target, or from the CLI:

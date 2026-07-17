@@ -18,5 +18,5 @@ xcuserdata/
 *.p12
 .env
 
-# scan-service lives in its own repo (Riva-Snap)
-scan-service/
+# Local metadata for the Riva-Snap deploy mirror of scan-service
+scan-service/.git-snap/
