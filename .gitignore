@@ -1,0 +1,22 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# macOS
+.DS_Store
+
+# Secrets — never commit API keys or provisioning secrets
+*.pem
+*.p12
+.env
+
+# scan-service lives in its own repo (Riva-Snap)
+scan-service/
