@@ -92,6 +92,72 @@ struct GoalsUpdate: Encodable, Sendable {
     var waterGoal: Int?
 }
 
+/// The onboarding "What brings you to Riva?" choices, one per
+/// `health_goals` flag in the database.
+enum OnboardingGoal: String, Sendable, Identifiable, CaseIterable {
+    case weightMgmt = "weight_mgmt"
+    case glp1Support = "glp1_support"
+    case nutritionDiet = "nutrition_diet"
+    case musclePreserve = "muscle_preserve"
+    case exerciseMove = "exercise_move"
+    case sleepRecovery = "sleep_recovery"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .weightMgmt: "Lose weight"
+        case .glp1Support: "GLP-1 support"
+        case .nutritionDiet: "Nutrition and diet"
+        case .musclePreserve: "Preserve muscle"
+        case .exerciseMove: "Exercise and movement"
+        case .sleepRecovery: "Sleep and recovery"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .weightMgmt: "Reach a healthier weight and keep it off."
+        case .glp1Support: "Guidance through my medication journey."
+        case .nutritionDiet: "Eat better with less guesswork."
+        case .musclePreserve: "Protect strength while losing weight."
+        case .exerciseMove: "Stay active in a way that lasts."
+        case .sleepRecovery: "Rest well and recover fully."
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .weightMgmt: "arrow.down.right.circle"
+        case .glp1Support: "syringe"
+        case .nutritionDiet: "fork.knife"
+        case .musclePreserve: "figure.strengthtraining.traditional"
+        case .exerciseMove: "figure.walk"
+        case .sleepRecovery: "moon.zzz"
+        }
+    }
+}
+
+/// Full-set update for the six health goal flags (onboarding submits the
+/// complete selection, so unselected goals are explicitly false).
+struct HealthGoalsUpdate: Encodable, Sendable {
+    let glp1Support: Bool
+    let weightMgmt: Bool
+    let nutritionDiet: Bool
+    let musclePreserve: Bool
+    let exerciseMove: Bool
+    let sleepRecovery: Bool
+
+    init(selected: Set<OnboardingGoal>) {
+        glp1Support = selected.contains(.glp1Support)
+        weightMgmt = selected.contains(.weightMgmt)
+        nutritionDiet = selected.contains(.nutritionDiet)
+        musclePreserve = selected.contains(.musclePreserve)
+        exerciseMove = selected.contains(.exerciseMove)
+        sleepRecovery = selected.contains(.sleepRecovery)
+    }
+}
+
 struct PlanUpdate: Encodable, Sendable {
     var name: String?
     var currentDoseMg: Double?

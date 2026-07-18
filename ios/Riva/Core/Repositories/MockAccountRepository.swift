@@ -66,6 +66,19 @@ struct MockAccountRepository: AccountRepository {
         )
     }
 
+    @discardableResult
+    func updateHealthGoals(_ update: HealthGoalsUpdate) async throws -> HealthGoalFlags {
+        try? await Task.sleep(for: .milliseconds(300))
+        return HealthGoalFlags(
+            glp1Support: update.glp1Support,
+            weightMgmt: update.weightMgmt,
+            nutritionDiet: update.nutritionDiet,
+            musclePreserve: update.musclePreserve,
+            exerciseMove: update.exerciseMove,
+            sleepRecovery: update.sleepRecovery
+        )
+    }
+
     func updatePlan(_ update: PlanUpdate) async throws -> MedicationPlan {
         try? await Task.sleep(for: .milliseconds(400))
         let current = Self.sampleBundle.plan!

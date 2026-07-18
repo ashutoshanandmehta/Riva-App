@@ -52,6 +52,11 @@ actor DeviceAuthRepository: AuthRepository {
         throw AuthError.service("Email sign in is not enabled yet.")
     }
 
+    @discardableResult
+    func adoptOAuthCallback(_ callback: URL) async throws -> AuthSession {
+        throw AuthError.service("Google sign in is not enabled for device accounts.")
+    }
+
     func validAccessToken() async throws -> String? {
         if let session, session.isFresh { return session.accessToken }
         return try await provision().accessToken

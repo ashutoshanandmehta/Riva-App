@@ -3,7 +3,8 @@ import Foundation
 /// Account sign-in and session management.
 ///
 /// UI code depends only on this protocol; the live implementation talks to
-/// Supabase Auth with an email code (no passwords in the app).
+/// Supabase Auth (Google OAuth today, with an email code path kept for
+/// later; no passwords in the app).
 protocol AuthRepository: Sendable {
     /// The persisted session, if any. May be expired; use
     /// `validAccessToken()` before calling an authenticated API.
@@ -15,6 +16,11 @@ protocol AuthRepository: Sendable {
     /// Exchanges the emailed code for a session.
     @discardableResult
     func verifyCode(email: String, code: String) async throws -> AuthSession
+
+    /// Adopts the token fragment from an OAuth redirect (Google sign in via
+    /// the system web session) as this device's session.
+    @discardableResult
+    func adoptOAuthCallback(_ callback: URL) async throws -> AuthSession
 
     /// A usable access token, refreshing behind the scenes when the current
     /// one is about to expire. Returns nil when signed out (or the refresh

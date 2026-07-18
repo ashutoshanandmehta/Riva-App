@@ -15,18 +15,19 @@ struct AppDependencies {
     let logRepository: any LogRepository
     let accountRepository: any AccountRepository
 
-    /// Production wiring. The scanner is live against the Riva backend;
-    /// dashboards are still mock-backed until their APIs exist.
+    /// Production wiring: everything reads and writes the Riva backend.
+    /// Mock repositories exist only for previews.
     ///
-    /// Identity is currently a silent per-device account (no sign-in
-    /// screen). When the landing page design lands, swap this back to
-    /// `SupabaseAuthRepository()` and restore the auth gate in `RivaApp`.
+    /// Identity: Google sign in through Supabase (the onboarding gate in
+    /// RivaApp). DeviceAuthRepository remains available for reviving the
+    /// no-sign-in mode if ever needed.
     static func live() -> AppDependencies {
-        let auth = DeviceAuthRepository()
+        let auth = SupabaseAuthRepository()
+        let dashboards = DashboardService(auth: auth)
         return AppDependencies(
-            homeRepository: MockHomeRepository(),
-            medicationRepository: MockMedicationRepository(),
-            trackerRepository: MockTrackerRepository(),
+            homeRepository: APIHomeRepository(service: dashboards),
+            medicationRepository: APIMedicationRepository(service: dashboards),
+            trackerRepository: APITrackerRepository(service: dashboards),
             profileRepository: MockProfileRepository(),
             authRepository: auth,
             scanRepository: APIScanRepository(auth: auth),

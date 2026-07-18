@@ -13,7 +13,7 @@ struct SleepQualityCard: View {
                 Text("Sleep quality")
                     .rivaOverline()
 
-                Text(RivaFormat.sleepDuration(minutes: sleep.durationMinutes))
+                Text(headline)
                     .font(RivaFont.metricM)
                     .foregroundStyle(RivaColor.textPrimary)
 
@@ -21,7 +21,7 @@ struct SleepQualityCard: View {
                     Image(systemName: "moon.fill")
                         .font(.system(size: 11))
                         .foregroundStyle(RivaColor.brand)
-                    Text("\(RivaFormat.percent(sleep.efficiency)) efficiency")
+                    Text(subheadline)
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(RivaColor.brand)
                 }
@@ -51,6 +51,29 @@ struct SleepQualityCard: View {
         }
         .frame(height: 44, alignment: .bottom)
     }
+    // Duration comes from sleep trackers we do not have yet; check-ins give
+    // quality, so a zero duration renders the quality words instead.
+    private var headline: String {
+        if sleep.durationMinutes > 0 {
+            return RivaFormat.sleepDuration(minutes: sleep.durationMinutes)
+        }
+        switch sleep.efficiency {
+        case 0: return "Not logged"
+        case ..<0.3: return "Terrible"
+        case ..<0.5: return "Poor"
+        case ..<0.7: return "Okay"
+        case ..<0.9: return "Good"
+        default: return "Excellent"
+        }
+    }
+
+    private var subheadline: String {
+        if sleep.durationMinutes > 0 {
+            return "\(RivaFormat.percent(sleep.efficiency)) efficiency"
+        }
+        return sleep.efficiency == 0 ? "log tonight from the plus" : "last night's quality"
+    }
+
 }
 
 #Preview {

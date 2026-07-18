@@ -11,6 +11,10 @@ protocol AccountRepository: Sendable {
 
     func updateGoals(_ update: GoalsUpdate) async throws -> NutritionGoals
 
+    /// Saves the onboarding goal selection (the six health goal flags).
+    @discardableResult
+    func updateHealthGoals(_ update: HealthGoalsUpdate) async throws -> HealthGoalFlags
+
     /// Updates the active plan, creating one server-side if none exists.
     func updatePlan(_ update: PlanUpdate) async throws -> MedicationPlan
 

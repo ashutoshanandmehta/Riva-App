@@ -42,6 +42,17 @@ struct APIAccountRepository: AccountRepository {
         return response.nutritionGoals
     }
 
+    @discardableResult
+    func updateHealthGoals(_ update: HealthGoalsUpdate) async throws -> HealthGoalFlags {
+        struct Response: Decodable {
+            let healthGoals: HealthGoalFlags
+        }
+        let response: Response = try decode(
+            try await send(path: "v1/health-goals", method: "POST", body: try encode(update))
+        )
+        return response.healthGoals
+    }
+
     func updatePlan(_ update: PlanUpdate) async throws -> MedicationPlan {
         struct Response: Decodable {
             let plan: MedicationPlan

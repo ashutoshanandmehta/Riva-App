@@ -90,6 +90,11 @@ struct MockAuthRepository: AuthRepository {
         await currentSession()!
     }
 
+    @discardableResult
+    func adoptOAuthCallback(_ callback: URL) async throws -> AuthSession {
+        await currentSession()!
+    }
+
     func validAccessToken() async throws -> String? { "mock" }
 
     func signOut() async {}

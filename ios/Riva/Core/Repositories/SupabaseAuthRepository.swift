@@ -54,6 +54,61 @@ actor SupabaseAuthRepository: AuthRepository {
         return try adopt(tokenData: data)
     }
 
+    @discardableResult
+    func adoptOAuthCallback(_ callback: URL) async throws -> AuthSession {
+        let params = Self.fragmentParameters(of: callback)
+        if let message = params["error_description"] ?? params["error"] {
+            throw AuthError.service(message.replacingOccurrences(of: "+", with: " "))
+        }
+        guard let accessToken = params["access_token"],
+              let refreshToken = params["refresh_token"] else {
+            throw AuthError.service("Google sign in did not complete. Try again.")
+        }
+        let expiry = params["expires_at"].flatMap(Double.init).map(Date.init(timeIntervalSince1970:))
+            ?? Date().addingTimeInterval(params["expires_in"].flatMap(Double.init) ?? 3600)
+
+        // The fragment carries tokens but not identity; ask GoTrue who this is.
+        guard let userURL = URL(string: "auth/v1/user", relativeTo: baseURL) else {
+            throw AuthError.unreachable
+        }
+        var request = URLRequest(url: userURL)
+        request.setValue(anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let data: Data
+        do {
+            (data, _) = try await urlSession.data(for: request)
+        } catch {
+            throw AuthError.unreachable
+        }
+        let user = try JSONDecoder().decode(TokenResponse.User.self, from: data)
+
+        let adopted = AuthSession(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiresAt: expiry,
+            userID: user.id,
+            email: user.email
+        )
+        session = adopted
+        if let encoded = try? JSONEncoder().encode(adopted) {
+            KeychainStore.save(encoded, key: Self.sessionKey)
+        }
+        return adopted
+    }
+
+    private static func fragmentParameters(of url: URL) -> [String: String] {
+        guard let fragment = URLComponents(url: url, resolvingAgainstBaseURL: false)?.fragment else {
+            return [:]
+        }
+        var parameters: [String: String] = [:]
+        for pair in fragment.split(separator: "&") {
+            let parts = pair.split(separator: "=", maxSplits: 1).map(String.init)
+            guard parts.count == 2 else { continue }
+            parameters[parts[0]] = parts[1].removingPercentEncoding ?? parts[1]
+        }
+        return parameters
+    }
+
     func validAccessToken() async throws -> String? {
         guard let current = session else { return nil }
         if current.isFresh { return current.accessToken }

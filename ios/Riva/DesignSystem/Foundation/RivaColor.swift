@@ -21,6 +21,13 @@ enum RivaColor {
     /// Faint brand wash — tinted stat tiles and icon chips.
     static let brandWash = Color(light: 0xEDF5F1, dark: 0x1A2622)
 
+    // MARK: Landing hero
+
+    /// Gradient stops for the landing page hero background.
+    static let heroTop = Color(light: 0x3F9C82, dark: 0x2E7A66)
+    static let heroMid = Color(light: 0x27745F, dark: 0x1D5A4A)
+    static let heroBottom = Color(light: 0x16493C, dark: 0x0F352C)
+
     // MARK: Backgrounds & surfaces
 
     /// App background (light mint-tinted off-white).

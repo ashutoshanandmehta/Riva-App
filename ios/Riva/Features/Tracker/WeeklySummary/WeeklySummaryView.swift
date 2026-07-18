@@ -71,7 +71,9 @@ struct WeeklySummaryView: View {
                 SummaryStatTile(
                     systemImage: "moon",
                     caption: "Sleep avg",
-                    value: RivaFormat.sleepDuration(minutes: summary.sleepAverageMinutes)
+                    value: summary.sleepAverageMinutes > 0
+                        ? RivaFormat.sleepDuration(minutes: summary.sleepAverageMinutes)
+                        : "Not logged"
                 )
             }
         }

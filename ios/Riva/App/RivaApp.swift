@@ -4,19 +4,48 @@ import SwiftUI
 struct RivaApp: App {
     /// App-wide UI state (selected tab, snap menu, placeholder sheets).
     @State private var appModel = AppModel()
+    /// The front door: landing, onboarding, Google sign in, profile
+    /// completion. Everything inside the app assumes a session.
+    @State private var authModel: AuthModel
     /// Composition root — swap mock repositories for API-backed ones here.
-    private let dependencies = AppDependencies.live()
+    private let dependencies: AppDependencies
 
-    // No sign-in screen in this phase: identity is a silent per-device
-    // account (see DeviceAuthRepository). The landing page gate returns
-    // here together with its design.
+    init() {
+        let dependencies = AppDependencies.live()
+        self.dependencies = dependencies
+        _authModel = State(initialValue: AuthModel(
+            repository: dependencies.authRepository,
+            account: dependencies.accountRepository
+        ))
+    }
+
     var body: some Scene {
         WindowGroup {
-            RootView(dependencies: dependencies)
-                .environment(appModel)
-                .tint(RivaColor.brand)
-                // User-selected theme; `nil` (System) follows the device.
-                .preferredColorScheme(appModel.appearance.colorScheme)
+            Group {
+                switch authModel.stage {
+                case .checking:
+                    // Looking up the stored session; sub-second.
+                    ZStack {
+                        RivaColor.background.ignoresSafeArea()
+                        ProgressView()
+                    }
+                case .landing:
+                    LandingView(model: authModel)
+                case .onboarding:
+                    GoalsStepView(model: authModel)
+                case .login:
+                    LoginView(model: authModel)
+                case .completingProfile:
+                    CompleteProfileView(model: authModel)
+                case .signedIn:
+                    RootView(dependencies: dependencies)
+                        .environment(appModel)
+                }
+            }
+            .task { await authModel.start() }
+            .tint(RivaColor.brand)
+            // User-selected theme; `nil` (System) follows the device.
+            .preferredColorScheme(appModel.appearance.colorScheme)
         }
     }
 }

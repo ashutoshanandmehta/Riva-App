@@ -22,5 +22,17 @@ enum BackendEnvironment {
 
     /// Supabase project (auth only; data writes go through the scan service).
     static let supabaseURL = URL(string: "https://casmdqfgxoihjisrjsbk.supabase.co")!
+
+    /// Google sign in runs through Supabase's OAuth flow in a system web
+    /// session; the tokens come back on this custom scheme redirect.
+    /// (ASWebAuthenticationSession intercepts it, so the scheme needs no
+    /// Info.plist registration.)
+    static let oauthCallbackScheme = "riva-auth"
+    static var googleAuthorizeURL: URL {
+        URL(
+            string: "auth/v1/authorize?provider=google&redirect_to=\(oauthCallbackScheme)://callback",
+            relativeTo: supabaseURL
+        )!
+    }
     static let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhc21kcWZneG9paGppc3Jqc2JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyOTA1NDQsImV4cCI6MjA5OTg2NjU0NH0.o4KhfXFdm0mlDG4QxOFb4JFvlCQrNlnYSFyXqvLci8k"
 }
