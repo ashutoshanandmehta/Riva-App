@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// "Personal Goals" — current and goal weight tiles with an Edit shortcut.
+/// "Personal Goals" section: start and goal weight tiles with an Edit shortcut.
 struct PersonalGoalsSection: View {
-    let goals: PersonalGoals
+    let startWeightLbs: Double?
+    let goalWeightLbs: Double?
     let onEdit: () -> Void
 
     var body: some View {
@@ -24,19 +25,19 @@ struct PersonalGoalsSection: View {
             HStack(spacing: RivaSpacing.md) {
                 goalTile(
                     systemImage: "scalemass",
-                    caption: "Current Weight",
-                    valueLbs: goals.currentWeightLbs
+                    caption: "Start Weight",
+                    valueLbs: startWeightLbs
                 )
                 goalTile(
                     systemImage: "flag",
                     caption: "Goal Weight",
-                    valueLbs: goals.goalWeightLbs
+                    valueLbs: goalWeightLbs
                 )
             }
         }
     }
 
-    private func goalTile(systemImage: String, caption: String, valueLbs: Double) -> some View {
+    private func goalTile(systemImage: String, caption: String, valueLbs: Double?) -> some View {
         RivaCard {
             VStack(alignment: .leading, spacing: RivaSpacing.xs) {
                 Image(systemName: systemImage)
@@ -45,23 +46,35 @@ struct PersonalGoalsSection: View {
                 Text(caption)
                     .font(.system(size: 12))
                     .foregroundStyle(RivaColor.textSecondary)
-                HStack(alignment: .firstTextBaseline, spacing: 3) {
-                    Text(RivaFormat.weight(valueLbs))
+                if let valueLbs {
+                    HStack(alignment: .firstTextBaseline, spacing: 3) {
+                        Text(RivaFormat.weight(valueLbs))
+                            .font(.system(size: 19, weight: .bold))
+                            .foregroundStyle(RivaColor.textPrimary)
+                        Text("lbs")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(RivaColor.textSecondary)
+                    }
+                } else {
+                    Text("Not set")
                         .font(.system(size: 19, weight: .bold))
-                        .foregroundStyle(RivaColor.textPrimary)
-                    Text("lbs")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .foregroundStyle(RivaColor.textTertiary)
                 }
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(caption): \(RivaFormat.weight(valueLbs)) pounds")
+        .accessibilityLabel(
+            valueLbs.map { "\(caption): \(RivaFormat.weight($0)) pounds" } ?? "\(caption): not set"
+        )
     }
 }
 
 #Preview {
-    PersonalGoalsSection(goals: MockProfileRepository.snapshot().goals) {}
+    let profile = MockAccountRepository.sampleBundle.profile
+    return PersonalGoalsSection(
+        startWeightLbs: profile.startWeight,
+        goalWeightLbs: profile.goalWeight
+    ) {}
         .padding()
         .background(RivaColor.background)
 }

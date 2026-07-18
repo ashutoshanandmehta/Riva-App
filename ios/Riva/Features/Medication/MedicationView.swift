@@ -52,11 +52,11 @@ struct MedicationView: View {
             .buttonStyle(.rivaPrimary)
 
             MedicationCurveCard(curve: dashboard.curve, insight: dashboard.insight) {
-                appModel.present(placeholder: .medicationCurveInfo)
+                appModel.activeDetail = .curveInfo
             }
 
             DoseHistorySection(records: dashboard.history) { _ in
-                appModel.present(placeholder: .shotDetails)
+                appModel.activeDetail = .shotHistory
             }
         }
         .padding(.horizontal, RivaSpacing.screenMargin)

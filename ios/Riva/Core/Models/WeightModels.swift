@@ -1,7 +1,7 @@
 import Foundation
 
-/// One logged body-weight measurement.
-struct WeightEntry: Identifiable, Equatable, Sendable {
+/// One point on the weight trend chart.
+struct WeightPoint: Identifiable, Equatable, Sendable {
     var id: Date { date }
     let date: Date
     let weightLbs: Double
@@ -10,7 +10,7 @@ struct WeightEntry: Identifiable, Equatable, Sendable {
 /// Everything the Weight Tracking card needs.
 struct WeightSummary: Equatable, Sendable {
     /// Trailing history window (typically the past month), oldest first.
-    var history: [WeightEntry]
+    var history: [WeightPoint]
     var currentLbs: Double
     var targetLbs: Double
     /// Change over the trailing 7 days; negative = loss.

@@ -42,11 +42,11 @@ struct HomeView: View {
             MedicationLevelCard(estimate: snapshot.medicationLevel)
 
             NextShotCard(shot: snapshot.nextShot) {
-                appModel.present(placeholder: .shotDetails)
+                appModel.activeDetail = .shotHistory
             }
 
             Button("Log today's shot") {
-                appModel.present(placeholder: .logShot)
+                appModel.activeQuickLog = .shot
             }
             .buttonStyle(.rivaPrimary)
 

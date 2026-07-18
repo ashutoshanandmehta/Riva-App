@@ -60,7 +60,7 @@ struct MockHomeRepository: HomeRepository {
 
     /// Deterministic month of gently declining weight (182.6 → 164.2 lbs).
     /// A fixed sine wiggle keeps the curve organic without run-to-run jitter.
-    private static func weightHistory(endingAt now: Date) -> [WeightEntry] {
+    private static func weightHistory(endingAt now: Date) -> [WeightPoint] {
         let calendar = Calendar.current
         let startLbs = 182.6
         let endLbs = 164.2
@@ -73,7 +73,7 @@ struct MockHomeRepository: HomeRepository {
             // on the headline 164.2.
             let wiggle = sin(t * .pi * 3.2) * 0.9 * (1 - t)
             let date = calendar.date(byAdding: .day, value: offset - dayCount, to: now) ?? now
-            return WeightEntry(date: date, weightLbs: base + wiggle)
+            return WeightPoint(date: date, weightLbs: base + wiggle)
         }
     }
 }

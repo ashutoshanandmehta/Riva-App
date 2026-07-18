@@ -20,6 +20,10 @@ final class AppModel {
     /// Non-nil while a quick-log sheet (weight, shot, protein, side
     /// effects, sleep) is presented.
     var activeQuickLog: QuickLog?
+    /// Non-nil while an account settings sheet is presented.
+    var activeAccountSheet: AccountSheet?
+    /// Non-nil while a history or info detail screen is presented.
+    var activeDetail: DetailScreen?
     /// App-wide appearance, persisted across launches.
     var appearance: AppearancePreference {
         didSet {
@@ -52,6 +56,16 @@ final class AppModel {
         if let rawLog = UserDefaults.standard.string(forKey: "riva.quickLog"),
            let kind = QuickLog(rawValue: rawLog) {
             activeQuickLog = kind
+        }
+        // Launch straight into an account sheet: `-riva.accountSheet editGoals`
+        if let rawSheet = UserDefaults.standard.string(forKey: "riva.accountSheet"),
+           let sheet = AccountSheet(rawValue: rawSheet) {
+            activeAccountSheet = sheet
+        }
+        // Launch straight into a detail screen: `-riva.detail shotHistory`
+        if let rawDetail = UserDefaults.standard.string(forKey: "riva.detail"),
+           let detail = DetailScreen(rawValue: rawDetail) {
+            activeDetail = detail
         }
         #endif
     }

@@ -93,4 +93,6 @@ struct MockAuthRepository: AuthRepository {
     func validAccessToken() async throws -> String? { "mock" }
 
     func signOut() async {}
+
+    func resetIdentity() async {}
 }

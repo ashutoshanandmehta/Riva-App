@@ -13,6 +13,7 @@ struct AppDependencies {
     let authRepository: any AuthRepository
     let scanRepository: any ScanRepository
     let logRepository: any LogRepository
+    let accountRepository: any AccountRepository
 
     /// Production wiring. The scanner is live against the Riva backend;
     /// dashboards are still mock-backed until their APIs exist.
@@ -29,7 +30,8 @@ struct AppDependencies {
             profileRepository: MockProfileRepository(),
             authRepository: auth,
             scanRepository: APIScanRepository(auth: auth),
-            logRepository: APILogRepository(auth: auth)
+            logRepository: APILogRepository(auth: auth),
+            accountRepository: APIAccountRepository(auth: auth)
         )
     }
 }

@@ -75,6 +75,10 @@ actor SupabaseAuthRepository: AuthRepository {
         KeychainStore.delete(key: Self.sessionKey)
     }
 
+    func resetIdentity() async {
+        await signOut()
+    }
+
     // MARK: GoTrue plumbing
 
     private struct TokenResponse: Decodable {

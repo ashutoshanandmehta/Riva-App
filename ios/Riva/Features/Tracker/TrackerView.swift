@@ -69,7 +69,7 @@ struct TrackerView: View {
             IntelligenceBanner(insight: dashboard.intelligence)
 
             CurrentWeightCard(trend: dashboard.weight) {
-                appModel.present(placeholder: .weightDetails)
+                appModel.activeDetail = .weightHistory
             }
 
             HStack(spacing: RivaSpacing.md) {
@@ -85,7 +85,7 @@ struct TrackerView: View {
             HStack(spacing: RivaSpacing.md) {
                 SideEffectsCard(
                     report: dashboard.sideEffect,
-                    onOpen: { appModel.present(placeholder: .sideEffects) },
+                    onOpen: { appModel.activeDetail = .sideEffectsHistory },
                     onAdd: { appModel.activeQuickLog = .sideEffects }
                 )
                 SleepQualityCard(sleep: dashboard.sleep) {

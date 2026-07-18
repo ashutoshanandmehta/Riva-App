@@ -62,6 +62,12 @@ actor DeviceAuthRepository: AuthRepository {
         KeychainStore.delete(key: Self.sessionKey)
     }
 
+    func resetIdentity() async {
+        session = nil
+        KeychainStore.delete(key: Self.sessionKey)
+        KeychainStore.delete(key: Self.deviceIDKey)
+    }
+
     // MARK: Provisioning
 
     private struct DeviceSessionResponse: Decodable {

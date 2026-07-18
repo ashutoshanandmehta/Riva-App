@@ -1,19 +1,32 @@
 import SwiftUI
 
-/// Avatar (initials fallback with an edit badge), name, and email.
+/// Avatar (initials fallback with an edit badge) and the account name.
 struct ProfileHeader: View {
-    let profile: ProfileSnapshot
-    /// Edit avatar/profile (placeholder for now).
+    /// Profile name from the backend; may be empty on a fresh account.
+    let name: String
     let onEdit: () -> Void
+
+    private var displayName: String {
+        name.isEmpty ? "there" : name
+    }
+
+    private var initials: String {
+        let letters = name
+            .split(separator: " ")
+            .prefix(2)
+            .compactMap { $0.first.map(String.init) }
+            .joined()
+        return letters.isEmpty ? "R" : letters
+    }
 
     var body: some View {
         VStack(spacing: RivaSpacing.sm) {
             avatar
             VStack(spacing: RivaSpacing.xxs) {
-                Text(profile.fullName)
+                Text(displayName)
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(RivaColor.textPrimary)
-                Text(profile.email)
+                Text("Riva member")
                     .font(RivaFont.footnote)
                     .foregroundStyle(RivaColor.textSecondary)
             }
@@ -32,7 +45,7 @@ struct ProfileHeader: View {
                         endPoint: .bottomTrailing
                     )
                 )
-            Text(profile.initials)
+            Text(initials)
                 .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(RivaColor.brandDeep)
         }
@@ -47,13 +60,13 @@ struct ProfileHeader: View {
                     .overlay(Circle().stroke(RivaColor.background, lineWidth: 2))
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Edit profile photo")
+            .accessibilityLabel("Edit profile")
         }
     }
 }
 
 #Preview {
-    ProfileHeader(profile: MockProfileRepository.snapshot()) {}
+    ProfileHeader(name: MockAccountRepository.sampleBundle.profile.name) {}
         .padding()
         .background(RivaColor.background)
 }

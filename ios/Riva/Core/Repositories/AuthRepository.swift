@@ -22,6 +22,11 @@ protocol AuthRepository: Sendable {
     func validAccessToken() async throws -> String?
 
     func signOut() async
+
+    /// Starts this device over with a fresh account: clears the stored
+    /// session and any persisted device identity, so the next authenticated
+    /// call provisions a brand new account.
+    func resetIdentity() async
 }
 
 enum AuthError: LocalizedError {
