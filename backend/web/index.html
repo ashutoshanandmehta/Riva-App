@@ -56,6 +56,9 @@
     border: 1px solid var(--brand-soft); border-radius: 12px;
     background: var(--bg); color: var(--text); }
   #loginCard .btn { width: 100%; margin-top: 10px; }
+  .or-line { display: flex; align-items: center; gap: 10px; margin: 14px 2px 2px;
+    color: var(--text-2); font-size: 12px; }
+  .or-line::before, .or-line::after { content: ""; flex: 1; height: 1px; background: var(--brand-wash); }
   #authBar { text-align: right; margin: -6px 2px 10px; }
   #authBar a { color: var(--brand); text-decoration: none; }
 
@@ -134,6 +137,8 @@
 
 <div class="card" id="loginCard" style="display:none">
   <div class="overline">Sign in to scan and log</div>
+  <button class="btn btn-soft" id="googleBtn">Continue with Google</button>
+  <div class="or-line"><span>or use email</span></div>
   <div id="emailStep">
     <input type="email" class="field" id="emailInput" placeholder="you@example.com" autocomplete="email">
     <button class="btn btn-primary" id="sendCodeBtn">Send code</button>
@@ -262,6 +267,21 @@ $("backToEmailBtn").onclick = () => {
   $("codeStep").style.display = "none";
   $("emailStep").style.display = "block";
   $("authMessage").textContent = "";
+};
+
+$("googleBtn").onclick = async () => {
+  $("googleBtn").disabled = true;
+  $("authMessage").textContent = "Redirecting to Google…";
+  // supabase-js completes the callback on return via detectSessionInUrl,
+  // so onAuthStateChange picks up the session with no extra handling here.
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: window.location.origin + window.location.pathname },
+  });
+  if (error) {
+    $("googleBtn").disabled = false;
+    $("authMessage").textContent = error.message;
+  }
 };
 
 initAuth();
