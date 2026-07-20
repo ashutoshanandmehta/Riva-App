@@ -20,3 +20,9 @@ xcuserdata/
 
 # Local metadata for the Riva-Snap deploy mirror of the backend
 backend/.git-snap/
+
+# Nutrition5k eval artifacts (downloaded / generated, not source)
+backend/eval/n5k_cache/
+backend/eval/images/n5k_*.png
+backend/eval/golden.n5k.jsonl
+backend/eval/reports/
