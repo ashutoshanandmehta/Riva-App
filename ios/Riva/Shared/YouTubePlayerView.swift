@@ -13,6 +13,10 @@ import WebKit
 struct YouTubePlayerView: UIViewRepresentable {
     let videoID: String
 
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
@@ -70,8 +74,6 @@ struct YouTubePlayerView: UIViewRepresentable {
         """
         webView.loadHTMLString(html, baseURL: URL(string: "https://www.youtube.com"))
     }
-
-    func makeCoordinator() -> Coordinator { Coordinator() }
 
     final class Coordinator {
         var loadedID: String?
