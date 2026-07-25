@@ -78,12 +78,16 @@ struct TrackerView: View {
                 appModel.activeDetail = .weightHistory
             }
 
+            // minHeight, not height: these are the design's intended sizes, but
+            // a fixed height smaller than the content does not clip in SwiftUI —
+            // the card draws at its real size inside a shorter layout slot and
+            // bleeds over its neighbours, which reads as overlapping cards.
             CalorieCard(
                 calorie: dashboard.calorie,
                 onOpen: { appModel.activeDetail = .caloriesHistory },
                 onAdd: { appModel.activeQuickLog = .calories }
             )
-            .frame(height: 120)
+            .frame(minHeight: 120)
 
             HStack(spacing: RivaSpacing.md) {
                 HydrationCard(
@@ -97,7 +101,7 @@ struct TrackerView: View {
                     onAdd: { appModel.activeQuickLog = .protein }
                 )
             }
-            .frame(height: 155)
+            .frame(minHeight: 155)
 
             HStack(spacing: RivaSpacing.md) {
                 SideEffectsCard(
@@ -109,7 +113,7 @@ struct TrackerView: View {
                     appModel.activeQuickLog = .sleep
                 }
             }
-            .frame(height: 200)
+            .frame(minHeight: 200)
 
             Button {
                 path.append(.weeklySummary)
