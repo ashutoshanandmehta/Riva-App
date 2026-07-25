@@ -19,6 +19,9 @@ struct NutritionGoals: Codable, Sendable, Equatable {
     let carbGoal: Int
     let fiberGoal: Int
     let waterGoal: Int
+    /// Daily wellness minutes goal; optional so payloads from a backend
+    /// without wellness support still decode.
+    let wellnessMinutesGoal: Int?
 }
 
 struct HealthGoalFlags: Codable, Sendable, Equatable {
@@ -90,6 +93,7 @@ struct GoalsUpdate: Encodable, Sendable {
     var carbGoal: Int?
     var fiberGoal: Int?
     var waterGoal: Int?
+    var wellnessMinutesGoal: Int?
 }
 
 /// The onboarding "What brings you to Riva?" choices, one per
@@ -210,6 +214,9 @@ enum DetailScreen: String, Sendable, Identifiable, CaseIterable {
     case weightHistory
     case sideEffectsHistory
     case curveInfo
+    case caloriesHistory
+    case hydrationHistory
+    case proteinHistory
 
     var id: String { rawValue }
 }

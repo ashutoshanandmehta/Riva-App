@@ -3,12 +3,12 @@ import SwiftUI
 /// The shared quick-log sheet: one presentation shell, per-kind form
 /// content, a saving state, and a brief confirmation before dismissing.
 struct QuickLogSheet: View {
-    let onClose: () -> Void
+    let onClose: (DayTotals?) -> Void
 
     @State private var model: QuickLogViewModel
     @FocusState private var isFieldFocused: Bool
 
-    init(kind: QuickLog, repository: any LogRepository, onClose: @escaping () -> Void) {
+    init(kind: QuickLog, repository: any LogRepository, onClose: @escaping (DayTotals?) -> Void) {
         self.onClose = onClose
         _model = State(initialValue: QuickLogViewModel(kind: kind, repository: repository))
     }
@@ -34,14 +34,14 @@ struct QuickLogSheet: View {
         }
         .padding(.top, RivaSpacing.xl)
         .padding(.bottom, RivaSpacing.lg)
-        .presentationDetents([model.kind == .sideEffects ? .large : .medium])
+        .presentationDetents([model.kind.needsTallSheet ? .large : .medium])
         .presentationDragIndicator(.visible)
         .presentationBackground(RivaColor.background)
         .onChange(of: model.phase) {
             guard case .saved = model.phase else { return }
             Task {
-                try? await Task.sleep(for: .seconds(1.4))
-                onClose()
+                try? await Task.sleep(for: .seconds(0.6))
+                onClose(model.savedTotals)
             }
         }
     }
@@ -72,7 +72,7 @@ struct QuickLogSheet: View {
             }
         }
         .buttonStyle(.rivaPrimary)
-        .disabled(!model.canSave || model.phase == .saving)
+        .disabled(model.phase == .saving)
         .padding(.horizontal, RivaSpacing.screenMargin)
     }
 
@@ -101,6 +101,8 @@ struct QuickLogSheet: View {
         case .weight: weightForm
         case .shot: shotForm
         case .protein: proteinForm
+        case .water: waterForm
+        case .calories: caloriesForm
         case .sideEffects: sideEffectsForm
         case .sleep: sleepForm
         }
@@ -124,6 +126,32 @@ struct QuickLogSheet: View {
         )
     }
 
+    private var waterForm: some View {
+        VStack(spacing: RivaSpacing.sm) {
+            metricField(
+                text: $model.waterText,
+                unit: "oz",
+                prompt: "8",
+                keyboard: .numberPad
+            )
+
+            Text("oz = fluid ounces. A standard glass is about 8 oz (≈ 240 ml).")
+                .font(RivaFont.footnote)
+                .foregroundStyle(RivaColor.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, RivaSpacing.screenMargin)
+        }
+    }
+
+    private var caloriesForm: some View {
+        metricField(
+            text: $model.caloriesText,
+            unit: "kcal",
+            prompt: "250",
+            keyboard: .numberPad
+        )
+    }
+
     private var shotForm: some View {
         VStack(spacing: RivaSpacing.md) {
             HStack(spacing: RivaSpacing.sm) {
@@ -136,6 +164,7 @@ struct QuickLogSheet: View {
                         RivaColor.fillNeutral,
                         in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
                     )
+                    .overlay(invalidBorder(model.showValidation && model.isMedicationMissing))
 
                 HStack(spacing: 5) {
                     TextField("0.5", text: $model.doseText)
@@ -154,11 +183,15 @@ struct QuickLogSheet: View {
                     RivaColor.fillNeutral,
                     in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
                 )
+                .overlay(invalidBorder(model.showValidation && model.isDoseMissing))
             }
 
             VStack(alignment: .leading, spacing: RivaSpacing.xs) {
                 Text("Injection site")
-                    .rivaOverline()
+                    .rivaOverline(
+                        model.showValidation && model.isSiteMissing
+                            ? RivaColor.danger : RivaColor.textSecondary
+                    )
                 LazyVGrid(
                     columns: [GridItem(.flexible()), GridItem(.flexible())],
                     spacing: RivaSpacing.xs
@@ -168,6 +201,11 @@ struct QuickLogSheet: View {
                             model.site = site
                         }
                     }
+                }
+                if model.showValidation && model.isSiteMissing {
+                    Text("Select where you injected.")
+                        .font(RivaFont.footnote)
+                        .foregroundStyle(RivaColor.danger)
                 }
             }
 
@@ -301,13 +339,20 @@ struct QuickLogSheet: View {
 
     // MARK: Shared pieces
 
+    /// A red outline drawn over a field when it failed validation.
+    private func invalidBorder(_ isInvalid: Bool) -> some View {
+        RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            .stroke(RivaColor.danger, lineWidth: isInvalid ? 1.5 : 0)
+    }
+
     private func metricField(
         text: Binding<String>,
         unit: String,
         prompt: String,
         keyboard: UIKeyboardType
     ) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: RivaSpacing.xs) {
+        let isInvalid = model.showValidation && !model.canSave
+        return HStack(alignment: .firstTextBaseline, spacing: RivaSpacing.xs) {
             TextField(prompt, text: text)
                 .keyboardType(keyboard)
                 .font(RivaFont.metricXL)
@@ -327,6 +372,7 @@ struct QuickLogSheet: View {
             in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
         )
         .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+        .overlay(invalidBorder(isInvalid))
         .padding(.horizontal, RivaSpacing.screenMargin)
     }
 
@@ -350,12 +396,12 @@ struct QuickLogSheet: View {
 
 #Preview("Shot") {
     Color.clear.sheet(isPresented: .constant(true)) {
-        QuickLogSheet(kind: .shot, repository: MockLogRepository()) {}
+        QuickLogSheet(kind: .shot, repository: MockLogRepository()) { _ in }
     }
 }
 
 #Preview("Side effects") {
     Color.clear.sheet(isPresented: .constant(true)) {
-        QuickLogSheet(kind: .sideEffects, repository: MockLogRepository()) {}
+        QuickLogSheet(kind: .sideEffects, repository: MockLogRepository()) { _ in }
     }
 }

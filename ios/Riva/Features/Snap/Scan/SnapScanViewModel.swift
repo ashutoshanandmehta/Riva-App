@@ -20,6 +20,9 @@ final class SnapScanViewModel {
     private(set) var stage: Stage = .capture
 
     var mode: ScanMode
+    /// Optional free-text note the user adds before scanning, passed to the
+    /// vision model to sharpen its read ("extra cheese, medium plate").
+    var hint = ""
     var photo: UIImage? {
         didSet { errorMessage = nil }
     }
@@ -43,7 +46,7 @@ final class SnapScanViewModel {
         stage = .scanning
         errorMessage = nil
         do {
-            stage = .result(try await scanRepository.scan(imageData: jpeg, mode: mode))
+            stage = .result(try await scanRepository.scan(imageData: jpeg, mode: mode, hint: hint))
         } catch ScanServiceError.signInRequired {
             stage = .capture
             errorMessage = "Could not connect to your account. Check your connection and try again."

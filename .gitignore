@@ -13,6 +13,18 @@ xcuserdata/
 # macOS
 .DS_Store
 
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Claude Code governance — transient state and per-user overrides only.
+# The kit itself (.claude/, vault/, CLAUDE.md) IS tracked.
+.claude/state/
+.claude/settings.local.json
+
 # Secrets — never commit API keys or provisioning secrets
 *.pem
 *.p12
@@ -26,3 +38,11 @@ backend/eval/n5k_cache/
 backend/eval/images/n5k_*.png
 backend/eval/golden.n5k.jsonl
 backend/eval/reports/
+
+# Volumetric + real-world eval artifacts (downloaded / generated, not source)
+backend/eval/volumetric/depth/
+backend/eval/volumetric/rgb/
+backend/eval/volumetric/reports/
+backend/eval/volumetric/samples_n5k/*.png
+backend/eval/realworld/reports/
+backend/eval/realworld/dataset/**/capture.mp4

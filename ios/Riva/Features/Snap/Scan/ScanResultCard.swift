@@ -123,8 +123,9 @@ struct ScanResultCard: View {
         RivaCard {
             VStack(alignment: .leading, spacing: RivaSpacing.md) {
                 if let plate = scan.plate, !plate.isEmpty {
-                    Text("On \(articled(plate))")
-                        .rivaOverline()
+                    Text(plate)
+                        .font(RivaFont.footnote)
+                        .foregroundStyle(RivaColor.textSecondary)
                 }
 
                 ForEach(Array(scan.items.enumerated()), id: \.offset) { index, item in

@@ -31,6 +31,22 @@ struct MockLogRepository: LogRepository {
         )
     }
 
+    func logWater(ounces: Int) async throws -> DayTotals {
+        try? await Task.sleep(for: .milliseconds(400))
+        return DayTotals(
+            day: "2026-07-17", calories: 820, proteinGrams: 41,
+            carbGrams: 88, fiberGrams: 12, waterOunces: 24 + ounces
+        )
+    }
+
+    func logCalories(kcal: Int) async throws -> DayTotals {
+        try? await Task.sleep(for: .milliseconds(400))
+        return DayTotals(
+            day: "2026-07-17", calories: 820 + kcal, proteinGrams: 41,
+            carbGrams: 88, fiberGrams: 12, waterOunces: 24
+        )
+    }
+
     func logSideEffects(_ entries: [SideEffectEntry]) async throws -> SideEffectsLogResult {
         try? await Task.sleep(for: .milliseconds(400))
         return SideEffectsLogResult(logDate: "2026-07-17", effects: entries)
@@ -43,5 +59,14 @@ struct MockLogRepository: LogRepository {
             checkinDate: "2026-07-17", questionId: "sleep",
             optionCode: option.code, label: option.label, value: 4
         )
+    }
+
+    func logWellnessSession(
+        practiceId: String,
+        kind: WellnessKind,
+        minutes: Int
+    ) async throws -> WellnessLogResult {
+        try? await Task.sleep(for: .milliseconds(400))
+        return WellnessLogResult(day: "2026-07-17", minutesToday: 24 + minutes, streakDays: 5)
     }
 }

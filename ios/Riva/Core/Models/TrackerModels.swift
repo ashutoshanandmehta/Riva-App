@@ -1,15 +1,5 @@
 import Foundation
 
-/// Short-window weight trend for the Tracker tab (distinct from Home's
-/// month-long `WeightSummary`).
-struct WeightTrend: Equatable, Sendable {
-    var currentLbs: Double
-    /// Change over the trailing 7 days; negative = loss.
-    var weeklyChangeLbs: Double
-    /// Daily weights for the trailing week, oldest first (drives the bars).
-    var recentDailyLbs: [Double]
-}
-
 /// Daily hydration progress.
 struct HydrationStatus: Equatable, Sendable {
     var glasses: Int
@@ -33,6 +23,19 @@ struct ProteinStatus: Equatable, Sendable {
     }
 
     var gramsRemaining: Double { max(goalGrams - grams, 0) }
+}
+
+/// Daily calorie progress.
+struct CalorieStatus: Equatable, Sendable {
+    var calories: Int
+    var goalCalories: Int
+
+    var progress: Double {
+        guard goalCalories > 0 else { return 0 }
+        return min(max(Double(calories) / Double(goalCalories), 0), 1)
+    }
+
+    var caloriesRemaining: Int { max(goalCalories - calories, 0) }
 }
 
 /// The patient's currently reported side effect.
@@ -82,10 +85,8 @@ struct WeeklyWeightProgress: Equatable, Sendable {
     var goalLbs: Double
 }
 
-/// A named coaching note (e.g. from "Remi", Riva's AI coach) with Markdown
-/// emphasis.
+/// A coaching note with Markdown emphasis.
 struct CoachNote: Equatable, Sendable {
-    var coachName: String
     var message: String
 }
 
@@ -106,11 +107,12 @@ struct WeeklySummary: Equatable, Sendable {
 
 /// Aggregate payload backing the Tracker tab.
 struct TrackerDashboard: Equatable, Sendable {
-    /// Markdown-formatted coaching message ("Tomorrow is **injection day**…").
-    var intelligence: RivaInsight
-    var weight: WeightTrend
+    /// Month-long trend, deltas, and goal progress — the Tracker tab leads
+    /// with the full `WeightTrackingCard`.
+    var weight: WeightSummary
     var hydration: HydrationStatus
     var protein: ProteinStatus
+    var calorie: CalorieStatus
     var sideEffect: SideEffectReport
     var sleep: SleepStatus
 }

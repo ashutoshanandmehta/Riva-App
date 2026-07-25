@@ -25,12 +25,13 @@ enum SnapAction: String, CaseIterable, Identifiable {
     }
 
     /// Fan-out angle in degrees, measured counter-clockwise from the positive
-    /// x-axis, relative to the aperture button.
+    /// x-axis, relative to the aperture button. Three spokes, evenly spaced
+    /// 50 degrees apart and symmetric around the vertical (90 degrees).
     var fanAngleDegrees: Double {
         switch self {
-        case .weight: 150
+        case .weight: 140
         case .water: 90
-        case .food: 30
+        case .food: 40
         }
     }
 }

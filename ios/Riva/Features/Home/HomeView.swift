@@ -1,13 +1,15 @@
 import SwiftUI
 
-/// Home dashboard — greeting, weight trend, medication model, next shot,
-/// insight, and daily nutrients.
+/// Home dashboard — greeting, to-dos, medication model, next shot, and daily
+/// nutrients. The weight trend lives on the Tracker tab.
 struct HomeView: View {
     @Environment(AppModel.self) private var appModel
     @State private var viewModel: HomeViewModel
+    private let todoRepository: any TodoRepository
 
-    init(repository: any HomeRepository) {
+    init(repository: any HomeRepository, todoRepository: any TodoRepository) {
         _viewModel = State(initialValue: HomeViewModel(repository: repository))
+        self.todoRepository = todoRepository
     }
 
     var body: some View {
@@ -25,6 +27,14 @@ struct HomeView: View {
         .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
+        .onChange(of: appModel.dashboardRevision) {
+            // Apply the fresh totals in place for an instant update, then
+            // reconcile against the server in the background.
+            if let totals = appModel.pendingTotals {
+                viewModel.apply(totals: totals)
+            }
+            Task { await viewModel.load() }
+        }
     }
 
     // MARK: Loaded
@@ -37,7 +47,7 @@ struct HomeView: View {
                 onSettings: { appModel.showProfile() }
             )
 
-            WeightTrackingCard(summary: snapshot.weight)
+            TodoSection(repository: todoRepository)
 
             MedicationLevelCard(estimate: snapshot.medicationLevel)
 
@@ -49,8 +59,6 @@ struct HomeView: View {
                 appModel.activeQuickLog = .shot
             }
             .buttonStyle(.rivaPrimary)
-
-            RivaInsightCard(insight: snapshot.insight)
 
             DailyNutrientsSection(nutrients: snapshot.nutrients)
         }
@@ -72,6 +80,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(repository: MockHomeRepository())
+    HomeView(repository: MockHomeRepository(), todoRepository: MockTodoRepository())
         .environment(AppModel())
 }

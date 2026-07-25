@@ -14,6 +14,15 @@ struct AppDependencies {
     let scanRepository: any ScanRepository
     let logRepository: any LogRepository
     let accountRepository: any AccountRepository
+    let wellnessRepository: any WellnessRepository
+    /// Backs the to-do card on Home. Its own endpoints rather than the shared
+    /// dashboard fetch, because to-dos are written as well as read.
+    let todoRepository: any TodoRepository
+    /// Backs the "3D scan (beta)" ARKit volumetric capture flow in the Snap
+    /// tab. Anonymous/stateless, like `scanRepository.scan` — persisting an
+    /// accepted volumetric scan reuses `scanRepository.accept`, not a
+    /// separate endpoint.
+    let volumetricScanRepository: any VolumetricScanRepository
 
     /// Production wiring: everything reads and writes the Riva backend.
     /// Mock repositories exist only for previews.
@@ -32,7 +41,10 @@ struct AppDependencies {
             authRepository: auth,
             scanRepository: APIScanRepository(auth: auth),
             logRepository: APILogRepository(auth: auth),
-            accountRepository: APIAccountRepository(auth: auth)
+            accountRepository: APIAccountRepository(auth: auth),
+            wellnessRepository: APIWellnessRepository(service: dashboards, auth: auth),
+            todoRepository: APITodoRepository(auth: auth),
+            volumetricScanRepository: APIVolumetricScanRepository()
         )
     }
 }

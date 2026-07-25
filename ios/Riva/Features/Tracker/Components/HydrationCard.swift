@@ -4,6 +4,8 @@ import SwiftUI
 /// progress, with a quick-add button.
 struct HydrationCard: View {
     let hydration: HydrationStatus
+    /// Opens the hydration history sheet.
+    let onOpen: () -> Void
     /// Quick-add a glass (placeholder for now).
     let onAdd: () -> Void
 
@@ -32,8 +34,12 @@ struct HydrationCard: View {
 
     private var content: some View {
         VStack(alignment: .leading, spacing: RivaSpacing.xs) {
-            Text("Hydration")
-                .rivaOverline()
+            HStack {
+                Text("Hydration")
+                    .rivaOverline()
+                Spacer()
+                HistoryChevronButton(accessibilityLabel: "Hydration history", action: onOpen)
+            }
 
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text("\(hydration.glasses)")
@@ -57,7 +63,7 @@ struct HydrationCard: View {
 }
 
 #Preview {
-    HydrationCard(hydration: MockTrackerRepository.dashboard().hydration) {}
+    HydrationCard(hydration: MockTrackerRepository.dashboard().hydration, onOpen: {}, onAdd: {})
         .frame(width: 170, height: 155)
         .padding()
         .background(RivaColor.background)

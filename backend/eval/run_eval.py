@@ -64,10 +64,10 @@ def main() -> None:
         golden = golden[: args.limit]
 
     try:
-        client, provider = vision.make_client(config)
+        client = vision.make_client(config)
     except RuntimeError as error:
         sys.exit(str(error))
-    model = vision.resolve_model(client, provider, config.riva_scan_model)
+    model = vision.resolve_model(config)
     prompt_text = vision.load_prompt(config.prompt_version)
 
     rows = []
@@ -82,7 +82,7 @@ def main() -> None:
         try:
             image_b64 = preprocess.prepare_image(image_path.read_bytes())
             analysis = vision.analyze_image(
-                client, model, image_b64, None, prompt_text, provider=provider
+                client, model, image_b64, None, prompt_text
             )
             result = _assemble(analysis, config.fdc_api_key)
         except Exception as error:  # keep evaluating the rest of the set

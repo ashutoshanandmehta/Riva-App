@@ -27,6 +27,10 @@ protocol AccountRepository: Sendable {
     /// Recent daily side-effect logs, newest first.
     func sideEffects() async throws -> [SideEffectDayLog]
 
+    /// Recent logged nutrition entries, newest first. `limit` caps the count
+    /// when non-nil; nil fetches the full history.
+    func foodEntries(limit: Int?) async throws -> [FoodEntry]
+
     /// The user's full data dump as raw JSON, ready to share or save.
     func exportData() async throws -> Data
 

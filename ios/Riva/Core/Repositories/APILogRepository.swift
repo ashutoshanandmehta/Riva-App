@@ -72,6 +72,60 @@ struct APILogRepository: LogRepository {
         ))
     }
 
+    func logWater(ounces: Int) async throws -> DayTotals {
+        struct Item: Encodable {
+            let name: String
+            let source: String
+        }
+        struct Body: Encodable {
+            let scanType: String
+            let items: [Item]
+            let calories: Int
+            let proteinGrams: Int
+            let carbGrams: Int
+            let fiberGrams: Int
+            let waterOunces: Int
+            let model: String
+        }
+        return try await post("v1/log", Body(
+            scanType: "water",
+            items: [Item(name: "Water quick add", source: "manual")],
+            calories: 0,
+            proteinGrams: 0,
+            carbGrams: 0,
+            fiberGrams: 0,
+            waterOunces: ounces,
+            model: "manual"
+        ))
+    }
+
+    func logCalories(kcal: Int) async throws -> DayTotals {
+        struct Item: Encodable {
+            let name: String
+            let source: String
+        }
+        struct Body: Encodable {
+            let scanType: String
+            let items: [Item]
+            let calories: Int
+            let proteinGrams: Int
+            let carbGrams: Int
+            let fiberGrams: Int
+            let waterOunces: Int
+            let model: String
+        }
+        return try await post("v1/log", Body(
+            scanType: "food",
+            items: [Item(name: "Calories quick add", source: "manual")],
+            calories: kcal,
+            proteinGrams: 0,
+            carbGrams: 0,
+            fiberGrams: 0,
+            waterOunces: 0,
+            model: "manual"
+        ))
+    }
+
     func logSideEffects(_ entries: [SideEffectEntry]) async throws -> SideEffectsLogResult {
         struct Body: Encodable {
             let effects: [SideEffectEntry]
@@ -85,6 +139,23 @@ struct APILogRepository: LogRepository {
             let optionCode: String
         }
         return try await post("v1/log/checkin", Body(questionId: "sleep", optionCode: optionCode))
+    }
+
+    func logWellnessSession(
+        practiceId: String,
+        kind: WellnessKind,
+        minutes: Int
+    ) async throws -> WellnessLogResult {
+        struct Body: Encodable {
+            let practiceId: String
+            let kind: String
+            let minutes: Int
+        }
+        return try await post("v1/log/wellness", Body(
+            practiceId: practiceId,
+            kind: kind.rawValue,
+            minutes: minutes
+        ))
     }
 
     // MARK: Transport

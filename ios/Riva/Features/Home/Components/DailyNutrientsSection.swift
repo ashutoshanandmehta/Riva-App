@@ -10,9 +10,11 @@ struct DailyNutrientsSection: View {
                 .font(RivaFont.sectionTitle)
                 .foregroundStyle(RivaColor.textPrimary)
 
-            HStack(spacing: RivaSpacing.md) {
-                ForEach(nutrients) { nutrient in
-                    tile(nutrient)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: RivaSpacing.md) {
+                    ForEach(nutrients) { nutrient in
+                        tile(nutrient)
+                    }
                 }
             }
         }
@@ -37,6 +39,7 @@ struct DailyNutrientsSection: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .frame(width: 128)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(nutrient.title): \(nutrient.valueText) \(nutrient.targetText)")
     }

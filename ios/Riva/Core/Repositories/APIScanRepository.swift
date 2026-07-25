@@ -21,7 +21,7 @@ struct APIScanRepository: ScanRepository {
         urlSession = URLSession(configuration: config)
     }
 
-    func scan(imageData: Data, mode: ScanMode) async throws -> ScanResult {
+    func scan(imageData: Data, mode: ScanMode, hint: String?) async throws -> ScanResult {
         guard let token = try await auth.validAccessToken() else {
             throw ScanServiceError.signInRequired
         }
@@ -30,6 +30,10 @@ struct APIScanRepository: ScanRepository {
         var body = Data()
         body.appendUTF8("--\(boundary)\r\n")
         body.appendUTF8("Content-Disposition: form-data; name=\"mode\"\r\n\r\n\(mode.rawValue)\r\n")
+        if let hint = hint?.trimmingCharacters(in: .whitespacesAndNewlines), !hint.isEmpty {
+            body.appendUTF8("--\(boundary)\r\n")
+            body.appendUTF8("Content-Disposition: form-data; name=\"hint\"\r\n\r\n\(hint)\r\n")
+        }
         body.appendUTF8("--\(boundary)\r\n")
         body.appendUTF8("Content-Disposition: form-data; name=\"image\"; filename=\"scan.jpg\"\r\n")
         body.appendUTF8("Content-Type: image/jpeg\r\n\r\n")

@@ -5,8 +5,8 @@ enum TrackerRoute: Hashable {
     case weeklySummary
 }
 
-/// Tracker tab — coaching intelligence, weight trend, hydration, protein,
-/// side effects, and sleep quality.
+/// Tracker tab — weight trend and goal progress, calories, hydration,
+/// protein, side effects, and sleep quality.
 struct TrackerView: View {
     @Environment(AppModel.self) private var appModel
     @State private var viewModel: TrackerViewModel
@@ -56,6 +56,14 @@ struct TrackerView: View {
         .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
+        .onChange(of: appModel.dashboardRevision) {
+            // Apply the fresh totals in place for an instant update, then
+            // reconcile against the server in the background.
+            if let totals = appModel.pendingTotals {
+                viewModel.apply(totals: totals)
+            }
+            Task { await viewModel.load() }
+        }
     }
 
     // MARK: Loaded
@@ -66,19 +74,28 @@ struct TrackerView: View {
                 appModel.showProfile()
             }
 
-            IntelligenceBanner(insight: dashboard.intelligence)
-
-            CurrentWeightCard(trend: dashboard.weight) {
+            WeightTrackingCard(summary: dashboard.weight) {
                 appModel.activeDetail = .weightHistory
             }
 
+            CalorieCard(
+                calorie: dashboard.calorie,
+                onOpen: { appModel.activeDetail = .caloriesHistory },
+                onAdd: { appModel.activeQuickLog = .calories }
+            )
+            .frame(height: 120)
+
             HStack(spacing: RivaSpacing.md) {
-                HydrationCard(hydration: dashboard.hydration) {
-                    appModel.activeScanMode = .water
-                }
-                ProteinGoalCard(protein: dashboard.protein) {
-                    appModel.activeQuickLog = .protein
-                }
+                HydrationCard(
+                    hydration: dashboard.hydration,
+                    onOpen: { appModel.activeDetail = .hydrationHistory },
+                    onAdd: { appModel.activeQuickLog = .water }
+                )
+                ProteinGoalCard(
+                    protein: dashboard.protein,
+                    onOpen: { appModel.activeDetail = .proteinHistory },
+                    onAdd: { appModel.activeQuickLog = .protein }
+                )
             }
             .frame(height: 155)
 

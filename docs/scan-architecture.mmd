@@ -1,0 +1,18 @@
+%% Riva Scan — how it works, in plain language
+flowchart TD
+    A["You snap your food<br/>(tap the center, then a slow 3-5s arc)"]:::you
+    subgraph AUTO["Behind the scenes — automatic, takes a couple of seconds"]
+        direction TB
+        B["Your phone keeps only the clear, sharp shots"]:::auto
+        C["It finds your food and separates it from the table"]:::auto
+        D["It measures how much food is really there"]:::auto
+        E["It figures out the ingredients<br/>(your note helps, like 'Chipotle bowl')"]:::auto
+        F["It turns the size and ingredients into the numbers"]:::auto
+        B --> C --> D --> E --> F
+    end
+    G["You see your result<br/>640 Calories · 45g protein · 62g carbs · 18g fat"]:::you
+    A --> B
+    F --> G
+
+    classDef you fill:#dff0e8,stroke:#2f6b53,stroke-width:2px,color:#123321,font-weight:bold;
+    classDef auto fill:#f6f8fa,stroke:#9aa7b4,color:#223140;

@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Strip of rounded daily-weight bars whose height tracks each day's value
 /// and whose tint deepens toward today (rightmost = today, full brand).
-/// Shared by the Tracker dashboard and the Weekly Summary.
+/// Used by the Weekly Summary's weight progress card.
 struct WeightBarsStrip: View {
     /// Daily weights, oldest first.
     let dailyLbs: [Double]

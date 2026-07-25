@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// The three quick-log actions (Weight, Water, Food) that fan out radially
-/// above the central snap button.
+/// The quick-log actions (Weight, Water, Food) that fan out radially above
+/// the central snap button.
 ///
 /// Lives directly above `RivaTabBar` in the same centered column, so the fan
 /// origin lines up with the aperture button. `GlassEffectContainer` lets the

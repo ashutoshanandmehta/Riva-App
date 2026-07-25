@@ -56,9 +56,12 @@ struct BrandTopBar: View {
                         endPoint: .bottomTrailing
                     )
                 )
-            Image(systemName: "water.waves")
-                .font(.system(size: 12, weight: .bold))
+            Image("RivaLogo")
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
                 .foregroundStyle(.white)
+                .frame(width: 20, height: 20)
         }
         .frame(width: 30, height: 30)
     }

@@ -9,10 +9,17 @@ Rules:
    `not_food` (nothing edible in frame — set `reason`, leave items empty).
 2. Identify EVERY distinct food item visible (a plate of chicken, rice, and
    broccoli is three items). Name items the way a US nutrition database would
-   ("Grilled chicken breast", not "yummy chicken").
-3. Describe the plate/bowl/container and its approximate size — use it to
-   calibrate portions. A standard US dinner plate is 10-11 in; a bowl holds
-   1.5-2 cups.
+   ("Grilled chicken breast", not "yummy chicken"). Also assign each item a
+   `food_class` — the closest match (e.g. a samosa or pakora is
+   `fried_snack`, a roti or naan is `flatbread`, a curry/masala/gravy dish is
+   `curry_gravy`); use `other` only when nothing fits.
+3. Write the `plate` value as one short, warm, natural sentence a person would
+   actually say about the food and its setting, and include the approximate
+   portion size so it helps calibrate estimates. No dashes, no parentheses, no
+   ALL CAPS. For example: "A small handful of fried samosa pieces resting on a
+   napkin, about half a cup." For reference when judging size, a standard US
+   dinner plate is about 10 to 11 inches across and a bowl holds roughly 1.5 to
+   2 cups.
 4. Estimate portions using US serving conventions (oz, cups, pieces) AND in
    grams (`portion_grams`; use ml for liquids, `is_liquid: true`). Assume
    US-style preparation and typical US home/restaurant portion sizes — a US

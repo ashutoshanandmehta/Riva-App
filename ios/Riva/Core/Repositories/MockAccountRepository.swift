@@ -15,7 +15,8 @@ struct MockAccountRepository: AccountRepository {
             timezone: "America/Los_Angeles"
         ),
         nutritionGoals: NutritionGoals(
-            proteinGoal: 100, carbGoal: 150, fiberGoal: 28, waterGoal: 64
+            proteinGoal: 100, carbGoal: 150, fiberGoal: 28, waterGoal: 64,
+            wellnessMinutesGoal: 45
         ),
         healthGoals: HealthGoalFlags(
             glp1Support: true,
@@ -62,7 +63,8 @@ struct MockAccountRepository: AccountRepository {
             proteinGoal: update.proteinGoal ?? current.proteinGoal,
             carbGoal: update.carbGoal ?? current.carbGoal,
             fiberGoal: update.fiberGoal ?? current.fiberGoal,
-            waterGoal: update.waterGoal ?? current.waterGoal
+            waterGoal: update.waterGoal ?? current.waterGoal,
+            wellnessMinutesGoal: update.wellnessMinutesGoal ?? current.wellnessMinutesGoal
         )
     }
 
@@ -135,6 +137,41 @@ struct MockAccountRepository: AccountRepository {
                 ]
             ),
         ]
+    }
+
+    func foodEntries(limit: Int?) async throws -> [FoodEntry] {
+        try? await Task.sleep(for: .milliseconds(400))
+        let entries = [
+            FoodEntry(
+                day: "2026-07-25", scanType: "food",
+                items: [FoodEntryItem(name: "Fried Samosa Pieces")],
+                calories: 180, proteinGrams: 3, waterOunces: 0,
+                createdAt: "2026-07-25T14:02:00Z"
+            ),
+            FoodEntry(
+                day: "2026-07-25", scanType: "food",
+                items: [FoodEntryItem(name: "Grilled Chicken Bowl")],
+                calories: 520, proteinGrams: 42, waterOunces: 0,
+                createdAt: "2026-07-25T12:30:00Z"
+            ),
+            FoodEntry(
+                day: "2026-07-25", scanType: "water",
+                items: [], calories: 0, proteinGrams: 0, waterOunces: 16,
+                createdAt: "2026-07-25T09:15:00Z"
+            ),
+            FoodEntry(
+                day: "2026-07-24", scanType: "food",
+                items: [FoodEntryItem(name: "Greek Yogurt")],
+                calories: 150, proteinGrams: 15, waterOunces: 0,
+                createdAt: "2026-07-24T08:05:00Z"
+            ),
+            FoodEntry(
+                day: "2026-07-24", scanType: "water",
+                items: [], calories: 0, proteinGrams: 0, waterOunces: 24,
+                createdAt: "2026-07-24T18:40:00Z"
+            ),
+        ]
+        return limit.map { Array(entries.prefix($0)) } ?? entries
     }
 
     func exportData() async throws -> Data {

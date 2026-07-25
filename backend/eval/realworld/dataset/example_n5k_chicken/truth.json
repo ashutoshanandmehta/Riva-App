@@ -1,0 +1,11 @@
+{
+  "dish_id": "example_n5k_chicken",
+  "name": "grilled chicken plate with vegetables",
+  "grams_total": 540,
+  "kcal_total": 563,
+  "ingredients": ["chicken", "carrot", "olives", "cherry tomatoes", "onions"],
+  "hint": "grilled chicken breast with carrots, tomatoes and onions",
+  "device": "n5k-overhead",
+  "arkit": false,
+  "notes": "EXAMPLE fixture built from one Nutrition5k overhead image (single top-down frame, not a real arc capture). Shows the truth.json format and lets the harness run before real dishes exist. Delete once you have real captures."
+}

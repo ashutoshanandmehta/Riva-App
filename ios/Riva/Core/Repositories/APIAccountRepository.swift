@@ -93,6 +93,22 @@ struct APIAccountRepository: AccountRepository {
         return response.logs
     }
 
+    func foodEntries(limit: Int?) async throws -> [FoodEntry] {
+        struct Response: Decodable {
+            let entries: [FoodEntry]
+        }
+        // The endpoint returns a bare JSON array, so decode that directly and
+        // fall back to an { "entries": [...] } envelope if the shape changes.
+        let path = limit.map { "v1/food-entries?limit=\($0)" } ?? "v1/food-entries"
+        let data = try await send(path: path, method: "GET")
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        if let entries = try? decoder.decode([FoodEntry].self, from: data) {
+            return entries
+        }
+        return try decoder.decode(Response.self, from: data).entries
+    }
+
     func exportData() async throws -> Data {
         try await send(path: "v1/export", method: "GET")
     }
