@@ -1,0 +1,35 @@
+# Local sandbox database for Riva Snap integration tests.
+#
+# This is the ONLY database the agent may touch (guard-bash.py blocks any
+# psql/DB access that is not localhost:5433). Production is remote Supabase and
+# has no connection string in this environment, by design.
+#
+#   docker compose up -d sandbox-db     # start
+#   psql postgresql://dev:dev@localhost:5433/appdev -c '\dt'   # inspect
+#   docker compose down -v              # stop and wipe
+#
+# On first start the container runs, in order:
+#   1. backend/supabase/local/00_roles_and_auth.sql  — stubs Supabase's auth
+#      schema + anon/authenticated/service_role roles so the real migrations apply
+#   2. backend/supabase/local/01_run_migrations.sh   — applies supabase/migrations/*.sql
+services:
+  sandbox-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: appdev
+    ports:
+      - "127.0.0.1:5433:5432"   # host 5433 -> matches the guard; loopback only
+    volumes:
+      - ./backend/supabase/local:/docker-entrypoint-initdb.d:ro
+      - ./backend/supabase/migrations:/supabase-migrations:ro
+      - sandbox-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d appdev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  sandbox-db-data:

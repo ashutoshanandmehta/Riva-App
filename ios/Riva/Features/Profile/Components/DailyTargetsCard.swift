@@ -17,8 +17,6 @@ struct DailyTargetsCard: View {
                 }
 
                 targetRow(label: "Protein", chip: "\(goals.proteinGoal)g")
-                targetRow(label: "Carbs", chip: "\(goals.carbGoal)g")
-                targetRow(label: "Fiber", chip: "\(goals.fiberGoal)g")
                 targetRow(label: "Water", chip: "\(goals.waterGoal) oz")
             }
         }

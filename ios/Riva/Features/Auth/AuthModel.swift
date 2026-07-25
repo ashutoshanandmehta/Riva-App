@@ -26,6 +26,11 @@ final class AuthModel {
     private(set) var isWorking = false
     private(set) var notice: String?
 
+    /// Set right after a returning login so the app can show a brief
+    /// "Welcome back" splash. Empty string = greet without a name; nil = no
+    /// splash pending.
+    private(set) var welcomeBackName: String?
+
     /// Goals picked during onboarding, saved right after account creation.
     var selectedGoals: Set<OnboardingGoal> = []
 
@@ -72,6 +77,33 @@ final class AuthModel {
         stage = .landing
     }
 
+    // MARK: Sign out / reset
+
+    /// Signs out of this device's session but keeps the account. Returns to
+    /// the front door; signing back in restores the same data.
+    func signOut() async {
+        await repository.signOut()
+        selectedGoals = []
+        notice = nil
+        stage = .landing
+    }
+
+    /// Wipes the user's data and this device's identity, then returns to the
+    /// front door for a brand-new start. Best-effort: even if the server-side
+    /// delete fails, the local session is still cleared.
+    func startFresh() async {
+        try? await account.deleteAccount()
+        await repository.resetIdentity()
+        selectedGoals = []
+        notice = nil
+        stage = .landing
+    }
+
+    /// Clears the pending "Welcome back" splash once it has been shown.
+    func dismissWelcomeBack() {
+        welcomeBackName = nil
+    }
+
     func toggle(_ goal: OnboardingGoal) {
         if selectedGoals.contains(goal) {
             selectedGoals.remove(goal)
@@ -97,10 +129,13 @@ final class AuthModel {
             try await repository.adoptOAuthCallback(callback)
 
             if fromLogin {
+                // A returning login never sees the profile-creation form. Go
+                // straight in and greet them by name.
                 let bundle = try? await account.me()
-                let untouched = (bundle?.profile.name ?? "there") == "there"
-                    && bundle?.profile.goalWeight == nil
-                stage = untouched ? .completingProfile : .signedIn
+                let first = bundle?.profile.name
+                    .split(separator: " ").first.map(String.init)
+                welcomeBackName = (first == nil || first == "there") ? "" : first
+                stage = .signedIn
             } else {
                 if !selectedGoals.isEmpty {
                     try? await account.updateHealthGoals(HealthGoalsUpdate(selected: selectedGoals))

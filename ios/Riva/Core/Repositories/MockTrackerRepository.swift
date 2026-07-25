@@ -20,16 +20,17 @@ struct MockTrackerRepository: TrackerRepository {
     /// Also used directly by SwiftUI previews.
     static func dashboard() -> TrackerDashboard {
         TrackerDashboard(
-            intelligence: RivaInsight(
-                message: "Tomorrow is **injection day**. Hydrate extra today to minimize potential side effects!"
-            ),
-            weight: WeightTrend(
-                currentLbs: 184.2,
-                weeklyChangeLbs: -0.8,
-                recentDailyLbs: [185.0, 184.9, 184.8, 184.7, 184.5, 184.3, 184.2]
+            weight: WeightSummary(
+                history: weightHistory(endingAt: .now),
+                currentLbs: 164.2,
+                targetLbs: 145,
+                weeklyChangeLbs: -1.2,
+                totalChangeLbs: -18.4,
+                goalProgress: 0.65
             ),
             hydration: HydrationStatus(glasses: 6, goalGlasses: 8),
             protein: ProteinStatus(grams: 85, goalGrams: 110),
+            calorie: CalorieStatus(calories: 1450, goalCalories: 2000),
             sideEffect: SideEffectReport(summary: "Mild Nausea", severity: .mild),
             sleep: SleepStatus(
                 durationMinutes: 440, // 7h 20m
@@ -63,7 +64,6 @@ struct MockTrackerRepository: TrackerRepository {
                 goalLbs: 175
             ),
             coachNote: CoachNote(
-                coachName: "Remi",
                 message: "Your protein intake was **15% higher** this week, which is great for muscle preservation! Keep focusing on your morning habits; consistency there is driving your progress."
             ),
             lastDoseDate: lastDose,
@@ -73,6 +73,26 @@ struct MockTrackerRepository: TrackerRepository {
             hydrationLitersPerDay: 2.4,
             sleepAverageMinutes: 462 // 7h 42m
         )
+    }
+
+    /// Deterministic month of gently declining weight (182.6 → 164.2 lbs) for
+    /// the Weight Tracking card. A fixed sine wiggle keeps the curve organic
+    /// without run-to-run jitter.
+    private static func weightHistory(endingAt now: Date) -> [WeightPoint] {
+        let calendar = Calendar.current
+        let startLbs = 182.6
+        let endLbs = 164.2
+        let dayCount = 28
+
+        return (0...dayCount).map { offset in
+            let t = Double(offset) / Double(dayCount)
+            let base = startLbs + (endLbs - startLbs) * t
+            // Wiggle fades to zero at the last point so "today" lands exactly
+            // on the headline 164.2.
+            let wiggle = sin(t * .pi * 3.2) * 0.9 * (1 - t)
+            let date = calendar.date(byAdding: .day, value: offset - dayCount, to: now) ?? now
+            return WeightPoint(date: date, weightLbs: base + wiggle)
+        }
     }
 
     private static func mostRecentMonday(onOrBefore date: Date) -> Date {

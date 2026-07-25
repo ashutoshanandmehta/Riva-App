@@ -18,9 +18,12 @@ struct LandingView: View {
                 Spacer(minLength: RivaSpacing.xl)
 
                 VStack(spacing: RivaSpacing.sm) {
-                    Image(systemName: "cross.case.fill")
-                        .font(.system(size: 28, weight: .semibold))
+                    Image("RivaLogo")
+                        .resizable()
+                        .renderingMode(.template)
+                        .scaledToFit()
                         .foregroundStyle(.white)
+                        .frame(width: 40, height: 40)
                         .frame(width: 64, height: 64)
                         .background(
                             .white.opacity(0.18),
@@ -64,18 +67,30 @@ struct LandingView: View {
 
                 Spacer()
 
-                Button {
-                    model.getStarted()
-                } label: {
-                    HStack(spacing: RivaSpacing.xs) {
-                        Text("Get Started")
-                        Image(systemName: "arrow.right")
+                VStack(spacing: RivaSpacing.sm) {
+                    Button {
+                        model.getStarted()
+                    } label: {
+                        HStack(spacing: RivaSpacing.xs) {
+                            Text("Get Started")
+                            Image(systemName: "arrow.right")
+                        }
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(RivaColor.heroBottom)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(.white, in: Capsule())
                     }
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(RivaColor.heroBottom)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(.white, in: Capsule())
+
+                    Button {
+                        model.showLogin()
+                    } label: {
+                        Text("Already have an account? **Log in**")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.white.opacity(0.95))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
                 }
                 .padding(.horizontal, RivaSpacing.screenMargin)
                 .padding(.bottom, RivaSpacing.md)

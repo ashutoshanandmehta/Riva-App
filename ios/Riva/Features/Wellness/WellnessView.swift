@@ -1,116 +1,185 @@
 import SwiftUI
 
-enum WellnessCategory: String, Identifiable {
-    case yoga, exercise, meditation
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .yoga:       "Yoga"
-        case .exercise:   "Exercise"
-        case .meditation: "Meditation"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .yoga:       "figure.yoga"
-        case .exercise:   "figure.run"
-        case .meditation: "moon.stars.fill"
-        }
-    }
-}
-
+/// Wellness tab — greeting, minutes-practiced hero, the practice catalog,
+/// and personalized suggestions.
 struct WellnessView: View {
     @Environment(AppModel.self) private var appModel
-    @State private var selectedCategory: WellnessCategory? = nil
+    @State private var viewModel: WellnessViewModel
+    private let account: any AccountRepository
+
+    @State private var selectedPractice: WellnessPractice?
+    @State private var showSeeAll = false
+    @State private var showGoalSheet = false
+
+    init(
+        repository: any WellnessRepository,
+        logRepository: any LogRepository,
+        account: any AccountRepository
+    ) {
+        _viewModel = State(initialValue: WellnessViewModel(
+            repository: repository,
+            logRepository: logRepository
+        ))
+        self.account = account
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            BrandTopBar(onSettings: { appModel.showProfile() })
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.top, RivaSpacing.xs)
-
-            Text("Wellness")
-                .font(RivaFont.screenTitle)
-                .foregroundStyle(RivaColor.textPrimary)
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.top, RivaSpacing.xs)
-
-            Spacer()
-
-            triangleLayout
-                .padding(.bottom, RivaLayout.tabBarClearance + RivaSpacing.xl)
+        ScrollView {
+            switch viewModel.state {
+            case .loading:
+                LoadingStateView(message: "Loading your practices…")
+            case .failed(let message):
+                ErrorStateView(message: message) {
+                    Task { await viewModel.load() }
+                }
+            case .loaded(let dashboard):
+                content(dashboard)
+            }
         }
         .background(RivaColor.background)
-        .sheet(item: $selectedCategory) { category in
-            WellnessCategorySheet(category: category)
+        .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
+        .refreshable { await viewModel.load() }
+        .task { await viewModel.load() }
+        .onChange(of: appModel.dashboardRevision) {
+            Task { await viewModel.load() }
         }
-    }
-
-    // MARK: Triangle
-
-    private var triangleLayout: some View {
-        GeometryReader { geo in
-            let cx   = geo.size.width / 2
-            let cy   = geo.size.height / 2
-            let side = min(geo.size.width * 0.62, 230.0)
-            let th   = side * sqrt(3) / 2
-
-            let topLeft  = CGPoint(x: cx - side / 2, y: cy - th / 2)
-            let topRight = CGPoint(x: cx + side / 2, y: cy - th / 2)
-            let bottom   = CGPoint(x: cx,             y: cy + th / 2)
-
-            ZStack {
-                Path { path in
-                    path.move(to: topLeft)
-                    path.addLine(to: topRight)
-                    path.addLine(to: bottom)
-                    path.closeSubpath()
-                }
-                .stroke(RivaColor.brandSoft, lineWidth: 1.5)
-
-                categoryNode(.yoga,       at: topLeft)
-                categoryNode(.exercise,   at: topRight)
-                categoryNode(.meditation, at: bottom)
+        .sheet(isPresented: $showSeeAll) {
+            WellnessCategorySheet(markComplete: markCompleteHandler)
+        }
+        .sheet(isPresented: $showGoalSheet) {
+            WellnessGoalSheet(account: account, currentGoal: currentGoal) { minutes in
+                viewModel.applyGoal(minutes: minutes)
             }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 320)
+        .fullScreenCover(item: $selectedPractice) { practice in
+            PracticeDetailView(
+                practice: practice,
+                markComplete: markCompleteHandler.map { complete in
+                    { await complete(practice) }
+                }
+            )
+        }
     }
 
-    private func categoryNode(_ category: WellnessCategory, at point: CGPoint) -> some View {
-        Button { selectedCategory = category } label: {
-            VStack(spacing: RivaSpacing.xs) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [RivaColor.brand, RivaColor.brandDeep],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 76, height: 76)
-                        .shadow(color: RivaColor.brand.opacity(0.3), radius: 14, y: 6)
+    // MARK: Loaded
 
-                    Image(systemName: category.icon)
-                        .font(.system(size: 28, weight: .medium))
-                        .foregroundStyle(.white)
-                }
+    private func content(_ dashboard: WellnessDashboard) -> some View {
+        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+            BrandTopBar(onSettings: { appModel.showProfile() })
 
-                Text(category.title)
-                    .font(RivaFont.captionEmphasized)
+            Text("How would you like\nto feel today?")
+                .font(RivaFont.screenTitle)
+                .foregroundStyle(RivaColor.textPrimary)
+                .padding(.top, RivaSpacing.xs)
+
+            WellnessHeroCard(
+                summary: dashboard.summary,
+                onStart: { selectedPractice = startPractice(dashboard) },
+                // Only allow editing the goal when the backend can persist it;
+                // against an old backend the numeral is shown but not tappable.
+                onEditGoal: viewModel.canLogSessions ? { showGoalSheet = true } : nil
+            )
+
+            practicesSection
+
+            suggestionsSection(dashboard.suggestions)
+        }
+        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.top, RivaSpacing.xs)
+    }
+
+    // MARK: Your practices
+
+    private var practicesSection: some View {
+        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            HStack {
+                Text("Your practices")
+                    .font(RivaFont.sectionTitle)
                     .foregroundStyle(RivaColor.textPrimary)
+                Spacer()
+                Button("See all") { showSeeAll = true }
+                    .font(RivaFont.captionEmphasized)
+                    .foregroundStyle(RivaColor.brand)
+            }
+            .padding(.top, RivaSpacing.xs)
+
+            if let yoga = WellnessPractice.practice(id: "yoga_beginners") {
+                PracticeRowCard(practice: yoga) { selectedPractice = yoga }
+            }
+
+            HStack(alignment: .top, spacing: RivaSpacing.md) {
+                tile(id: "exercise_walk")
+                tile(id: "meditation_isha")
             }
         }
-        .buttonStyle(.plain)
-        .position(point)
+    }
+
+    @ViewBuilder
+    private func tile(id: String) -> some View {
+        if let practice = WellnessPractice.practice(id: id) {
+            PracticeTileCard(practice: practice) { selectedPractice = practice }
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    // MARK: Suggested for you
+
+    @ViewBuilder
+    private func suggestionsSection(_ suggestions: [SuggestedPractice]) -> some View {
+        if !suggestions.isEmpty {
+            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+                Text("Suggested for you")
+                    .font(RivaFont.sectionTitle)
+                    .foregroundStyle(RivaColor.textPrimary)
+                    .padding(.top, RivaSpacing.xs)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .top, spacing: RivaSpacing.md) {
+                        ForEach(suggestions) { suggestion in
+                            SuggestedPracticeCard(suggestion: suggestion) {
+                                selectedPractice = suggestion.practice
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .scrollClipDisabled()
+            }
+        }
+    }
+
+    // MARK: Helpers
+
+    /// "Start session" opens the top suggestion, or the first yoga flow.
+    private func startPractice(_ dashboard: WellnessDashboard) -> WellnessPractice? {
+        dashboard.suggestions.first?.practice
+            ?? WellnessPractice.catalog.first { $0.kind == .yoga }
+    }
+
+    private var currentGoal: Int {
+        if case .loaded(let dashboard) = viewModel.state {
+            return dashboard.summary.goalMinutes
+        }
+        return 45
+    }
+
+    /// Non-nil only when the backend confirmed wellness support; a nil
+    /// handler hides "Mark complete" everywhere downstream.
+    private var markCompleteHandler: ((WellnessPractice) async -> Bool)? {
+        guard viewModel.canLogSessions else { return nil }
+        return { practice in
+            let ok = await viewModel.markComplete(practice)
+            if ok { appModel.refreshDashboards() }
+            return ok
+        }
     }
 }
 
 #Preview {
-    WellnessView()
-        .environment(AppModel())
+    WellnessView(
+        repository: MockWellnessRepository(),
+        logRepository: MockLogRepository(),
+        account: MockAccountRepository()
+    )
+    .environment(AppModel())
 }

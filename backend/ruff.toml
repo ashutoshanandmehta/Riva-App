@@ -1,0 +1,11 @@
+line-length = 100
+target-version = "py312"
+# Notebooks are prototype artifacts (magics, cross-cell names) — not linted as source.
+extend-exclude = ["*.ipynb"]
+
+[lint]
+# Lenient by design: the post-edit hook runs `ruff check` on every edit, so keep
+# the ruleset to real problems (errors, undefined names, import order) and don't
+# fight the existing style.
+select = ["E", "F", "I"]
+ignore = ["E501"]  # long lines are common in prompts/comments

@@ -17,6 +17,10 @@ final class AppModel {
     /// Non-nil while the snap scan flow is presented (the value is the
     /// mode the user chose from the radial menu).
     var activeScanMode: ScanMode?
+    /// True while the "3D scan (beta)" ARKit volumetric capture flow is
+    /// presented. Only ever set true when `CaptureCapability.isSupported`
+    /// (the radial menu hides the action otherwise).
+    var activeVolumetricScan = false
     /// Non-nil while a quick-log sheet (weight, shot, protein, side
     /// effects, sleep) is presented.
     var activeQuickLog: QuickLog?
@@ -24,6 +28,15 @@ final class AppModel {
     var activeAccountSheet: AccountSheet?
     /// Non-nil while a history or info detail screen is presented.
     var activeDetail: DetailScreen?
+    /// Bumped whenever a write (quick-log or accepted scan) lands, so the
+    /// always-mounted dashboard tabs know to re-fetch. They observe this and
+    /// reload; without it a logged value only appears after a manual refresh.
+    private(set) var dashboardRevision = 0
+    /// The day's updated totals from the most recent log, so the mounted
+    /// dashboards can update instantly before the background refetch lands.
+    /// Nil when a write carried no totals (e.g. weight, shots, scans).
+    private(set) var pendingTotals: DayTotals?
+
     /// App-wide appearance, persisted across launches.
     var appearance: AppearancePreference {
         didSet {
@@ -51,6 +64,11 @@ final class AppModel {
         if let rawMode = UserDefaults.standard.string(forKey: "riva.scan"),
            let mode = ScanMode(rawValue: rawMode) {
             activeScanMode = mode
+        }
+        // Launch straight into the 3D scan (beta) flow, now that it's real
+        // in-app routing rather than the old pre-auth `RivaApp` cover.
+        if ProcessInfo.processInfo.arguments.contains("-riva.volumetric") {
+            activeVolumetricScan = true
         }
         // Launch straight into a quick-log sheet: `-riva.quickLog shot`
         if let rawLog = UserDefaults.standard.string(forKey: "riva.quickLog"),
@@ -121,6 +139,20 @@ final class AppModel {
 
     func present(placeholder: PlaceholderContext) {
         activePlaceholder = placeholder
+    }
+
+    /// Signals that logged data changed; mounted dashboards re-fetch.
+    func refreshDashboards() {
+        dashboardRevision += 1
+    }
+
+    /// Applies the totals returned by a log so dashboards can update
+    /// optimistically, then bumps the revision to trigger their background
+    /// reconcile. `totals` is nil for writes that return none (weight,
+    /// shots, scans), which just refetch as before.
+    func applyLoggedTotals(_ totals: DayTotals?) {
+        pendingTotals = totals
+        dashboardRevision += 1
     }
 }
 

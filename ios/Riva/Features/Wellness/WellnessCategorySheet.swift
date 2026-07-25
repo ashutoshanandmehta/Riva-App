@@ -1,128 +1,78 @@
 import SwiftUI
 
+/// The "See all" sheet: the unified practice catalog grouped by kind.
+/// `markComplete` is nil when the backend has no wellness support, which
+/// hides the detail view's completion button.
 struct WellnessCategorySheet: View {
-    let category: WellnessCategory
-    @State private var showIshaKriya = false
-    @State private var showNSDR = false
-    @State private var selectedYoga: YogaSession? = nil
+    var markComplete: ((WellnessPractice) async -> Bool)?
+
+    @State private var selectedPractice: WellnessPractice?
 
     var body: some View {
         NavigationStack {
-            Group {
-                switch category {
-                case .meditation: meditationList
-                case .yoga:       yogaList
-                case .exercise:   comingSoon
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+                    ForEach(WellnessKind.allCases, id: \.self) { kind in
+                        let practices = WellnessPractice.catalog.filter { $0.kind == kind }
+                        if !practices.isEmpty {
+                            section(kind: kind, practices: practices)
+                        }
+                    }
                 }
+                .padding(.horizontal, RivaSpacing.screenMargin)
+                .padding(.top, RivaSpacing.sm)
             }
-            .navigationTitle(category.title)
+            .navigationTitle("All practices")
             .navigationBarTitleDisplayMode(.large)
             .background(RivaColor.background)
             .toolbarBackground(RivaColor.background, for: .navigationBar)
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .fullScreenCover(isPresented: $showIshaKriya) { IshaKriyaView() }
-        .fullScreenCover(isPresented: $showNSDR) { NSDRView() }
-        .fullScreenCover(item: $selectedYoga) { YogaSessionView(session: $0) }
-    }
-
-    // MARK: Meditation
-
-    private var meditationList: some View {
-        ScrollView {
-            LazyVStack(spacing: RivaSpacing.md) {
-                practiceCard(
-                    icon: "moon.stars.fill",
-                    iconStyle: .gradient,
-                    title: "Isha Kriya",
-                    subtitle: "by Sadhguru · Isha Foundation",
-                    duration: "21 min",
-                    action: { showIshaKriya = true }
-                )
-                practiceCard(
-                    icon: "brain.head.profile",
-                    iconStyle: .soft,
-                    title: "NSDR",
-                    subtitle: "by Andrew Huberman · Huberman Lab",
-                    duration: "10 min",
-                    action: { showNSDR = true }
-                )
-            }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.top, RivaSpacing.sm)
-        }
-    }
-
-    // MARK: Yoga
-
-    private var yogaList: some View {
-        ScrollView {
-            LazyVStack(spacing: RivaSpacing.md) {
-                ForEach(YogaSession.all) { session in
-                    practiceCard(
-                        icon: session.icon,
-                        iconStyle: .soft,
-                        title: session.title,
-                        subtitle: session.host,
-                        duration: session.duration,
-                        action: { selectedYoga = session }
-                    )
+        .fullScreenCover(item: $selectedPractice) { practice in
+            PracticeDetailView(
+                practice: practice,
+                markComplete: markComplete.map { complete in
+                    { await complete(practice) }
                 }
+            )
+        }
+    }
+
+    private func section(kind: WellnessKind, practices: [WellnessPractice]) -> some View {
+        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            Text(kind.title.uppercased())
+                .rivaOverline(RivaColor.textSecondary)
+                .padding(.top, RivaSpacing.xs)
+
+            ForEach(practices) { practice in
+                practiceRow(practice)
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.top, RivaSpacing.sm)
         }
     }
 
-    // MARK: Exercise (coming soon)
-
-    private var comingSoon: some View {
-        VStack(spacing: RivaSpacing.md) {
-            Spacer()
-            Image(systemName: "figure.run")
-                .font(.system(size: 48))
-                .foregroundStyle(RivaColor.brand)
-            Text("Coming Soon")
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
-            Text("Exercise programs are on the way.")
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
-                .multilineTextAlignment(.center)
-            Spacer()
-        }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-    }
-
-    // MARK: Shared card
-
-    private enum IconStyle { case gradient, soft }
-
-    private func practiceCard(
-        icon: String,
-        iconStyle: IconStyle,
-        title: String,
-        subtitle: String,
-        duration: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
+    private func practiceRow(_ practice: WellnessPractice) -> some View {
+        Button { selectedPractice = practice } label: {
             RivaCard {
-                HStack(alignment: .center, spacing: RivaSpacing.md) {
-                    iconChip(icon: icon, style: iconStyle)
+                HStack(spacing: RivaSpacing.md) {
+                    RivaIconChip(
+                        systemImage: practice.icon,
+                        tint: RivaColor.brand,
+                        background: RivaColor.brandSoft,
+                        size: 44
+                    )
                     VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
                         HStack(spacing: RivaSpacing.xs) {
-                            Text(title)
+                            Text(practice.title)
                                 .font(RivaFont.cardTitle)
                                 .foregroundStyle(RivaColor.textPrimary)
-                            Text(duration.uppercased())
+                            Text(practice.durationText.uppercased())
                                 .rivaOverline(RivaColor.brand)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 3)
                                 .background(RivaColor.brandWash, in: Capsule())
                         }
-                        Text(subtitle)
+                        Text(practice.subtitle)
                             .font(RivaFont.footnote)
                             .foregroundStyle(RivaColor.textSecondary)
                     }
@@ -135,30 +85,10 @@ struct WellnessCategorySheet: View {
         }
         .buttonStyle(.plain)
     }
+}
 
-    @ViewBuilder
-    private func iconChip(icon: String, style: IconStyle) -> some View {
-        if style == .gradient {
-            ZStack {
-                RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
-                    .fill(LinearGradient(
-                        colors: [RivaColor.brand, RivaColor.brandDeep],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing))
-                    .frame(width: 52, height: 52)
-                Image(systemName: icon)
-                    .font(.system(size: 22))
-                    .foregroundStyle(Color.white)
-            }
-        } else {
-            ZStack {
-                RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
-                    .fill(RivaColor.brandSoft)
-                    .frame(width: 52, height: 52)
-                Image(systemName: icon)
-                    .font(.system(size: 22))
-                    .foregroundStyle(RivaColor.brand)
-            }
-        }
+#Preview {
+    Color.clear.sheet(isPresented: .constant(true)) {
+        WellnessCategorySheet { _ in true }
     }
 }

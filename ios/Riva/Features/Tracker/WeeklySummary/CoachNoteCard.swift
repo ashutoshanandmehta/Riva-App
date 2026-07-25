@@ -1,7 +1,6 @@
 import SwiftUI
 
-/// Tinted note from Riva's AI coach ("Remi Says …") with brand-highlighted
-/// emphasis.
+/// Tinted coaching note with brand-highlighted emphasis.
 struct CoachNoteCard: View {
     let note: CoachNote
 
@@ -10,15 +9,11 @@ struct CoachNoteCard: View {
             HStack(alignment: .top, spacing: RivaSpacing.sm) {
                 avatar
 
-                VStack(alignment: .leading, spacing: RivaSpacing.xs) {
-                    Text("\(note.coachName) Says")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(RivaColor.brand)
-                    Text(AttributedString.rivaHighlighted(markdown: note.message))
-                        .font(RivaFont.body)
-                        .foregroundStyle(RivaColor.textPrimary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                Text(AttributedString.rivaHighlighted(markdown: note.message))
+                    .font(RivaFont.body)
+                    .foregroundStyle(RivaColor.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .accessibilityElement(children: .combine)

@@ -1,0 +1,13 @@
+# These are the Lightning Studio server's dependencies. Do NOT install into
+# backend/.venv — this is a separate deployable from the main Riva Snap
+# backend and never runs inside this repo's process.
+litserve
+torch
+opencv-python-headless
+numpy
+# SAM 2 has no stable PyPI release as of writing; install from source per
+# Meta's official repo instructions:
+#   pip install "sam2 @ git+https://github.com/facebookresearch/sam2.git"
+# If that changes (a PyPI package ships), swap this line for the pinned
+# PyPI name/version instead.
+sam2 @ git+https://github.com/facebookresearch/sam2.git

@@ -12,7 +12,7 @@ struct RivaCard<Content: View>: View {
         case standard
         /// High-contrast dark surface (e.g. Next Shot).
         case inverse
-        /// Soft brand-tinted surface, no elevation (e.g. Riva Intelligence).
+        /// Soft brand-tinted surface, no elevation (e.g. the coach note).
         case tinted
     }
 

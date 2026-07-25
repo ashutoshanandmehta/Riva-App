@@ -3,7 +3,7 @@ import Foundation
 /// Canned scanner for previews and UI work without the network.
 struct MockScanRepository: ScanRepository {
 
-    func scan(imageData: Data, mode: ScanMode) async throws -> ScanResult {
+    func scan(imageData: Data, mode: ScanMode, hint: String?) async throws -> ScanResult {
         try? await Task.sleep(for: .seconds(1))
         return Self.sampleMeal
     }

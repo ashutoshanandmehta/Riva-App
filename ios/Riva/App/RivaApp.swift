@@ -38,14 +38,30 @@ struct RivaApp: App {
                 case .completingProfile:
                     CompleteProfileView(model: authModel)
                 case .signedIn:
-                    RootView(dependencies: dependencies)
-                        .environment(appModel)
+                    ZStack {
+                        RootView(dependencies: dependencies)
+                            .environment(appModel)
+                            .environment(authModel)
+
+                        if let name = authModel.welcomeBackName {
+                            WelcomeBackView(name: name) {
+                                authModel.dismissWelcomeBack()
+                            }
+                            .transition(.opacity)
+                            .zIndex(1)
+                        }
+                    }
+                    .animation(.easeInOut(duration: 0.35), value: authModel.welcomeBackName)
                 }
             }
             .task { await authModel.start() }
             .tint(RivaColor.brand)
             // User-selected theme; `nil` (System) follows the device.
             .preferredColorScheme(appModel.appearance.colorScheme)
+            // The "3D scan (beta)" ARKit capture flow now has real in-app
+            // routing from the signed-in Snap tab (see `RootView`) instead
+            // of a pre-auth cover here. `-riva.volumetric` still launches
+            // straight into it post-sign-in via `AppModel`.
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+  "_note": "Published standard dimensions used as a PRIOR to seed metric scale (px->cm). Used only when an in-frame reference is detected; otherwise scale falls back to the food-class footprint prior. Refined per detected food class. Never treated as ground truth.",
+  "vessels_cm": {
+    "dinner_plate": 27.0,
+    "salad_plate": 21.0,
+    "slate_board_round": 30.0,
+    "bowl": 15.0,
+    "mug": 8.5
+  },
+  "references_cm": {
+    "dinner_fork_length": 19.0,
+    "tablespoon_length": 16.0,
+    "credit_card_long": 8.56,
+    "us_quarter_diam": 2.426
+  }
+}

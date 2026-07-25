@@ -15,10 +15,7 @@ struct RootView: View {
             // Profile slides in over the tab content, keeping the tab bar
             // visible (drawn later in this ZStack).
             if appModel.isProfilePresented {
-                ProfileView(
-                    account: dependencies.accountRepository,
-                    auth: dependencies.authRepository
-                )
+                ProfileView(account: dependencies.accountRepository)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
             }
 
@@ -43,8 +40,9 @@ struct RootView: View {
             PlaceholderSheet(context: context)
         }
         .sheet(item: $appModel.activeQuickLog) { kind in
-            QuickLogSheet(kind: kind, repository: dependencies.logRepository) {
+            QuickLogSheet(kind: kind, repository: dependencies.logRepository) { totals in
                 appModel.activeQuickLog = nil
+                appModel.applyLoggedTotals(totals)
             }
         }
         .sheet(item: $appModel.activeAccountSheet) { sheet in
@@ -59,6 +57,16 @@ struct RootView: View {
                 scanRepository: dependencies.scanRepository
             ) {
                 appModel.activeScanMode = nil
+                appModel.applyLoggedTotals(nil)
+            }
+        }
+        .fullScreenCover(isPresented: $appModel.activeVolumetricScan) {
+            ARFoodCaptureView(
+                volumetricScanRepository: dependencies.volumetricScanRepository,
+                accept: dependencies.scanRepository.accept
+            ) {
+                appModel.activeVolumetricScan = false
+                appModel.applyLoggedTotals(nil)
             }
         }
     }
@@ -68,9 +76,18 @@ struct RootView: View {
     private var tabContent: some View {
         ZStack {
             tabPage(.home) {
-                HomeView(repository: dependencies.homeRepository)
+                HomeView(
+                    repository: dependencies.homeRepository,
+                    todoRepository: dependencies.todoRepository
+                )
             }
-            tabPage(.wellness) { WellnessView() }
+            tabPage(.wellness) {
+                WellnessView(
+                    repository: dependencies.wellnessRepository,
+                    logRepository: dependencies.logRepository,
+                    account: dependencies.accountRepository
+                )
+            }
             tabPage(.medication) {
                 MedicationView(repository: dependencies.medicationRepository)
             }
@@ -119,6 +136,18 @@ struct RootView: View {
             SideEffectsHistoryView(account: dependencies.accountRepository, onClose: close)
         case .curveInfo:
             CurveInfoSheet(onClose: close)
+        case .caloriesHistory:
+            NutritionHistoryView(
+                metric: .calories, account: dependencies.accountRepository, onClose: close
+            )
+        case .hydrationHistory:
+            NutritionHistoryView(
+                metric: .hydration, account: dependencies.accountRepository, onClose: close
+            )
+        case .proteinHistory:
+            NutritionHistoryView(
+                metric: .protein, account: dependencies.accountRepository, onClose: close
+            )
         }
     }
 

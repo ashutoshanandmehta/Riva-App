@@ -5,6 +5,8 @@ enum QuickLog: String, Sendable, Identifiable, CaseIterable {
     case weight
     case shot
     case protein
+    case water
+    case calories
     case sideEffects
     case sleep
 
@@ -15,6 +17,8 @@ enum QuickLog: String, Sendable, Identifiable, CaseIterable {
         case .weight: "Log Weight"
         case .shot: "Log Shot"
         case .protein: "Log Protein"
+        case .water: "Log Water"
+        case .calories: "Log Calories"
         case .sideEffects: "Log Side Effects"
         case .sleep: "Sleep Quality"
         }
@@ -25,8 +29,20 @@ enum QuickLog: String, Sendable, Identifiable, CaseIterable {
         case .weight: "scalemass"
         case .shot: "syringe"
         case .protein: "fork.knife"
+        case .water: "drop"
+        case .calories: "flame"
         case .sideEffects: "exclamationmark.bubble"
         case .sleep: "moon.zzz"
+        }
+    }
+
+    /// Forms tall enough to need the large sheet detent, so their Save button
+    /// stays reachable (the shot form has a site grid + comfort row; side
+    /// effects lists every effect).
+    var needsTallSheet: Bool {
+        switch self {
+        case .shot, .sideEffects: true
+        default: false
         }
     }
 }

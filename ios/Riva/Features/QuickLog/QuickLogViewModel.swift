@@ -16,6 +16,12 @@ final class QuickLogViewModel {
     let kind: QuickLog
     private(set) var phase: Phase = .editing
     private(set) var errorMessage: String?
+    /// The day's updated totals returned by a water/calories/protein log, so
+    /// the dashboards can update optimistically instead of refetching.
+    private(set) var savedTotals: DayTotals?
+    /// Turns on after a Save attempt with missing fields, so the form can
+    /// highlight exactly which inputs still need filling.
+    private(set) var showValidation = false
 
     // Weight
     var weightText = ""
@@ -28,6 +34,12 @@ final class QuickLogViewModel {
 
     // Protein
     var proteinText = ""
+
+    // Water
+    var waterText = ""
+
+    // Calories
+    var caloriesText = ""
 
     // Side effects: selected effect → severity 1 to 5
     var severities: [SideEffect: Int] = [:]
@@ -51,10 +63,61 @@ final class QuickLogViewModel {
                 && parsedDose != nil && site != nil
         case .protein:
             return parsedProtein != nil
+        case .water:
+            return parsedWater != nil
+        case .calories:
+            return parsedCalories != nil
         case .sideEffects:
             return true
         case .sleep:
             return sleepCode != nil
+        }
+    }
+
+    // MARK: Validation
+
+    /// Per-field "still empty" flags, used with `showValidation` to highlight
+    /// the shot form's inputs.
+    var isMedicationMissing: Bool {
+        medicationName.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+    var isDoseMissing: Bool { parsedDose == nil }
+    var isSiteMissing: Bool { site == nil }
+
+    /// A friendly, specific message naming what still needs filling for the
+    /// current kind, or nil when the form is ready to save.
+    var validationMessage: String? {
+        switch kind {
+        case .weight:
+            return parsedWeight == nil ? "Enter your weight in pounds (20–1500)." : nil
+        case .shot:
+            var missing: [String] = []
+            if isMedicationMissing { missing.append("the medication name") }
+            if isDoseMissing { missing.append("a dose (0–100 mg)") }
+            if isSiteMissing { missing.append("an injection site") }
+            guard !missing.isEmpty else { return nil }
+            return "Please add \(Self.humanList(missing)) to log your shot."
+        case .protein:
+            return parsedProtein == nil ? "Enter a protein amount in grams (1–500)." : nil
+        case .water:
+            return parsedWater == nil ? "Enter a water amount in ounces (1–200)." : nil
+        case .calories:
+            return parsedCalories == nil ? "Enter a calorie amount (1–5000)." : nil
+        case .sideEffects:
+            return nil
+        case .sleep:
+            return sleepCode == nil ? "Pick how you slept last night." : nil
+        }
+    }
+
+    /// Joins items as "a", "a and b", or "a, b, and c".
+    private static func humanList(_ items: [String]) -> String {
+        switch items.count {
+        case 0: return ""
+        case 1: return items[0]
+        case 2: return "\(items[0]) and \(items[1])"
+        default:
+            return items.dropLast().joined(separator: ", ") + ", and " + items[items.count - 1]
         }
     }
 
@@ -67,7 +130,15 @@ final class QuickLogViewModel {
     }
 
     func save() async {
-        guard canSave, phase == .editing else { return }
+        guard phase == .editing else { return }
+        // Incomplete form: guide the user to the empty fields instead of a
+        // dead button.
+        guard canSave else {
+            showValidation = true
+            errorMessage = validationMessage
+            return
+        }
+        showValidation = false
         phase = .saving
         errorMessage = nil
         do {
@@ -95,7 +166,18 @@ final class QuickLogViewModel {
 
         case .protein:
             let totals = try await repository.logProtein(grams: parsedProtein ?? 0)
+            savedTotals = totals
             return "Protein logged. Today so far: \(totals.proteinGrams)g."
+
+        case .water:
+            let totals = try await repository.logWater(ounces: parsedWater ?? 0)
+            savedTotals = totals
+            return "Water logged. Today so far: \(totals.waterOunces) oz."
+
+        case .calories:
+            let totals = try await repository.logCalories(kcal: parsedCalories ?? 0)
+            savedTotals = totals
+            return "Calories logged. Today so far: \(totals.calories) kcal."
 
         case .sideEffects:
             let entries = severities
@@ -131,6 +213,18 @@ final class QuickLogViewModel {
     private var parsedProtein: Int? {
         guard let value = Int(proteinText.trimmingCharacters(in: .whitespaces)),
               value > 0, value <= 500 else { return nil }
+        return value
+    }
+
+    private var parsedWater: Int? {
+        guard let value = Int(waterText.trimmingCharacters(in: .whitespaces)),
+              value > 0, value <= 200 else { return nil }
+        return value
+    }
+
+    private var parsedCalories: Int? {
+        guard let value = Int(caloriesText.trimmingCharacters(in: .whitespaces)),
+              value > 0, value <= 5000 else { return nil }
         return value
     }
 

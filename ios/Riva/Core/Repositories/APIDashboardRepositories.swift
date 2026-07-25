@@ -13,6 +13,12 @@ struct DashboardPayload: Codable, Sendable {
         let label: String
     }
 
+    struct Wellness: Codable, Sendable {
+        let minutesToday: Int
+        let streakDays: Int
+        let goalMinutes: Int
+    }
+
     let profile: AccountProfile
     let nutritionGoals: NutritionGoals
     let plan: MedicationPlan?
@@ -22,6 +28,9 @@ struct DashboardPayload: Codable, Sendable {
     let shots: [ShotEntry]
     let sideEffectsToday: [SideEffectEntry]
     let sleepCheckins: [SleepCheckin]
+    /// Optional so responses from a backend without wellness support still
+    /// decode; readers degrade to zeros via `DashboardMapping.wellnessSummary`.
+    let wellness: Wellness?
 }
 
 // MARK: - Shared fetch + parsing
@@ -87,6 +96,11 @@ struct DashboardService: Sendable {
 
 enum DashboardMapping {
 
+    /// Daily calorie goal. `NutritionGoals` has no calorie field from the
+    /// backend yet, so this matches the flat 2000 kcal goal already used by
+    /// `weeklySummary()` below.
+    static let calorieGoalKcal = 2000
+
     /// One-week GLP-1 half life: each logged dose decays by half every
     /// seven days. An educational model, not pharmacology.
     static func medicationLevel(shots: [ShotEntry], at moment: Date = .now) -> Double {
@@ -96,6 +110,17 @@ enum DashboardMapping {
             guard days >= 0 else { return total }
             return total + shot.doseMg * pow(0.5, days / 7)
         }
+    }
+
+    /// A missing wellness block (old backend) reads as an honest zero day
+    /// with the default 45-minute goal — never an error.
+    static func wellnessSummary(_ wellness: DashboardPayload.Wellness?) -> WellnessSummary {
+        guard let wellness else { return .empty }
+        return WellnessSummary(
+            minutesToday: wellness.minutesToday,
+            goalMinutes: wellness.goalMinutes,
+            streakDays: wellness.streakDays
+        )
     }
 
     static func weightSummary(_ payload: DashboardPayload) -> WeightSummary {
@@ -205,7 +230,6 @@ struct APIHomeRepository: HomeRepository {
 
     func homeSnapshot() async throws -> HomeSnapshot {
         let payload = try await service.fetch()
-        let weight = DashboardMapping.weightSummary(payload)
         let level = DashboardMapping.medicationLevel(shots: payload.shots)
         let planDose = payload.plan?.currentDoseMg ?? 0
         let goals = payload.nutritionGoals
@@ -214,19 +238,9 @@ struct APIHomeRepository: HomeRepository {
         let firstName = payload.profile.name
             .split(separator: " ").first.map(String.init) ?? "there"
 
-        let insightMessage: String
-        if payload.shots.isEmpty && payload.weights.isEmpty {
-            insightMessage = "Welcome to Riva. Log your first shot and a weight, and this page starts working for you."
-        } else if weight.totalChangeLbs < 0 {
-            insightMessage = "You are down \(RivaFormat.weight(abs(weight.totalChangeLbs))) lbs so far. Steady weeks win."
-        } else {
-            insightMessage = "Keep logging meals and weights; trends need a little data to show themselves."
-        }
-
         return HomeSnapshot(
             user: UserProfile(firstName: firstName == "there" ? "there" : firstName),
             quote: "Consistency is your superpower.",
-            weight: weight,
             medicationLevel: MedicationLevelEstimate(
                 currentMg: (level * 100).rounded() / 100,
                 peakMg: max(planDose * 2, level, 0.5),
@@ -235,7 +249,6 @@ struct APIHomeRepository: HomeRepository {
                     : "Estimated from your logged shots with a one week half life. Solid is past, dashed projects ahead."
             ),
             nextShot: DashboardMapping.nextShot(payload),
-            insight: RivaInsight(message: insightMessage),
             nutrients: [
                 NutrientProgress(
                     title: "Protein",
@@ -250,16 +263,10 @@ struct APIHomeRepository: HomeRepository {
                     progress: progress(today?.waterOunces, goals.waterGoal)
                 ),
                 NutrientProgress(
-                    title: "Carbs",
-                    valueText: "\(today?.carbGrams ?? 0)g",
-                    targetText: "of \(goals.carbGoal)g",
-                    progress: progress(today?.carbGrams, goals.carbGoal)
-                ),
-                NutrientProgress(
-                    title: "Fiber",
-                    valueText: "\(today?.fiberGrams ?? 0)g",
-                    targetText: "of \(goals.fiberGoal)g",
-                    progress: progress(today?.fiberGrams, goals.fiberGoal)
+                    title: "Calories",
+                    valueText: "\(today?.calories ?? 0)",
+                    targetText: "of \(DashboardMapping.calorieGoalKcal) kcal",
+                    progress: progress(today?.calories, DashboardMapping.calorieGoalKcal)
                 ),
             ]
         )
@@ -358,28 +365,9 @@ struct APITrackerRepository: TrackerRepository {
         let goals = payload.nutritionGoals
         let today = payload.today
         let weight = DashboardMapping.weightSummary(payload)
-        let next = DashboardMapping.nextShot(payload)
-
-        let recentDaily = payload.weights.reversed().suffix(7).map(\.pounds)
-
-        let message: String
-        if payload.shots.isEmpty {
-            message = "Start with a shot log and a weight, and Riva starts coaching from your real numbers."
-        } else if next.daysRemaining() <= 1 {
-            message = next.daysRemaining() == 0
-                ? "Today is **injection day**. \(next.suggestedSite) is up next."
-                : "Tomorrow is **injection day**. \(next.suggestedSite) is up next."
-        } else {
-            message = "Next shot in **\(next.daysRemaining()) days**. Keep protein and water on pace this week."
-        }
 
         return TrackerDashboard(
-            intelligence: RivaInsight(message: message),
-            weight: WeightTrend(
-                currentLbs: weight.currentLbs,
-                weeklyChangeLbs: weight.weeklyChangeLbs,
-                recentDailyLbs: Array(recentDaily)
-            ),
+            weight: weight,
             hydration: HydrationStatus(
                 glasses: (today?.waterOunces ?? 0) / 8,
                 goalGlasses: max(goals.waterGoal / 8, 1)
@@ -387,6 +375,10 @@ struct APITrackerRepository: TrackerRepository {
             protein: ProteinStatus(
                 grams: Double(today?.proteinGrams ?? 0),
                 goalGrams: Double(max(goals.proteinGoal, 1))
+            ),
+            calorie: CalorieStatus(
+                calories: today?.calories ?? 0,
+                goalCalories: DashboardMapping.calorieGoalKcal
             ),
             sideEffect: DashboardMapping.sideEffectReport(payload.sideEffectsToday),
             sleep: DashboardMapping.sleepStatus(payload.sleepCheckins)
@@ -427,12 +419,12 @@ struct APITrackerRepository: TrackerRepository {
                 totalLostLbs: max(-weight.totalChangeLbs, 0),
                 goalLbs: weight.targetLbs
             ),
-            coachNote: CoachNote(coachName: "Remi", message: coachMessage),
+            coachNote: CoachNote(message: coachMessage),
             lastDoseDate: lastDose,
             nextDoseDate: next.date,
             calories: QuantityGoal(
                 value: DashboardMapping.weekAverage(payload.weekNutrition) { $0.calories },
-                goal: 2000
+                goal: Double(DashboardMapping.calorieGoalKcal)
             ),
             protein: QuantityGoal(
                 value: DashboardMapping.weekAverage(payload.weekNutrition) { $0.proteinGrams },

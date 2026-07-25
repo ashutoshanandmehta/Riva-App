@@ -30,14 +30,17 @@ enum RivaColor {
 
     // MARK: Backgrounds & surfaces
 
-    /// App background (light mint-tinted off-white).
-    static let background = Color(light: 0xF1F7F3, dark: 0x0C110F)
+    /// App background (light warm cream).
+    static let background = Color(light: 0xFAF6EC, dark: 0x0C110F)
     /// Card / elevated surface.
     static let surface = Color(light: 0xFFFFFF, dark: 0x171D1A)
-    /// High-contrast inverse surface (e.g. the Next Shot card).
-    static let surfaceInverse = Color(light: 0x161B19, dark: 0x1F2624)
-    /// Neutral chip / badge fill on light surfaces.
-    static let fillNeutral = Color(light: 0xEDF1EF, dark: 0x252C29)
+    /// High-contrast inverse surface — the single dark accent used by every
+    /// dark card (Next Shot, the Wellness hero, the day ring). Brand dark
+    /// green so dark surfaces stay on-theme against the cream background,
+    /// consistent app-wide.
+    static let surfaceInverse = Color(light: 0x16493C, dark: 0x123B31)
+    /// Neutral chip / badge fill on light surfaces (warmed to sit on cream).
+    static let fillNeutral = Color(light: 0xF2EDDF, dark: 0x252C29)
     /// Hairline outline for elevated surfaces. Transparent in light mode
     /// (shadows carry the elevation); a faint light stroke in dark mode,
     /// where shadows are invisible against the dark background.
@@ -65,6 +68,19 @@ enum RivaColor {
     static let brandOnInverse = Color(light: 0x5BC4A4, dark: 0x5BC4A4)
     /// Subtle fill on dark surfaces (dose pill background, ring track).
     static let fillOnInverse = Color(light: 0x2A3A34, dark: 0x2A3A34)
+
+    // MARK: Wellness hero
+
+    /// Dark green hero card (the Wellness "Minutes practiced" card). Aliases
+    /// `surfaceInverse` so every dark card in the app shares one color and
+    /// they can never drift apart.
+    static let heroCard = surfaceInverse
+    /// Cream pill fill on the hero card ("Start session") in both modes.
+    static let fillOnHero = Color(light: 0xFAF6EC, dark: 0xFAF6EC)
+    /// Text/icons on `fillOnHero`.
+    static let textOnHeroFill = Color(light: 0x16493C, dark: 0x16493C)
+    /// Decorative accent for suggested-practice icons (same hue as `warning`).
+    static let wellnessAccent = Color(light: 0xB97B1B, dark: 0xE0A33F)
 
     // MARK: Feedback
 

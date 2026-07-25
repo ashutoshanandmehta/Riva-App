@@ -26,8 +26,6 @@ struct GoalsStepView: View {
                         ForEach(OnboardingGoal.allCases) { goal in
                             goalCard(goal)
                         }
-
-                        intelligenceCard
                     }
                     .padding(.horizontal, RivaSpacing.screenMargin)
                     .padding(.bottom, RivaSpacing.xl)
@@ -108,31 +106,6 @@ struct GoalsStepView: View {
             )
         }
         .buttonStyle(.plain)
-    }
-
-    private var intelligenceCard: some View {
-        HStack(alignment: .top, spacing: RivaSpacing.md) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(RivaColor.brand)
-                .frame(width: 38, height: 38)
-                .background(RivaColor.surface, in: Circle())
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Riva Intelligence")
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.brand)
-                Text("Based on clinical data, users who track muscle preservation alongside GLP-1 therapy see 40% better outcomes in long-term metabolic health.")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
-            }
-        }
-        .padding(RivaSpacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RivaColor.brandWash,
-            in: RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
-        )
     }
 
     private var footer: some View {

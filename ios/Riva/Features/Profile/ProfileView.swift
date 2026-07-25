@@ -4,13 +4,12 @@ import SwiftUI
 /// over the tab content while the tab bar stays visible.
 struct ProfileView: View {
     @Environment(AppModel.self) private var appModel
+    @Environment(AuthModel.self) private var authModel
     @State private var viewModel: ProfileViewModel
     @State private var isStartFreshPresented = false
+    @State private var isLogOutPresented = false
 
-    private let auth: any AuthRepository
-
-    init(account: any AccountRepository, auth: any AuthRepository) {
-        self.auth = auth
+    init(account: any AccountRepository) {
         _viewModel = State(initialValue: ProfileViewModel(account: account))
     }
 
@@ -63,30 +62,7 @@ struct ProfileView: View {
 
             accountSection
 
-            Button {
-                isStartFreshPresented = true
-            } label: {
-                HStack(spacing: RivaSpacing.xs) {
-                    Image(systemName: "arrow.counterclockwise")
-                    Text("Start Fresh")
-                }
-            }
-            .buttonStyle(.rivaDestructive)
-            .confirmationDialog(
-                "Start fresh?",
-                isPresented: $isStartFreshPresented,
-                titleVisibility: .visible
-            ) {
-                Button("Start Fresh", role: .destructive) {
-                    Task {
-                        await auth.resetIdentity()
-                        appModel.closeProfile()
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This unlinks this device's data and starts a new profile.")
-            }
+            dangerZone
 
             Text(Self.versionFooter)
                 .font(.system(size: 11))
@@ -175,6 +151,62 @@ struct ProfileView: View {
                 SettingsRow(systemImage: "lock", title: "Privacy & Security", subtitle: nil) {
                     appModel.activeAccountSheet = .privacy
                 }
+                SettingsRow(
+                    systemImage: "rectangle.portrait.and.arrow.right",
+                    title: "Log Out",
+                    subtitle: nil
+                ) {
+                    isLogOutPresented = true
+                }
+                .confirmationDialog(
+                    "Log out?",
+                    isPresented: $isLogOutPresented,
+                    titleVisibility: .visible
+                ) {
+                    Button("Log Out", role: .destructive) {
+                        Task {
+                            appModel.closeProfile()
+                            await authModel.signOut()
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("You can sign back in anytime; your data stays saved.")
+                }
+            }
+        }
+    }
+
+    // MARK: Danger zone
+
+    private var dangerZone: some View {
+        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            Text("Danger Zone")
+                .rivaOverline(RivaColor.danger)
+
+            Button {
+                isStartFreshPresented = true
+            } label: {
+                HStack(spacing: RivaSpacing.xs) {
+                    Image(systemName: "arrow.counterclockwise")
+                    Text("Start Fresh")
+                }
+            }
+            .buttonStyle(.rivaDestructive)
+            .confirmationDialog(
+                "Start fresh?",
+                isPresented: $isStartFreshPresented,
+                titleVisibility: .visible
+            ) {
+                Button("Erase & Start Fresh", role: .destructive) {
+                    Task {
+                        appModel.closeProfile()
+                        await authModel.startFresh()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This permanently erases all your logged data and starts a brand-new profile. This cannot be undone.")
             }
         }
     }
@@ -190,6 +222,7 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView(account: MockAccountRepository(), auth: MockAuthRepository())
+    ProfileView(account: MockAccountRepository())
         .environment(AppModel())
+        .environment(AuthModel(repository: MockAuthRepository(), account: MockAccountRepository()))
 }

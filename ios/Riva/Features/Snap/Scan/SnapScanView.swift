@@ -114,6 +114,7 @@ struct SnapScanView: View {
 
             VStack(spacing: RivaSpacing.sm) {
                 if model.photo != nil {
+                    hintField
                     Button("Scan") { Task { await model.scan() } }
                         .buttonStyle(.rivaPrimary)
                     Button("Choose a different photo") { model.photo = nil }
@@ -141,6 +142,21 @@ struct SnapScanView: View {
             .padding(.bottom, RivaSpacing.lg)
         }
         .padding(.top, RivaSpacing.xs)
+    }
+
+    private var hintField: some View {
+        TextField("Add a hint (optional)", text: $model.hint)
+            .font(RivaFont.body)
+            .foregroundStyle(RivaColor.textPrimary)
+            .textInputAutocapitalization(.never)
+            .submitLabel(.done)
+            .padding(.horizontal, RivaSpacing.md)
+            .padding(.vertical, 12)
+            .background(
+                RivaColor.surface,
+                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            )
+            .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
     }
 
     private var modePicker: some View {

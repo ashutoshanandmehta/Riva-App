@@ -1,0 +1,9 @@
+# Dev-only tooling (tests + lint). NOT installed on Render — keep out of
+# requirements.txt. Install locally with:
+#   uv pip install --python .venv/bin/python -r requirements-dev.txt
+pytest>=8.0
+ruff>=0.6
+psycopg[binary]>=3.2   # sandbox-DB integration tests
+numpy>=2.0
+opencv-python-headless>=4.10
+replicate>=0.34   # SAM 2 segmentation (multiview prototype)

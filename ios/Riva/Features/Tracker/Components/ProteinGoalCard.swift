@@ -4,14 +4,20 @@ import SwiftUI
 /// button.
 struct ProteinGoalCard: View {
     let protein: ProteinStatus
+    /// Opens the protein history sheet.
+    let onOpen: () -> Void
     /// Quick-add protein (placeholder for now).
     let onAdd: () -> Void
 
     var body: some View {
         RivaCard {
             VStack(alignment: .leading, spacing: RivaSpacing.xs) {
-                Text("Protein goal")
-                    .rivaOverline()
+                HStack {
+                    Text("Protein goal")
+                        .rivaOverline()
+                    Spacer()
+                    HistoryChevronButton(accessibilityLabel: "Protein history", action: onOpen)
+                }
 
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text("\(RivaFormat.grams(protein.grams))g")
@@ -45,7 +51,7 @@ struct ProteinGoalCard: View {
 }
 
 #Preview {
-    ProteinGoalCard(protein: MockTrackerRepository.dashboard().protein) {}
+    ProteinGoalCard(protein: MockTrackerRepository.dashboard().protein, onOpen: {}, onAdd: {})
         .frame(width: 170, height: 155)
         .padding()
         .background(RivaColor.background)

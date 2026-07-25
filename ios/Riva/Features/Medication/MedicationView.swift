@@ -27,6 +27,9 @@ struct MedicationView: View {
         .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
+        .onChange(of: appModel.dashboardRevision) {
+            Task { await viewModel.load() }
+        }
     }
 
     // MARK: Loaded
