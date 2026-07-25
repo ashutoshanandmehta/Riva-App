@@ -20,10 +20,17 @@ for pattern, label in WRAPPERS:
               f"Run the underlying command directly so it can be checked.", file=sys.stderr)
         sys.exit(2)
 
-# 2. Version control — the board's rule: push/commit/merge/PR only when explicitly told.
-if re.search(r"\bgit\s+(push|commit|merge|rebase)\b|\bgh\s+pr\s+(create|merge)\b", cmd):
-    print("Blocked: version-control write operations require explicit human instruction. "
-          "Report what you would commit and stop.", file=sys.stderr)
+# 2. Version control — commit/merge/rebase/PR and branch pushes are allowed
+# (2026-07-25: the blanket block meant every commit had to be hand-run by the
+# human, which cost more than it caught). Two things stay blocked because they
+# are the ones that actually destroy work or skip review.
+if re.search(r"\bgit\s+push\b.*(--force(?!-with-lease)|(?<!-)\s-f\b|\s\+)", cmd):
+    print("Blocked: force-push can destroy pushed history. Use --force-with-lease, "
+          "or ask if the history really needs rewriting.", file=sys.stderr)
+    sys.exit(2)
+if re.search(r"\bgit\s+push\b[^|;&]*\borigin\s+(main|master)\b", cmd):
+    print("Blocked: push a branch and open a PR instead of pushing straight to main. "
+          "If a direct push to main is genuinely intended, ask first.", file=sys.stderr)
     sys.exit(2)
 
 # 3. Database — the guessing failure mode. Only the sandbox port is reachable.

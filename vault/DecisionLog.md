@@ -161,3 +161,34 @@ portions. (2) Capture B: volume 45.4 ml, clamped to plausible bound (`action=cla
 undersegmented / partial silhouette, clamped by the plausibility gate. Both errors upstream 
 of the carving step. Accuracy validation (R²≥0.6, grams MAPE≤20%) remains the GO gate; 
 grid sizing + segmentation quality are the next tuning knobs.
+
+## 2026-07-25 — To-dos are server-owned, with completion as a single date
+
+Context: Home led with the Weight Tracking card while Tracker led with a thinner
+CurrentWeightCard showing the same numbers. The richer card moved to Tracker
+(replacing CurrentWeightCard) and Home's lead slot became a user-settable to-do
+card, grouped by category, where a food/water/weight to-do opens the Snap flow
+that already logs it.
+Decision: To-dos are server-owned like every other Riva resource —
+`0004_todos.sql` adds `todos` with SELECT-only RLS plus four SECURITY DEFINER
+functions (`list_todos`, `upsert_todo`, `set_todo_done`, `delete_todo`), each
+taking `p_user_id` and scoped to the caller, fronted by `/v1/todos`. Device-local
+storage was rejected: to-dos would not survive reinstall or sync across devices.
+Completion is one nullable `completed_on date`, not a boolean.
+Rationale: `completed_on` makes the daily reset free. A `daily` to-do is done
+when `completed_on` equals the profile-timezone day, so it reopens itself each
+morning with no cron and no client day math; a `once` to-do is done once the
+column is set at all. The cost is that the column means two different things
+depending on `repeat_rule`, so `upsert_todo` must clear it whenever a reschedule
+changes `repeat_rule` or `due_date` — without that, a daily to-do ticked
+yesterday and switched to `once` reads as finished business and silently drops
+off the card. That was caught by the verifier and is now covered by two
+regression tests.
+Notifications stay on-device (`TodoNotificationScheduler`, `riva.todo.*`
+identifiers) rather than push: no server infrastructure, and the schedule is
+already known locally. A daily to-do keeps its repeating trigger even once
+ticked — cancelling it on completion meant the alarm never fired again unless
+the app happened to be reopened before the next morning.
+Deployed 2026-07-25: migration applied via the Supabase SQL Editor, backend
+shipped as mirror commit `4392445`. iOS side is on
+`feature/home-todos-tracker-weight-card`, not yet merged to main.

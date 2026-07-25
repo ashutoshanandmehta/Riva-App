@@ -47,13 +47,14 @@ Model defaults to `claude-sonnet-5`; override with `RIVA_SCAN_MODEL`.
 
 ## Current production state
 
-Prod is still running the **old OpenAI `gpt-5.2`** code. The Claude-only
-rewrite is **local/uncommitted**. To ship it: ensure `ANTHROPIC_API_KEY` is set
-in Render (done), push the mirror, Manual Deploy, then verify:
+Prod runs the **Claude-only** scanner and, as of 2026-07-25, the **to-do CRUD**
+API (`/v1/todos`, mirror commit `4392445`). Verify what is actually live rather
+than trusting this file:
 
 ```bash
 curl -s https://riva-snap.onrender.com/healthz
 # expect: {"provider":"anthropic","model":"claude-sonnet-5",...}
 ```
 
-The V2 / CalorieMama work is also local/uncommitted and deliberately unshipped.
+The V2 / CalorieMama work and the volumetric pipeline remain local and
+deliberately unshipped — the mirror carries only what production needs.

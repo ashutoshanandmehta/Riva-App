@@ -301,3 +301,13 @@ Changed files:
 - [2026-07-25] failure in `Bash`: Exit code 56 curl: (56) The requested URL returned error: 404
 
 - [2026-07-25] failure in `Bash`: Exit code 1 Help:  --destination <path>  The file path where the screenshot will be saved (must be a .png file). Usage: devicectl device capture screenshot --device <uuid|ecid|serial_number|udid|name|dns_name> --destination <path> [--display-unique-id <unique-id>] [--verbose] [--quiet] [--timeout <seconds>] [--json-output <path>] [--omit-deprecated-fields-in-json] [--log-output <path>]   See 'devi
+
+- [2026-07-25] failure in `Bash`: Exit code 1 ERROR: The application failed to launch. (com.apple.dt.CoreDeviceError error 10002 (0x2712))            The request to open "in.riva" failed. (FBSOpenApplicationServiceErrorDomain error 1 (0x01))            BSErrorCodeDescription = RequestDenied                The operation couldn’t be completed. Unable to launch in.riva because the device was not, or could not be, unlocked. (FBSOpenAp
+
+- [2026-07-25] failure in `Bash`: Exit code 2 ----------------   --------   ------------------------------------   ------------------   ----------------------   -------- Devansh’s iPhone              C949AE41-263F-5DE4-BBCE-0E90DA497042   available (paired)   iPhone 17 (iPhone18,3)   physical === is the git block still in guard-bash? === ugrep: warning: .claude/hooks/guard-bash.py: No such file or directory
+
+
+## Session ended 2026-07-25T15:21:48Z
+## Session ended 2026-07-25T15:21:48Z
+
+- [2026-07-25] failure in `Read`: File does not exist. Note: your current working directory is /Users/ashutoshanand/Downloads/Riva.
