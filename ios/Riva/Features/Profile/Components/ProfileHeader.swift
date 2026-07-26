@@ -20,19 +20,19 @@ struct ProfileHeader: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             avatar
-            VStack(spacing: RivaSpacing.xxs) {
+            VStack(spacing: TPCSpacing.xxs) {
                 Text(displayName)
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text("Riva member")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, RivaSpacing.xs)
+        .padding(.top, TPCSpacing.xs)
     }
 
     private var avatar: some View {
@@ -40,24 +40,24 @@ struct ProfileHeader: View {
             Circle()
                 .fill(
                     LinearGradient(
-                        colors: [RivaColor.brandSoft, RivaColor.brandWash],
+                        colors: [TPCColor.brandSoft, TPCColor.brandWash],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
             Text(initials)
                 .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(RivaColor.brandDeep)
+                .foregroundStyle(TPCColor.brandDeep)
         }
         .frame(width: 78, height: 78)
         .overlay(alignment: .bottomTrailing) {
             Button(action: onEdit) {
                 Image(systemName: "pencil")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(RivaColor.textOnBrand)
+                    .foregroundStyle(TPCColor.textOnBrand)
                     .frame(width: 26, height: 26)
-                    .background(RivaColor.brandDeep, in: Circle())
-                    .overlay(Circle().stroke(RivaColor.background, lineWidth: 2))
+                    .background(TPCColor.brandDeep, in: Circle())
+                    .overlay(Circle().stroke(TPCColor.background, lineWidth: 2))
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Edit profile")
@@ -68,5 +68,5 @@ struct ProfileHeader: View {
 #Preview {
     ProfileHeader(name: MockAccountRepository.sampleBundle.profile.name) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

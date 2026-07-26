@@ -7,12 +7,12 @@ struct DoseHistorySection: View {
     let onSelect: (DoseRecord) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text("Dose History")
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
 
-            VStack(spacing: RivaSpacing.sm) {
+            VStack(spacing: TPCSpacing.sm) {
                 ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
                     row(record, isLatest: index == 0, isLast: index == records.count - 1)
                 }
@@ -45,10 +45,10 @@ struct DoseHistorySection: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text("Week \(record.week) • \(RivaFormat.doseMgCompact(record.doseMg))")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(RivaFormat.mediumDate(record.date))
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
 
             Spacer()
@@ -56,18 +56,18 @@ struct DoseHistorySection: View {
             VStack(alignment: .trailing, spacing: 3) {
                 Image(systemName: "mappin.and.ellipse")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(RivaColor.textTertiary)
+                    .foregroundStyle(TPCColor.textTertiary)
                 Text(record.site)
                     .font(.system(size: 12))
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
-        .padding(RivaSpacing.sm)
+        .padding(TPCSpacing.sm)
         .background(
-            RivaColor.surface,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.surface,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
         .shadow(color: .black.opacity(0.04), radius: 8, y: 3)
     }
 
@@ -78,28 +78,28 @@ struct DoseHistorySection: View {
     private func timelineMarker(isLatest: Bool, isLast: Bool) -> some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(RivaColor.brandSoft)
+                .fill(TPCColor.brandSoft)
                 .frame(width: 2)
                 .frame(maxHeight: .infinity)
                 .opacity(isLatest ? 0 : 1)
 
             Circle()
-                .fill(isLatest ? RivaColor.brand : RivaColor.brandSoft)
+                .fill(isLatest ? TPCColor.brand : TPCColor.brandSoft)
                 .frame(width: 10, height: 10)
 
             Rectangle()
-                .fill(RivaColor.brandSoft)
+                .fill(TPCColor.brandSoft)
                 .frame(width: 2)
                 .frame(maxHeight: .infinity)
                 .opacity(isLast ? 0 : 1)
         }
         .frame(width: 10)
-        .padding(.vertical, isLatest || isLast ? 0 : -RivaSpacing.sm)
+        .padding(.vertical, isLatest || isLast ? 0 : -TPCSpacing.sm)
     }
 }
 
 #Preview {
     DoseHistorySection(records: MockMedicationRepository.dashboard().history) { _ in }
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

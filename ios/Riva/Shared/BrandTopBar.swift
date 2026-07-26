@@ -1,34 +1,33 @@
 import SwiftUI
 
-/// Brand row shown at the top of every main tab: Riva logo + wordmark on the
-/// left, settings on the right. Pushed sub-screens pass `onBack` to prepend
-/// a back chevron; screens without a settings affordance (e.g. the profile
-/// itself) pass `onSettings: nil`.
+/// Brand row shown at the top of every main tab: TPC gold seal + wordmark on
+/// the left, settings on the right. Pushed sub-screens pass `onBack` to
+/// prepend a back chevron; screens without a settings affordance pass
+/// `onSettings: nil`.
 struct BrandTopBar: View {
     var onBack: (() -> Void)?
     var onSettings: (() -> Void)?
 
     var body: some View {
-        HStack(spacing: RivaSpacing.xs) {
+        HStack(spacing: TPCSpacing.xs) {
             if let onBack {
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .foregroundStyle(TPCColor.textPrimary)
                         .frame(width: 36, height: 36)
-                        .background(RivaColor.surface, in: Circle())
+                        .background(TPCColor.surface, in: Circle())
                         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
                         .contentShape(Circle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Back")
-                .padding(.trailing, RivaSpacing.xxs)
+                .padding(.trailing, TPCSpacing.xxs)
             }
 
-            logo
-            Text("Riva")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(RivaColor.textPrimary)
+            tpcSeal
+            Text("The Peptide Company")
+                .tpcOverline(TPCColor.accentLink)
 
             Spacer()
 
@@ -36,7 +35,7 @@ struct BrandTopBar: View {
                 Button(action: onSettings) {
                     Image(systemName: "gearshape")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .foregroundStyle(TPCColor.textSecondary)
                         .frame(width: 40, height: 40)
                         .contentShape(Circle())
                 }
@@ -46,29 +45,31 @@ struct BrandTopBar: View {
         }
     }
 
-    private var logo: some View {
+    private var tpcSeal: some View {
         ZStack {
             Circle()
                 .fill(
-                    LinearGradient(
-                        colors: [RivaColor.brand, RivaColor.brandDeep],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                    RadialGradient(
+                        colors: [Color(hex: 0xB08A2E), Color(hex: 0x7E5F14)],
+                        center: UnitPoint(x: 0.4, y: 0.3),
+                        startRadius: 0,
+                        endRadius: 15
                     )
                 )
-            Image("RivaLogo")
-                .resizable()
-                .renderingMode(.template)
-                .scaledToFit()
-                .foregroundStyle(.white)
-                .frame(width: 20, height: 20)
+                .overlay(
+                    Circle()
+                        .strokeBorder(TPCColor.accentPale.opacity(0.45), lineWidth: 1)
+                )
+            Text("TPC")
+                .font(.system(size: 8, weight: .heavy, design: .rounded))
+                .foregroundStyle(Color(hex: 0xFBF7EC))
         }
         .frame(width: 30, height: 30)
     }
 }
 
 #Preview {
-    BrandTopBar {}
+    BrandTopBar(onSettings: {})
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

@@ -1,30 +1,50 @@
 import SwiftUI
 
-/// Top of the Home screen: brand row (logo + settings), greeting, and quote.
+/// Top of the Home screen: TPC brand bar, then greeting + streak chip.
 struct HomeHeader: View {
     let userName: String
-    let quote: String
+    let streak: Int
     let onSettings: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.md) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             BrandTopBar(onSettings: onSettings)
 
-            VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
-                Text("\(HomeViewModel.greeting()) \(userName)")
-                    .font(RivaFont.screenTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
-                Text("\u{201C}\(quote)\u{201D}")
-                    .font(RivaFont.footnote.italic())
-                    .foregroundStyle(RivaColor.textSecondary)
+            HStack(alignment: .center, spacing: TPCSpacing.sm) {
+                Text("Hey \(userName) — ")
+                    .font(TPCFont.screenTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
+                + Text("how's today going?")
+                    .font(TPCFont.screenTitle)
+                    .foregroundStyle(TPCColor.textSecondary)
+
+                Spacer(minLength: 0)
+
+                if streak > 0 {
+                    streakChip
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
+
+    private var streakChip: some View {
+        HStack(spacing: 4) {
+            Text("🔥")
+                .font(.system(size: 11))
+            Text("\(streak)d")
+                .font(TPCFont.metricS)
+                .foregroundStyle(TPCColor.accentLink)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(TPCColor.brandSoft, in: Capsule())
+        .overlay(Capsule().strokeBorder(TPCColor.brand.opacity(0.22), lineWidth: 1))
+    }
 }
 
 #Preview {
-    HomeHeader(userName: "Sarah", quote: "Consistency is your superpower.") {}
+    HomeHeader(userName: "Alex", streak: 42) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

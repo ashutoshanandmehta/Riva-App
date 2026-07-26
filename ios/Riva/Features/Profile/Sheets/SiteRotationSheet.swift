@@ -13,7 +13,7 @@ struct SiteRotationSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .siteRotation)
 
             switch model.phase {
@@ -27,17 +27,17 @@ struct SiteRotationSheet: View {
                 }
             case .ready(let statuses, let suggested):
                 siteList(statuses, suggested: suggested)
-                Spacer(minLength: RivaSpacing.xs)
+                Spacer(minLength: TPCSpacing.xs)
                 Button("Done", action: onClose)
                     .buttonStyle(.rivaPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .task { await model.load() }
     }
 
@@ -45,44 +45,44 @@ struct SiteRotationSheet: View {
         _ statuses: [SiteRotationViewModel.SiteStatus], suggested: InjectionSite
     ) -> some View {
         ScrollView {
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Text("Rotating where you inject gives each spot time to recover, which keeps shots comfortable and absorption steady.")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, RivaSpacing.xxs)
+                    .padding(.bottom, TPCSpacing.xxs)
 
                 ForEach(statuses) { status in
                     siteRow(status, isSuggested: status.site == suggested)
                 }
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
+            .padding(.horizontal, TPCSpacing.screenMargin)
         }
     }
 
     private func siteRow(
         _ status: SiteRotationViewModel.SiteStatus, isSuggested: Bool
     ) -> some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(status.site.title)
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.cardTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(status.subtitle)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
             Spacer()
             if isSuggested {
                 RivaBadge(text: "Suggested", style: .brand)
             }
         }
-        .padding(RivaSpacing.sm)
+        .padding(TPCSpacing.sm)
         .background(
-            isSuggested ? RivaColor.brandWash : RivaColor.surface,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            isSuggested ? TPCColor.brandWash : TPCColor.surface,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             isSuggested

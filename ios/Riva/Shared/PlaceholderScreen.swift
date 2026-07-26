@@ -8,27 +8,27 @@ struct PlaceholderScreen: View {
     let blurb: String
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             RivaIconView(icon: icon, pointSize: 34, weight: .semibold, scale: iconScale)
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .frame(width: 88, height: 88)
-                .background(RivaColor.brandWash, in: Circle())
+                .background(TPCColor.brandWash, in: Circle())
 
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Text(title)
-                    .font(RivaFont.sectionTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.sectionTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(blurb)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.horizontal, RivaSpacing.xxl)
+            .padding(.horizontal, TPCSpacing.xxl)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         // Optically center above the floating tab bar.
-        .padding(.bottom, RivaLayout.tabBarClearance * 0.6)
-        .background(RivaColor.background)
+        .padding(.bottom, TPCLayout.tabBarClearance * 0.6)
+        .background(TPCColor.background)
     }
 }
 

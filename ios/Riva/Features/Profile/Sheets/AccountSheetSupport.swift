@@ -29,15 +29,15 @@ struct AccountSheetHeader: View {
     let sheet: AccountSheet
 
     var body: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             Image(systemName: sheet.systemImage)
                 .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .frame(width: 56, height: 56)
-                .background(RivaColor.brandWash, in: Circle())
+                .background(TPCColor.brandWash, in: Circle())
             Text(sheet.title)
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
         }
     }
 }
@@ -47,18 +47,18 @@ struct AccountSavedView: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             Spacer()
             Image(systemName: "checkmark")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(RivaColor.textOnBrand)
+                .foregroundStyle(TPCColor.textOnBrand)
                 .frame(width: 56, height: 56)
-                .background(RivaColor.brand, in: Circle())
+                .background(TPCColor.brand, in: Circle())
             Text(message)
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textSecondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, RivaSpacing.xl)
+                .padding(.horizontal, TPCSpacing.xl)
             Spacer()
         }
     }
@@ -70,16 +70,16 @@ struct AccountLoadFailedView: View {
     let onRetry: () -> Void
 
     var body: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             Spacer()
             Text(message)
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textSecondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, RivaSpacing.xxl)
+                .padding(.horizontal, TPCSpacing.xxl)
             Button("Try again", action: onRetry)
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
             Spacer()
         }
     }
@@ -94,25 +94,25 @@ struct AccountLabeledField: View {
     var keyboard: UIKeyboardType = .default
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text(label)
                 .rivaOverline()
-            HStack(spacing: RivaSpacing.xs) {
+            HStack(spacing: TPCSpacing.xs) {
                 TextField(prompt, text: $text)
                     .keyboardType(keyboard)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
                 if let unit {
                     Text(unit)
-                        .font(RivaFont.metricUnit)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.metricUnit)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
             }
-            .padding(.horizontal, RivaSpacing.md)
+            .padding(.horizontal, TPCSpacing.md)
             .padding(.vertical, 12)
             .background(
-                RivaColor.fillNeutral,
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.fillNeutral,
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
         }
     }
@@ -127,12 +127,12 @@ struct AccountChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(isSelected ? RivaColor.textOnBrand : RivaColor.textSecondary)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(isSelected ? TPCColor.textOnBrand : TPCColor.textSecondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background(
-                    isSelected ? RivaColor.brandDeep : RivaColor.fillNeutral,
+                    isSelected ? TPCColor.brandDeep : TPCColor.fillNeutral,
                     in: Capsule()
                 )
         }

@@ -13,7 +13,7 @@ struct InjectionDaySheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .injectionDay)
 
             switch model.phase {
@@ -31,20 +31,20 @@ struct InjectionDaySheet: View {
                 dayGrid
                 if let message = model.errorMessage {
                     Text(message)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.lg)
+                        .padding(.horizontal, TPCSpacing.lg)
                 }
-                Spacer(minLength: RivaSpacing.xs)
+                Spacer(minLength: TPCSpacing.xs)
                 saveButton
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .task { await model.load() }
         .onChange(of: model.phase) {
             guard case .saved = model.phase else { return }
@@ -56,12 +56,12 @@ struct InjectionDaySheet: View {
     }
 
     private var dayGrid: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Your weekly shot day")
                 .rivaOverline()
             LazyVGrid(
                 columns: [GridItem(.flexible()), GridItem(.flexible())],
-                spacing: RivaSpacing.xs
+                spacing: TPCSpacing.xs
             ) {
                 ForEach(RivaWeekday.names, id: \.self) { day in
                     AccountChip(title: day, isSelected: model.selectedDay == day) {
@@ -70,7 +70,7 @@ struct InjectionDaySheet: View {
                 }
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private var saveButton: some View {
@@ -78,14 +78,14 @@ struct InjectionDaySheet: View {
             Task { await model.save() }
         } label: {
             if model.phase == .saving {
-                ProgressView().tint(RivaColor.textOnBrand)
+                ProgressView().tint(TPCColor.textOnBrand)
             } else {
                 Text("Save")
             }
         }
         .buttonStyle(.rivaPrimary)
         .disabled(!model.canSave || model.phase == .saving)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 }
 

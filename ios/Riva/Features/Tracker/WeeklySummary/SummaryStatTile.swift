@@ -8,15 +8,15 @@ struct SummaryStatTile: View {
 
     var body: some View {
         RivaCard {
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Image(systemName: systemImage)
                     .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.brand)
                 Text(caption)
                     .rivaOverline()
                 Text(value)
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .foregroundStyle(TPCColor.textPrimary)
             }
             .frame(maxWidth: .infinity)
         }
@@ -26,10 +26,10 @@ struct SummaryStatTile: View {
 }
 
 #Preview {
-    HStack(spacing: RivaSpacing.md) {
+    HStack(spacing: TPCSpacing.md) {
         SummaryStatTile(systemImage: "drop", caption: "Hydration", value: "2.4L / day")
         SummaryStatTile(systemImage: "moon", caption: "Sleep avg", value: "7h 42m")
     }
     .padding()
-    .background(RivaColor.background)
+    .background(TPCColor.background)
 }

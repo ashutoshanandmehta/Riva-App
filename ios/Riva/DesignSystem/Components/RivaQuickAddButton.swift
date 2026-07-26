@@ -1,27 +1,29 @@
 import SwiftUI
 
-/// Floating circular "+" button used on dashboard tiles for one-tap logging
+/// Small circular "+" button for one-tap logging on dashboard tiles
 /// (water, protein, side effects, sleep).
-struct RivaQuickAddButton: View {
+struct TPCQuickAddButton: View {
     let accessibilityLabel: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Image(systemName: "plus")
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(RivaColor.textOnBrand)
-                .frame(width: 36, height: 36)
-                .background(RivaColor.brand, in: Circle())
-                .shadow(color: .black.opacity(0.15), radius: 6, y: 3)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(TPCColor.textOnBrand)
+                .frame(width: 34, height: 34)
+                .background(TPCColor.brand, in: Circle())
+                .shadow(color: TPCColor.brandDeep.opacity(0.25), radius: 6, y: 3)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(accessibilityLabel)
     }
 }
 
+typealias RivaQuickAddButton = TPCQuickAddButton
+
 #Preview {
-    RivaQuickAddButton(accessibilityLabel: "Add") {}
+    TPCQuickAddButton(accessibilityLabel: "Add water") {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

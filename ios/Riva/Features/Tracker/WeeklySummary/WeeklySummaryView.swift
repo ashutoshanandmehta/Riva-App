@@ -24,24 +24,24 @@ struct WeeklySummaryView: View {
                 content(summary)
             }
         }
-        .background(RivaColor.background)
-        .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
+        .background(TPCColor.background)
+        .contentMargins(.bottom, TPCLayout.tabBarClearance, for: .scrollContent)
         .task { await viewModel.load() }
     }
 
     // MARK: Loaded
 
     private func content(_ summary: WeeklySummary) -> some View {
-        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
             BrandTopBar(
                 onBack: { dismiss() },
                 onSettings: { appModel.showProfile() }
             )
 
-            VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
                 Text("Weekly Summary")
-                    .font(RivaFont.screenTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.screenTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(RivaFormat.weekRange(summary.interval))
                     .rivaOverline()
             }
@@ -62,7 +62,7 @@ struct WeeklySummaryView: View {
 
             NutritionOverviewCard(calories: summary.calories, protein: summary.protein)
 
-            HStack(spacing: RivaSpacing.md) {
+            HStack(spacing: TPCSpacing.md) {
                 SummaryStatTile(
                     systemImage: "drop",
                     caption: "Hydration",
@@ -77,8 +77,8 @@ struct WeeklySummaryView: View {
                 )
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
     }
 }
 

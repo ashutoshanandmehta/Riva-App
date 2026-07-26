@@ -10,7 +10,7 @@ struct CalorieCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 HStack {
                     Text("Calories")
                         .rivaOverline()
@@ -20,21 +20,21 @@ struct CalorieCard: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text("\(calorie.calories)")
-                        .font(RivaFont.metricM)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.metricM)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text("/ \(calorie.goalCalories) kcal")
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
 
                 Spacer()
 
-                HStack(alignment: .center, spacing: RivaSpacing.sm) {
-                    VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+                HStack(alignment: .center, spacing: TPCSpacing.sm) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                         RivaProgressBar(progress: calorie.progress, height: 7)
                         Text("\(calorie.caloriesRemaining) kcal remaining")
                             .font(.system(size: 12))
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
 
                     RivaQuickAddButton(accessibilityLabel: "Add calories", action: onAdd)
@@ -53,5 +53,5 @@ struct CalorieCard: View {
     CalorieCard(calorie: MockTrackerRepository.dashboard().calorie, onOpen: {}, onAdd: {})
         .frame(width: 170, height: 155)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

@@ -6,7 +6,7 @@ struct WeightProgressCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                 HStack {
                     Text("Weight progress")
                         .rivaOverline()
@@ -16,11 +16,11 @@ struct WeightProgressCard: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 5) {
                     Text(RivaFormat.signedDelta(progress.changeLbs))
-                        .font(RivaFont.metricXL)
-                        .foregroundStyle(RivaColor.brand)
+                        .font(TPCFont.metricXL)
+                        .foregroundStyle(TPCColor.brand)
                     Text("lbs")
-                        .font(RivaFont.metricUnit)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.metricUnit)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
 
                 WeightBarsStrip(dailyLbs: progress.dailyLbs, barHeight: 48)
@@ -30,8 +30,8 @@ struct WeightProgressCard: View {
                     Spacer()
                     Text("Goal: \(RivaFormat.doseNumber(progress.goalLbs)) lbs")
                 }
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
             }
         }
         .accessibilityElement(children: .combine)
@@ -41,5 +41,5 @@ struct WeightProgressCard: View {
 #Preview {
     WeightProgressCard(progress: MockTrackerRepository.summary().weight)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

@@ -11,7 +11,7 @@ struct ProteinGoalCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 HStack {
                     Text("Protein goal")
                         .rivaOverline()
@@ -21,21 +21,21 @@ struct ProteinGoalCard: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text("\(RivaFormat.grams(protein.grams))g")
-                        .font(RivaFont.metricM)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.metricM)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text("/ \(RivaFormat.grams(protein.goalGrams))g")
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
 
                 Spacer()
 
-                HStack(alignment: .center, spacing: RivaSpacing.sm) {
-                    VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+                HStack(alignment: .center, spacing: TPCSpacing.sm) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                         RivaProgressBar(progress: protein.progress, height: 7)
                         Text("\(RivaFormat.grams(protein.gramsRemaining))g remaining")
                             .font(.system(size: 12))
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
 
                     RivaQuickAddButton(accessibilityLabel: "Add protein", action: onAdd)
@@ -54,5 +54,5 @@ struct ProteinGoalCard: View {
     ProteinGoalCard(protein: MockTrackerRepository.dashboard().protein, onOpen: {}, onAdd: {})
         .frame(width: 170, height: 155)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

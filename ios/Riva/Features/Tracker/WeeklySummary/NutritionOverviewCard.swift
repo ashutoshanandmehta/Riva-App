@@ -6,19 +6,19 @@ struct NutritionOverviewCard: View {
     let protein: QuantityGoal
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text("Nutrition Overview")
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
 
             RivaCard {
-                VStack(spacing: RivaSpacing.md) {
+                VStack(spacing: TPCSpacing.md) {
                     goalRow(
                         title: "Daily Calories",
                         value: RivaFormat.wholeNumber(calories.value),
                         goal: "/ \(RivaFormat.wholeNumber(calories.goal)) kcal",
                         progress: calories.progress,
-                        tint: RivaColor.brand
+                        tint: TPCColor.brand
                     )
                     goalRow(
                         title: "Protein Goal",
@@ -26,7 +26,7 @@ struct NutritionOverviewCard: View {
                         goal: "/ \(RivaFormat.grams(protein.goal))g",
                         progress: protein.progress,
                         // Near-ceiling macro highlighted like the wireframe.
-                        tint: RivaColor.warning
+                        tint: TPCColor.warning
                     )
                 }
             }
@@ -41,18 +41,18 @@ struct NutritionOverviewCard: View {
         progress: Double,
         tint: Color
     ) -> some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             HStack(alignment: .firstTextBaseline) {
                 Text(title)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Spacer()
                 Text(value)
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(goal)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
             RivaProgressBar(progress: progress, height: 7, tint: tint, track: tint.opacity(0.18))
         }
@@ -65,5 +65,5 @@ struct NutritionOverviewCard: View {
     let summary = MockTrackerRepository.summary()
     return NutritionOverviewCard(calories: summary.calories, protein: summary.protein)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

@@ -3,14 +3,18 @@ import SwiftUI
 extension View {
     /// Hairline border for elevated surfaces (cards, rows, tiles).
     ///
-    /// Invisible in light mode, where drop shadows provide separation; in
-    /// dark mode shadows vanish against the dark background, so this faint
-    /// stroke keeps surfaces legible. Apply after the surface's
-    /// `background`/`clipShape` with the same corner radius.
-    func rivaSurfaceOutline(cornerRadius: CGFloat) -> some View {
+    /// Uses the TPC forest-green-at-10% border, visible in both light and
+    /// dark contexts — matches the `rgba(30,51,37,0.10)` convention in the
+    /// design files.
+    func tpcSurfaceOutline(cornerRadius: CGFloat) -> some View {
         overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .strokeBorder(RivaColor.surfaceOutline, lineWidth: 1)
+                .strokeBorder(TPCColor.surfaceOutline, lineWidth: 1)
         )
+    }
+
+    /// Legacy alias — remove call-site by call-site as screens are rebuilt.
+    func rivaSurfaceOutline(cornerRadius: CGFloat) -> some View {
+        tpcSurfaceOutline(cornerRadius: cornerRadius)
     }
 }

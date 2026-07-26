@@ -23,7 +23,7 @@ struct SnapScanView: View {
 
     var body: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 header
@@ -76,50 +76,50 @@ struct SnapScanView: View {
     private var header: some View {
         HStack {
             Text("Riva Snap")
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             Button {
                 onClose()
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .frame(width: 34, height: 34)
-                    .background(RivaColor.fillNeutral, in: Circle())
+                    .background(TPCColor.fillNeutral, in: Circle())
             }
             .accessibilityLabel("Close")
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.vertical, RivaSpacing.sm)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.vertical, TPCSpacing.sm)
     }
 
     // MARK: Capture
 
     private var captureContent: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             modePicker
 
             photoPanel
 
             if let message = model.errorMessage {
                 Text(message)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.danger)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.danger)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, RivaSpacing.lg)
+                    .padding(.horizontal, TPCSpacing.lg)
             }
 
             Spacer()
 
-            VStack(spacing: RivaSpacing.sm) {
+            VStack(spacing: TPCSpacing.sm) {
                 if model.photo != nil {
                     hintField
                     Button("Scan") { Task { await model.scan() } }
                         .buttonStyle(.rivaPrimary)
                     Button("Choose a different photo") { model.photo = nil }
-                        .font(RivaFont.captionEmphasized)
-                        .foregroundStyle(RivaColor.brand)
+                        .font(TPCFont.captionEmphasized)
+                        .foregroundStyle(TPCColor.brand)
                 } else {
                     if CameraPicker.isAvailable {
                         Button("Take a photo") { isCameraPresented = true }
@@ -128,50 +128,50 @@ struct SnapScanView: View {
                     PhotosPicker(selection: $libraryItem, matching: .images) {
                         Text("Choose from library")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(RivaColor.brand)
+                            .foregroundStyle(TPCColor.brand)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)
                             .background(
-                                RivaColor.brandWash,
-                                in: RoundedRectangle(cornerRadius: RivaRadius.control, style: .continuous)
+                                TPCColor.brandWash,
+                                in: RoundedRectangle(cornerRadius: TPCRadius.control, style: .continuous)
                             )
                     }
                 }
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.bottom, RivaSpacing.lg)
+            .padding(.horizontal, TPCSpacing.screenMargin)
+            .padding(.bottom, TPCSpacing.lg)
         }
-        .padding(.top, RivaSpacing.xs)
+        .padding(.top, TPCSpacing.xs)
     }
 
     private var hintField: some View {
         TextField("Add a hint (optional)", text: $model.hint)
-            .font(RivaFont.body)
-            .foregroundStyle(RivaColor.textPrimary)
+            .font(TPCFont.body)
+            .foregroundStyle(TPCColor.textPrimary)
             .textInputAutocapitalization(.never)
             .submitLabel(.done)
-            .padding(.horizontal, RivaSpacing.md)
+            .padding(.horizontal, TPCSpacing.md)
             .padding(.vertical, 12)
             .background(
-                RivaColor.surface,
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.surface,
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
-            .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+            .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
     }
 
     private var modePicker: some View {
-        HStack(spacing: RivaSpacing.xs) {
+        HStack(spacing: TPCSpacing.xs) {
             ForEach(ScanMode.allCases) { mode in
                 Button {
                     model.mode = mode
                 } label: {
                     Text(mode.title)
-                        .font(RivaFont.captionEmphasized)
-                        .foregroundStyle(model.mode == mode ? RivaColor.textOnBrand : RivaColor.textSecondary)
-                        .padding(.horizontal, RivaSpacing.md)
+                        .font(TPCFont.captionEmphasized)
+                        .foregroundStyle(model.mode == mode ? TPCColor.textOnBrand : TPCColor.textSecondary)
+                        .padding(.horizontal, TPCSpacing.md)
                         .padding(.vertical, 8)
                         .background(
-                            model.mode == mode ? RivaColor.brandDeep : RivaColor.fillNeutral,
+                            model.mode == mode ? TPCColor.brandDeep : TPCColor.fillNeutral,
                             in: Capsule()
                         )
                 }
@@ -192,31 +192,31 @@ struct SnapScanView: View {
                             .scaledToFill()
                     }
             } else {
-                VStack(spacing: RivaSpacing.sm) {
+                VStack(spacing: TPCSpacing.sm) {
                     Image(systemName: "camera.viewfinder")
                         .font(.system(size: 40, weight: .light))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                     Text("Point at a meal, a drink, or a glass of water")
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.xl)
+                        .padding(.horizontal, TPCSpacing.xl)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(RivaColor.surface)
+                .background(TPCColor.surface)
             }
         }
         .frame(maxWidth: .infinity)
         .frame(height: 340)
-        .clipShape(RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous))
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.card)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .clipShape(RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous))
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.card)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     // MARK: Scanning
 
     private var scanningContent: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             if let photo = model.photo {
                 Color.clear
                     .overlay {
@@ -226,56 +226,56 @@ struct SnapScanView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 340)
-                    .clipShape(RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
+                        RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous)
                             .fill(Color.black.opacity(0.25))
                     )
-                    .padding(.horizontal, RivaSpacing.screenMargin)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
             }
             ProgressView()
             Text("Scanning your photo. This can take a few seconds.")
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
             Spacer()
         }
-        .padding(.top, RivaSpacing.xs)
+        .padding(.top, TPCSpacing.xs)
     }
 
     // MARK: Saved
 
     private func savedContent(totals: DayTotals, loggedWater: Bool) -> some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             Spacer()
 
             Image(systemName: "checkmark")
                 .font(.system(size: 30, weight: .bold))
-                .foregroundStyle(RivaColor.textOnBrand)
+                .foregroundStyle(TPCColor.textOnBrand)
                 .frame(width: 76, height: 76)
-                .background(RivaColor.brand, in: Circle())
+                .background(TPCColor.brand, in: Circle())
 
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Text("Logged")
-                    .font(RivaFont.sectionTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.sectionTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(summary(totals: totals, loggedWater: loggedWater))
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, RivaSpacing.xl)
+                    .padding(.horizontal, TPCSpacing.xl)
             }
 
             Spacer()
 
-            VStack(spacing: RivaSpacing.sm) {
+            VStack(spacing: TPCSpacing.sm) {
                 Button("Done") { onClose() }
                     .buttonStyle(.rivaPrimary)
                 Button("Scan something else") { model.scanAgain() }
-                    .font(RivaFont.captionEmphasized)
-                    .foregroundStyle(RivaColor.brand)
+                    .font(TPCFont.captionEmphasized)
+                    .foregroundStyle(TPCColor.brand)
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.bottom, RivaSpacing.lg)
+            .padding(.horizontal, TPCSpacing.screenMargin)
+            .padding(.bottom, TPCSpacing.lg)
         }
     }
 

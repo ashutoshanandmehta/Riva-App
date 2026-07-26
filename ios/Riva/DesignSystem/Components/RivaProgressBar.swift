@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Slim rounded progress bar (goal progress, medication level gauge).
-struct RivaProgressBar: View {
+/// Slim rounded progress bar (goal progress, macro bars, medication gauge).
+struct TPCProgressBar: View {
     /// Progress in `0...1`; values outside the range are clamped.
     let progress: Double
-    var height: CGFloat = 8
-    var tint: Color = RivaColor.brand
-    var track: Color = RivaColor.brandSoft
+    var height: CGFloat = 6
+    var tint: Color = TPCColor.brand
+    var track: Color = TPCColor.surfaceOutline
 
     var body: some View {
         GeometryReader { proxy in
@@ -25,10 +25,14 @@ struct RivaProgressBar: View {
     private var clamped: Double { min(max(progress, 0), 1) }
 }
 
+typealias RivaProgressBar = TPCProgressBar
+
 #Preview {
     VStack(spacing: 16) {
-        RivaProgressBar(progress: 0.65)
-        RivaProgressBar(progress: 0.45, height: 6)
+        TPCProgressBar(progress: 0.65)
+        TPCProgressBar(progress: 0.74, tint: TPCColor.accentGold)
+        TPCProgressBar(progress: 0.45, tint: TPCColor.brandDeep)
     }
     .padding()
+    .background(TPCColor.background)
 }

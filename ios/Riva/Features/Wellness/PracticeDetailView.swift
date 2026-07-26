@@ -18,7 +18,7 @@ struct PracticeDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 header
                 videoCard
                 about
@@ -27,11 +27,11 @@ struct PracticeDetailView: View {
                     completeButton
                 }
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.top, RivaSpacing.xs)
+            .padding(.horizontal, TPCSpacing.screenMargin)
+            .padding(.top, TPCSpacing.xs)
         }
-        .background(RivaColor.background)
-        .contentMargins(.bottom, RivaSpacing.xxl, for: .scrollContent)
+        .background(TPCColor.background)
+        .contentMargins(.bottom, TPCSpacing.xxl, for: .scrollContent)
     }
 
     // MARK: Header
@@ -40,37 +40,37 @@ struct PracticeDetailView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(practice.title)
-                    .font(RivaFont.screenTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.screenTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(practice.subtitle)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
             Spacer()
             Button(action: { dismiss() }) {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .frame(width: 34, height: 34)
-                    .background(RivaColor.fillNeutral, in: Circle())
+                    .background(TPCColor.fillNeutral, in: Circle())
             }
             .buttonStyle(.plain)
         }
-        .padding(.top, RivaSpacing.xs)
+        .padding(.top, TPCSpacing.xs)
     }
 
     // MARK: Video
 
     private var videoCard: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                 Text("GUIDED SESSION")
-                    .rivaOverline(RivaColor.brand)
+                    .rivaOverline(TPCColor.brand)
 
                 if let videoID = practice.videoID {
                     YouTubePlayerView(videoID: videoID)
                         .aspectRatio(16 / 9, contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous))
 
                     // Fallback for videos whose owner blocks embedding: opens
                     // the YouTube app / browser so the session is still usable.
@@ -85,15 +85,15 @@ struct PracticeDetailView: View {
                             Image(systemName: "arrow.up.right")
                                 .font(.system(size: 11, weight: .semibold))
                         }
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                     }
                     .buttonStyle(.plain)
                 } else {
                     comingSoon
                 }
 
-                HStack(spacing: RivaSpacing.md) {
+                HStack(spacing: TPCSpacing.md) {
                     metaStat(icon: "clock", text: practice.durationText)
                     metaStat(icon: "person.fill", text: "All levels")
                     metaStat(icon: "repeat", text: practice.kind.title)
@@ -103,19 +103,19 @@ struct PracticeDetailView: View {
     }
 
     private var comingSoon: some View {
-        VStack(spacing: RivaSpacing.xs) {
+        VStack(spacing: TPCSpacing.xs) {
             Image(systemName: "play.slash")
                 .font(.system(size: 24))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
             Text("Video coming soon")
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .aspectRatio(16 / 9, contentMode: .fit)
         .background(
-            RivaColor.brandWash,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.brandWash,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
     }
 
@@ -123,12 +123,12 @@ struct PracticeDetailView: View {
 
     private var about: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text("ABOUT")
-                    .rivaOverline(RivaColor.brand)
+                    .rivaOverline(TPCColor.brand)
                 Text(practice.description)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -138,9 +138,9 @@ struct PracticeDetailView: View {
 
     private var preparation: some View {
         RivaCard(style: .tinted) {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                 Text("BEFORE YOU BEGIN")
-                    .rivaOverline(RivaColor.brand)
+                    .rivaOverline(TPCColor.brand)
 
                 ForEach(practice.prepSteps.indices, id: \.self) { index in
                     prepStep(icon: practice.prepSteps[index].icon,
@@ -185,23 +185,23 @@ struct PracticeDetailView: View {
         HStack(spacing: 4) {
             Image(systemName: icon)
                 .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
             Text(text)
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
         }
     }
 
     private func prepStep(icon: String, text: String) -> some View {
-        HStack(alignment: .top, spacing: RivaSpacing.sm) {
+        HStack(alignment: .top, spacing: TPCSpacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 14))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .frame(width: 20)
                 .padding(.top, 1)
             Text(text)
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }

@@ -8,22 +8,22 @@ struct MedicationWeekSection: View {
     let onManage: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             HStack {
                 Text("Medication")
-                    .font(RivaFont.sectionTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.sectionTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Spacer()
                 Button(action: onManage) {
                     Text("Manage")
-                        .rivaOverline(RivaColor.brand)
+                        .rivaOverline(TPCColor.brand)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Manage medication")
             }
 
-            HStack(spacing: RivaSpacing.md) {
+            HStack(spacing: TPCSpacing.md) {
                 doseTile(systemImage: "checkmark.circle", caption: "Last dose", date: lastDose)
                 doseTile(systemImage: "calendar", caption: "Next dose", date: nextDose)
             }
@@ -33,15 +33,15 @@ struct MedicationWeekSection: View {
 
     private func doseTile(systemImage: String, caption: String, date: Date) -> some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Image(systemName: systemImage)
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.brand)
                 Text(caption)
                     .rivaOverline()
                 Text(RivaFormat.monthDay(date))
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .foregroundStyle(TPCColor.textPrimary)
             }
         }
         .accessibilityElement(children: .combine)
@@ -56,5 +56,5 @@ struct MedicationWeekSection: View {
         nextDose: summary.nextDoseDate
     ) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

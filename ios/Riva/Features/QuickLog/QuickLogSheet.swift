@@ -14,7 +14,7 @@ struct QuickLogSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             header
 
             if case .saved(let message) = model.phase {
@@ -23,20 +23,20 @@ struct QuickLogSheet: View {
                 formContent
                 if let message = model.errorMessage {
                     Text(message)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.lg)
+                        .padding(.horizontal, TPCSpacing.lg)
                 }
-                Spacer(minLength: RivaSpacing.xs)
+                Spacer(minLength: TPCSpacing.xs)
                 saveButton
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([model.kind.needsTallSheet ? .large : .medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .onChange(of: model.phase) {
             guard case .saved = model.phase else { return }
             Task {
@@ -49,15 +49,15 @@ struct QuickLogSheet: View {
     // MARK: Shell
 
     private var header: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             Image(systemName: model.kind.systemImage)
                 .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .frame(width: 56, height: 56)
-                .background(RivaColor.brandWash, in: Circle())
+                .background(TPCColor.brandWash, in: Circle())
             Text(model.kind.title)
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
         }
     }
 
@@ -66,29 +66,29 @@ struct QuickLogSheet: View {
             Task { await model.save() }
         } label: {
             if model.phase == .saving {
-                ProgressView().tint(RivaColor.textOnBrand)
+                ProgressView().tint(TPCColor.textOnBrand)
             } else {
                 Text("Save")
             }
         }
         .buttonStyle(.rivaPrimary)
         .disabled(model.phase == .saving)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private func savedContent(_ message: String) -> some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             Spacer()
             Image(systemName: "checkmark")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(RivaColor.textOnBrand)
+                .foregroundStyle(TPCColor.textOnBrand)
                 .frame(width: 56, height: 56)
-                .background(RivaColor.brand, in: Circle())
+                .background(TPCColor.brand, in: Circle())
             Text(message)
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textSecondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, RivaSpacing.xl)
+                .padding(.horizontal, TPCSpacing.xl)
             Spacer()
         }
     }
@@ -127,7 +127,7 @@ struct QuickLogSheet: View {
     }
 
     private var waterForm: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             metricField(
                 text: $model.waterText,
                 unit: "oz",
@@ -136,10 +136,10 @@ struct QuickLogSheet: View {
             )
 
             Text("oz = fluid ounces. A standard glass is about 8 oz (≈ 240 ml).")
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, RivaSpacing.screenMargin)
+                .padding(.horizontal, TPCSpacing.screenMargin)
         }
     }
 
@@ -153,48 +153,48 @@ struct QuickLogSheet: View {
     }
 
     private var shotForm: some View {
-        VStack(spacing: RivaSpacing.md) {
-            HStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.md) {
+            HStack(spacing: TPCSpacing.sm) {
                 TextField("Medication", text: $model.medicationName)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
-                    .padding(.horizontal, RivaSpacing.md)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
+                    .padding(.horizontal, TPCSpacing.md)
                     .padding(.vertical, 12)
                     .background(
-                        RivaColor.fillNeutral,
-                        in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                        TPCColor.fillNeutral,
+                        in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
                     )
                     .overlay(invalidBorder(model.showValidation && model.isMedicationMissing))
 
                 HStack(spacing: 5) {
                     TextField("0.5", text: $model.doseText)
                         .keyboardType(.decimalPad)
-                        .font(RivaFont.body)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.body)
+                        .foregroundStyle(TPCColor.textPrimary)
                         .frame(width: 52)
                         .multilineTextAlignment(.trailing)
                     Text("mg")
-                        .font(RivaFont.metricUnit)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.metricUnit)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
-                .padding(.horizontal, RivaSpacing.md)
+                .padding(.horizontal, TPCSpacing.md)
                 .padding(.vertical, 12)
                 .background(
-                    RivaColor.fillNeutral,
-                    in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                    TPCColor.fillNeutral,
+                    in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
                 )
                 .overlay(invalidBorder(model.showValidation && model.isDoseMissing))
             }
 
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text("Injection site")
                     .rivaOverline(
                         model.showValidation && model.isSiteMissing
-                            ? RivaColor.danger : RivaColor.textSecondary
+                            ? TPCColor.danger : TPCColor.textSecondary
                     )
                 LazyVGrid(
                     columns: [GridItem(.flexible()), GridItem(.flexible())],
-                    spacing: RivaSpacing.xs
+                    spacing: TPCSpacing.xs
                 ) {
                     ForEach(InjectionSite.allCases) { site in
                         selectableChip(site.title, isSelected: model.site == site) {
@@ -204,29 +204,29 @@ struct QuickLogSheet: View {
                 }
                 if model.showValidation && model.isSiteMissing {
                     Text("Select where you injected.")
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                 }
             }
 
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text("Comfort (optional)")
                     .rivaOverline()
-                HStack(spacing: RivaSpacing.xs) {
+                HStack(spacing: TPCSpacing.xs) {
                     ForEach(1...5, id: \.self) { rating in
                         Button {
                             model.comfortRating = model.comfortRating == rating ? nil : rating
                         } label: {
                             Text("\(rating)")
-                                .font(RivaFont.captionEmphasized)
+                                .font(TPCFont.captionEmphasized)
                                 .foregroundStyle(
                                     model.comfortRating == rating
-                                        ? RivaColor.textOnBrand : RivaColor.textSecondary
+                                        ? TPCColor.textOnBrand : TPCColor.textSecondary
                                 )
                                 .frame(width: 40, height: 40)
                                 .background(
                                     model.comfortRating == rating
-                                        ? RivaColor.brandDeep : RivaColor.fillNeutral,
+                                        ? TPCColor.brandDeep : TPCColor.fillNeutral,
                                     in: Circle()
                                 )
                         }
@@ -236,29 +236,29 @@ struct QuickLogSheet: View {
                 }
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private var sideEffectsForm: some View {
         ScrollView {
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Text("Select what you felt today. Severity is 1 mild to 5 severe.")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, RivaSpacing.xxs)
+                    .padding(.bottom, TPCSpacing.xxs)
 
                 ForEach(SideEffect.allCases) { effect in
                     sideEffectRow(effect)
                 }
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
+            .padding(.horizontal, TPCSpacing.screenMargin)
         }
     }
 
     private func sideEffectRow(_ effect: SideEffect) -> some View {
         let severity = model.severities[effect]
-        return VStack(spacing: RivaSpacing.xs) {
+        return VStack(spacing: TPCSpacing.xs) {
             Button {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                     model.toggle(effect)
@@ -266,31 +266,31 @@ struct QuickLogSheet: View {
             } label: {
                 HStack {
                     Text(effect.title)
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Spacer()
                     Image(systemName: severity == nil ? "plus.circle" : "checkmark.circle.fill")
                         .font(.system(size: 20))
-                        .foregroundStyle(severity == nil ? RivaColor.textTertiary : RivaColor.brand)
+                        .foregroundStyle(severity == nil ? TPCColor.textTertiary : TPCColor.brand)
                 }
             }
             .buttonStyle(.plain)
 
             if let severity {
-                HStack(spacing: RivaSpacing.xs) {
+                HStack(spacing: TPCSpacing.xs) {
                     ForEach(1...5, id: \.self) { level in
                         Button {
                             model.severities[effect] = level
                         } label: {
                             Text("\(level)")
-                                .font(RivaFont.captionEmphasized)
+                                .font(TPCFont.captionEmphasized)
                                 .foregroundStyle(
-                                    severity == level ? RivaColor.textOnBrand : RivaColor.textSecondary
+                                    severity == level ? TPCColor.textOnBrand : TPCColor.textSecondary
                                 )
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 32)
                                 .background(
-                                    severity == level ? RivaColor.brandDeep : RivaColor.fillNeutral,
+                                    severity == level ? TPCColor.brandDeep : TPCColor.fillNeutral,
                                     in: Capsule()
                                 )
                         }
@@ -299,50 +299,50 @@ struct QuickLogSheet: View {
                 }
             }
         }
-        .padding(RivaSpacing.sm)
+        .padding(TPCSpacing.sm)
         .background(
-            RivaColor.surface,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.surface,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
     }
 
     private var sleepForm: some View {
-        VStack(spacing: RivaSpacing.xs) {
+        VStack(spacing: TPCSpacing.xs) {
             ForEach(SleepOption.all) { option in
                 Button {
                     model.sleepCode = option.code
                 } label: {
                     HStack {
                         Text(option.label)
-                            .font(RivaFont.cardTitle)
-                            .foregroundStyle(RivaColor.textPrimary)
+                            .font(TPCFont.cardTitle)
+                            .foregroundStyle(TPCColor.textPrimary)
                         Spacer()
                         Image(systemName: model.sleepCode == option.code
                             ? "largecircle.fill.circle" : "circle")
                             .font(.system(size: 20))
                             .foregroundStyle(model.sleepCode == option.code
-                                ? RivaColor.brand : RivaColor.textTertiary)
+                                ? TPCColor.brand : TPCColor.textTertiary)
                     }
-                    .padding(RivaSpacing.sm)
+                    .padding(TPCSpacing.sm)
                     .background(
-                        RivaColor.surface,
-                        in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                        TPCColor.surface,
+                        in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
                     )
-                    .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+                    .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     // MARK: Shared pieces
 
     /// A red outline drawn over a field when it failed validation.
     private func invalidBorder(_ isInvalid: Bool) -> some View {
-        RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
-            .stroke(RivaColor.danger, lineWidth: isInvalid ? 1.5 : 0)
+        RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
+            .stroke(TPCColor.danger, lineWidth: isInvalid ? 1.5 : 0)
     }
 
     private func metricField(
@@ -352,28 +352,28 @@ struct QuickLogSheet: View {
         keyboard: UIKeyboardType
     ) -> some View {
         let isInvalid = model.showValidation && !model.canSave
-        return HStack(alignment: .firstTextBaseline, spacing: RivaSpacing.xs) {
+        return HStack(alignment: .firstTextBaseline, spacing: TPCSpacing.xs) {
             TextField(prompt, text: text)
                 .keyboardType(keyboard)
-                .font(RivaFont.metricXL)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.metricXL)
+                .foregroundStyle(TPCColor.textPrimary)
                 .multilineTextAlignment(.trailing)
                 .frame(width: 132)
                 .focused($isFieldFocused)
                 .onAppear { isFieldFocused = true }
             Text(unit)
-                .font(RivaFont.metricUnit)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.metricUnit)
+                .foregroundStyle(TPCColor.textSecondary)
         }
-        .padding(.vertical, RivaSpacing.md)
+        .padding(.vertical, TPCSpacing.md)
         .frame(maxWidth: .infinity)
         .background(
-            RivaColor.surface,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.surface,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
         .overlay(invalidBorder(isInvalid))
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private func selectableChip(
@@ -381,12 +381,12 @@ struct QuickLogSheet: View {
     ) -> some View {
         Button(action: action) {
             Text(title)
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(isSelected ? RivaColor.textOnBrand : RivaColor.textSecondary)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(isSelected ? TPCColor.textOnBrand : TPCColor.textSecondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background(
-                    isSelected ? RivaColor.brandDeep : RivaColor.fillNeutral,
+                    isSelected ? TPCColor.brandDeep : TPCColor.fillNeutral,
                     in: Capsule()
                 )
         }

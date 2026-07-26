@@ -8,7 +8,7 @@ struct CurrentDoseCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(spacing: RivaSpacing.lg) {
+            VStack(spacing: TPCSpacing.lg) {
                 doseRing
                     .frame(maxWidth: .infinity)
                     .overlay(alignment: .topTrailing) {
@@ -24,20 +24,20 @@ struct CurrentDoseCard: View {
 
     private var doseRing: some View {
         RivaProgressRing(progress: titration.progress, size: 150, lineWidth: 11) {
-            VStack(spacing: RivaSpacing.xxs) {
+            VStack(spacing: TPCSpacing.xxs) {
                 Text("Current dose")
                     .rivaOverline()
                 HStack(alignment: .firstTextBaseline, spacing: 1) {
                     Text(RivaFormat.doseNumber(titration.currentDoseMg))
                         .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text("mg")
-                        .font(RivaFont.metricUnit)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.metricUnit)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
                 Text("\(titration.weeksCompleted)/\(titration.weeksPerLevel) weeks")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
         .accessibilityElement(children: .combine)
@@ -55,23 +55,23 @@ struct CurrentDoseCard: View {
                     .rivaOverline()
                 Text(RivaFormat.doseSchedule(nextDose.date))
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .foregroundStyle(TPCColor.textPrimary)
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 3) {
                 Text(RivaFormat.hoursRemaining(until: nextDose.date))
-                    .font(RivaFont.metricM)
-                    .foregroundStyle(RivaColor.brand)
+                    .font(TPCFont.metricM)
+                    .foregroundStyle(TPCColor.brand)
                 Text("Remaining")
                     .rivaOverline()
             }
         }
-        .padding(RivaSpacing.sm)
+        .padding(TPCSpacing.sm)
         .background(
-            RivaColor.brandWash,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.brandWash,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
     }
 }
@@ -80,5 +80,5 @@ struct CurrentDoseCard: View {
     let dashboard = MockMedicationRepository.dashboard()
     return CurrentDoseCard(titration: dashboard.titration, nextDose: dashboard.nextDose)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

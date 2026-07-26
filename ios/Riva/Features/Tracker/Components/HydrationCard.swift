@@ -12,11 +12,11 @@ struct HydrationCard: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .bottom) {
-                RivaColor.surface
+                TPCColor.surface
 
                 // Water level.
                 LinearGradient(
-                    colors: [RivaColor.brandSoft.opacity(0.45), RivaColor.brandSoft],
+                    colors: [TPCColor.brandSoft.opacity(0.45), TPCColor.brandSoft],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -25,15 +25,15 @@ struct HydrationCard: View {
                 content
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous))
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.card)
+        .clipShape(RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous))
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.card)
         .shadow(color: .black.opacity(0.06), radius: 14, x: 0, y: 6)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Hydration: \(hydration.glasses) of \(hydration.goalGlasses) glasses")
     }
 
     private var content: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             HStack {
                 Text("Hydration")
                     .rivaOverline()
@@ -43,11 +43,11 @@ struct HydrationCard: View {
 
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text("\(hydration.glasses)")
-                    .font(RivaFont.metricM)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.metricM)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text("/ \(hydration.goalGlasses) glasses")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
 
             Spacer()
@@ -57,7 +57,7 @@ struct HydrationCard: View {
                 RivaQuickAddButton(accessibilityLabel: "Add a glass of water", action: onAdd)
             }
         }
-        .padding(RivaSpacing.md)
+        .padding(TPCSpacing.md)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
@@ -66,5 +66,5 @@ struct HydrationCard: View {
     HydrationCard(hydration: MockTrackerRepository.dashboard().hydration, onOpen: {}, onAdd: {})
         .frame(width: 170, height: 155)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

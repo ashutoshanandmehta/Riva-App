@@ -1,112 +1,106 @@
 import SwiftUI
 
-/// Semantic color tokens for the Riva design system.
+/// Semantic color tokens for the TPC design system.
 ///
 /// Rules:
-/// - Feature code must never reference raw hex values or `Color(red:green:blue:)`;
-///   always go through a semantic token so a rebrand or dark-mode tweak is a
-///   one-file change.
+/// - Feature code must never reference raw hex values; always go through a
+///   semantic token so a rebrand or dark-mode tweak is a one-file change.
 /// - Tokens are named for *role*, not appearance (`textSecondary`, not `gray`).
-/// - Every token carries a light and a dark variant.
-enum RivaColor {
+enum TPCColor {
 
     // MARK: Brand
 
-    /// Primary brand teal — active states, rings, chart lines, links.
-    static let brand = Color(light: 0x1F6D5B, dark: 0x4BB596)
-    /// Deeper brand shade — filled buttons, the snap aperture button.
-    static let brandDeep = Color(light: 0x235C4F, dark: 0x2F8371)
-    /// Soft brand tint — progress-bar tracks, ring tracks.
-    static let brandSoft = Color(light: 0xD8EAE2, dark: 0x22322D)
-    /// Faint brand wash — tinted stat tiles and icon chips.
-    static let brandWash = Color(light: 0xEDF5F1, dark: 0x1A2622)
+    /// Primary gold — buttons, active states, links.
+    static let brand = Color(hex: 0x9A7526)
+    /// Hover / pressed gold.
+    static let brandHover = Color(hex: 0xB08A2E)
+    /// Forest green — dark filled buttons and inverse surfaces.
+    static let brandDeep = Color(hex: 0x1E3325)
+    /// Mid forest green — dark card gradient, hero card bg.
+    static let brandMid = Color(hex: 0x24402D)
+    /// Gold tint fill — icon chip backgrounds, expandable rows.
+    static let brandSoft = Color(hex: 0x9A7526, alpha: 0.10)
+    /// Very faint gold wash — subtle tinted tiles.
+    static let brandWash = Color(hex: 0x9A7526, alpha: 0.06)
 
-    // MARK: Landing hero
+    // MARK: Accent gold scale
 
-    /// Gradient stops for the landing page hero background.
-    static let heroTop = Color(light: 0x3F9C82, dark: 0x2E7A66)
-    static let heroMid = Color(light: 0x27745F, dark: 0x1D5A4A)
-    static let heroBottom = Color(light: 0x16493C, dark: 0x0F352C)
+    /// Light gold — progress bar fills, macro bars, weight chart line.
+    static let accentGold = Color(hex: 0xC8A454)
+    /// Pale gold — text and borders on inverse (dark) surfaces.
+    static let accentPale = Color(hex: 0xE7D9A9)
+    /// Deep gold — links, overline text on cream.
+    static let accentLink = Color(hex: 0x8C6A18)
 
     // MARK: Backgrounds & surfaces
 
-    /// App background (light warm cream).
-    static let background = Color(light: 0xFAF6EC, dark: 0x0C110F)
+    /// App background — warm cream.
+    static let background = Color(hex: 0xF6F2E8)
     /// Card / elevated surface.
-    static let surface = Color(light: 0xFFFFFF, dark: 0x171D1A)
-    /// High-contrast inverse surface — the single dark accent used by every
-    /// dark card (Next Shot, the Wellness hero, the day ring). Brand dark
-    /// green so dark surfaces stay on-theme against the cream background,
-    /// consistent app-wide.
-    static let surfaceInverse = Color(light: 0x16493C, dark: 0x123B31)
-    /// Neutral chip / badge fill on light surfaces (warmed to sit on cream).
-    static let fillNeutral = Color(light: 0xF2EDDF, dark: 0x252C29)
-    /// Hairline outline for elevated surfaces. Transparent in light mode
-    /// (shadows carry the elevation); a faint light stroke in dark mode,
-    /// where shadows are invisible against the dark background.
-    static let surfaceOutline = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor.white.withAlphaComponent(0.08)
-            : UIColor.clear
-    })
+    static let surface = Color(hex: 0xFFFDF7)
+    /// Further elevated surface (option rows inside expandable cards).
+    static let surfaceElevated = Color(hex: 0xFBF7EC)
+    /// High-contrast inverse surface — dark cards, today hero card.
+    static let surfaceInverse = Color(hex: 0x1E3325)
+    /// Neutral fill on light surfaces.
+    static let fillNeutral = Color(hex: 0x1E3325, alpha: 0.07)
+    /// Subtle fill on inverse (dark) surfaces.
+    static let fillOnInverse = Color(hex: 0xF6F2E8, alpha: 0.10)
+    /// Hairline border for cards and rows.
+    static let surfaceOutline = Color(hex: 0x1E3325, alpha: 0.10)
 
     // MARK: Content
 
-    static let textPrimary = Color(light: 0x101614, dark: 0xF2F5F3)
-    static let textSecondary = Color(light: 0x66716C, dark: 0x9BA6A0)
-    static let textTertiary = Color(light: 0x93A09A, dark: 0x6E7A74)
-    /// Text/icons placed on `brand` or `brandDeep` fills.
-    static let textOnBrand = Color(light: 0xFFFFFF, dark: 0xFFFFFF)
-    /// Primary text on `surfaceInverse`.
-    static let textOnInversePrimary = Color(light: 0xF5F8F6, dark: 0xF5F8F6)
-    /// Secondary text on `surfaceInverse`.
-    static let textOnInverseSecondary = Color(light: 0x9AA8A2, dark: 0x9AA8A2)
+    static let textPrimary = Color(hex: 0x17201B)
+    static let textSecondary = Color(hex: 0x5C6259)
+    static let textTertiary = Color(hex: 0x8B9189)
+    static let textFaint = Color(hex: 0xA3AAA4)
+    /// Text/icons on gold-filled elements (primary buttons).
+    static let textOnBrand = Color(hex: 0xFBF7EC)
+    /// Primary text on inverse (dark) surfaces.
+    static let textOnInversePrimary = Color(hex: 0xF6F2E8)
+    /// Secondary text on inverse (dark) surfaces.
+    static let textOnInverseSecondary = Color(hex: 0xF6F2E8, alpha: 0.66)
 
-    // MARK: On-inverse accents (Next Shot card)
+    // MARK: On-inverse accents
 
-    /// Brand accent tuned for dark surfaces (ring fill, dose pill text).
-    static let brandOnInverse = Color(light: 0x5BC4A4, dark: 0x5BC4A4)
-    /// Subtle fill on dark surfaces (dose pill background, ring track).
-    static let fillOnInverse = Color(light: 0x2A3A34, dark: 0x2A3A34)
+    /// Gold accent tuned for dark surfaces (ring fills, stat highlights).
+    static let brandOnInverse = Color(hex: 0xC8A454)
 
-    // MARK: Wellness hero
+    // MARK: Landing
 
-    /// Dark green hero card (the Wellness "Minutes practiced" card). Aliases
-    /// `surfaceInverse` so every dark card in the app shares one color and
-    /// they can never drift apart.
-    static let heroCard = surfaceInverse
-    /// Cream pill fill on the hero card ("Start session") in both modes.
-    static let fillOnHero = Color(light: 0xFAF6EC, dark: 0xFAF6EC)
-    /// Text/icons on `fillOnHero`.
-    static let textOnHeroFill = Color(light: 0x16493C, dark: 0x16493C)
-    /// Decorative accent for suggested-practice icons (same hue as `warning`).
-    static let wellnessAccent = Color(light: 0xB97B1B, dark: 0xE0A33F)
+    /// Landing screen dark background.
+    static let heroBackground = Color(hex: 0x10201A)
 
     // MARK: Feedback
 
-    static let positive = Color(light: 0x1F6D5B, dark: 0x4BB596)
-    static let warning = Color(light: 0xB97B1B, dark: 0xE0A33F)
-    static let danger = Color(light: 0xC24A3F, dark: 0xE0705F)
+    static let positive = Color(hex: 0x3E6349)
+    static let warning = Color(hex: 0xC8A454)
+    static let danger = Color(hex: 0xA5391F)
+
+    // MARK: Wellness (kept for WellnessView until redesigned)
+
+    static let heroCard = surfaceInverse
+    static let fillOnHero = Color(hex: 0xF6F2E8)
+    static let textOnHeroFill = Color(hex: 0x1E3325)
+    static let wellnessAccent = Color(hex: 0xC8A454)
+
+    // MARK: Legacy landing aliases (removed when LandingView is rebuilt in step 2)
+
+    static let heroTop = Color(hex: 0x24402D)
+    static let heroMid = Color(hex: 0x1E3325)
+    static let heroBottom = Color(hex: 0x10201A)
 }
 
-// MARK: - Hex helpers (internal to the design system)
+// MARK: - Hex helper
 
 extension Color {
-    /// Builds a dynamic color from light/dark hex values (0xRRGGBB).
-    init(light: UInt32, dark: UInt32) {
-        self.init(uiColor: UIColor { traits in
-            traits.userInterfaceStyle == .dark ? UIColor(rgb: dark) : UIColor(rgb: light)
-        })
-    }
-}
-
-private extension UIColor {
-    convenience init(rgb: UInt32) {
+    init(hex: UInt32, alpha: Double = 1) {
         self.init(
-            red: CGFloat((rgb >> 16) & 0xFF) / 255.0,
-            green: CGFloat((rgb >> 8) & 0xFF) / 255.0,
-            blue: CGFloat(rgb & 0xFF) / 255.0,
-            alpha: 1.0
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8) & 0xFF) / 255,
+            blue: Double(hex & 0xFF) / 255,
+            opacity: alpha
         )
     }
 }

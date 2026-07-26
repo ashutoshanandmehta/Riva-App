@@ -31,14 +31,14 @@ struct TodoEditorSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             header
 
             if didSave {
                 AccountSavedView(message: isEditing ? "To-do updated." : "To-do set.")
             } else {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: RivaSpacing.lg) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.lg) {
                         AccountLabeledField(
                             label: "To-do",
                             prompt: "Log breakfast",
@@ -49,48 +49,48 @@ struct TodoEditorSheet: View {
                         schedule
                         if notificationsDenied {
                             Text("Notifications for Riva are turned off. Allow them in Settings to be reminded.")
-                                .font(RivaFont.footnote)
-                                .foregroundStyle(RivaColor.textSecondary)
+                                .font(TPCFont.footnote)
+                                .foregroundStyle(TPCColor.textSecondary)
                         }
                     }
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.bottom, RivaSpacing.md)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.bottom, TPCSpacing.md)
                 }
                 actions
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .animation(.default, value: draft.repeatRule)
     }
 
     // MARK: Header
 
     private var header: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             Image(systemName: "checklist")
                 .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .frame(width: 56, height: 56)
-                .background(RivaColor.brandWash, in: Circle())
+                .background(TPCColor.brandWash, in: Circle())
             Text(isEditing ? "Edit to-do" : "Set a to-do")
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
         }
     }
 
     // MARK: Fields
 
     private var categoryPicker: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Category")
                 .rivaOverline()
             LazyVGrid(
                 columns: [GridItem(.flexible()), GridItem(.flexible())],
-                spacing: RivaSpacing.xs
+                spacing: TPCSpacing.xs
             ) {
                 ForEach(TodoCategory.allCases) { category in
                     AccountChip(title: category.title, isSelected: draft.category == category) {
@@ -99,16 +99,16 @@ struct TodoEditorSheet: View {
                 }
             }
             Text(hint(for: draft.category))
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
         }
     }
 
     private var repeatPicker: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Repeats")
                 .rivaOverline()
-            HStack(spacing: RivaSpacing.xs) {
+            HStack(spacing: TPCSpacing.xs) {
                 ForEach(TodoRepeat.allCases) { rule in
                     AccountChip(title: rule.title, isSelected: draft.repeatRule == rule) {
                         draft.repeatRule = rule
@@ -119,7 +119,7 @@ struct TodoEditorSheet: View {
     }
 
     private var schedule: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             DatePicker(
                 "Remind me at",
                 selection: $draft.time,
@@ -134,14 +134,14 @@ struct TodoEditorSheet: View {
                 )
             }
         }
-        .font(RivaFont.body)
-        .foregroundStyle(RivaColor.textPrimary)
-        .tint(RivaColor.brand)
-        .padding(.horizontal, RivaSpacing.md)
+        .font(TPCFont.body)
+        .foregroundStyle(TPCColor.textPrimary)
+        .tint(TPCColor.brand)
+        .padding(.horizontal, TPCSpacing.md)
         .padding(.vertical, 12)
         .background(
-            RivaColor.fillNeutral,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.fillNeutral,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
     }
 
@@ -159,7 +159,7 @@ struct TodoEditorSheet: View {
     // MARK: Actions
 
     private var actions: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             Button {
                 Task {
                     isSaving = true
@@ -172,7 +172,7 @@ struct TodoEditorSheet: View {
                 }
             } label: {
                 if isSaving {
-                    ProgressView().tint(RivaColor.textOnBrand)
+                    ProgressView().tint(TPCColor.textOnBrand)
                 } else {
                     Text(isEditing ? "Save" : "Set to-do")
                 }
@@ -191,7 +191,7 @@ struct TodoEditorSheet: View {
                 .disabled(isSaving)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 }
 

@@ -36,25 +36,25 @@ struct WeightHistoryView: View {
                 }
             }
         }
-        .padding(.top, RivaSpacing.sm)
+        .padding(.top, TPCSpacing.sm)
         .task { await model.load() }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
     }
 
     // MARK: List
 
     private func list(_ entries: [WeightEntry]) -> some View {
-        LazyVStack(spacing: RivaSpacing.sm) {
+        LazyVStack(spacing: TPCSpacing.sm) {
             summaryStrip(entries)
             ForEach(entries) { entry in
                 weightCard(entry)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
-        .padding(.bottom, RivaSpacing.xl)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
+        .padding(.bottom, TPCSpacing.xl)
     }
 
     /// Change since the earliest entry, shown once there is a trend to tell.
@@ -63,13 +63,13 @@ struct WeightHistoryView: View {
         if entries.count >= 2, let newest = entries.first, let oldest = entries.last {
             let delta = newest.pounds - oldest.pounds
             RivaCard(style: .tinted) {
-                HStack(spacing: RivaSpacing.xs) {
+                HStack(spacing: TPCSpacing.xs) {
                     Image(systemName: deltaIcon(delta))
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                     Text(deltaText(delta, since: DetailDate.shortDayLabel(oldest.measuredAt)))
-                        .font(RivaFont.captionEmphasized)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.captionEmphasized)
+                        .foregroundStyle(TPCColor.textPrimary)
                 }
             }
         }
@@ -89,18 +89,18 @@ struct WeightHistoryView: View {
     private func weightCard(_ entry: WeightEntry) -> some View {
         RivaCard {
             HStack {
-                VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
-                    HStack(alignment: .firstTextBaseline, spacing: RivaSpacing.xxs) {
+                VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
+                    HStack(alignment: .firstTextBaseline, spacing: TPCSpacing.xxs) {
                         Text(RivaFormat.weight(entry.pounds))
-                            .font(RivaFont.metricM)
-                            .foregroundStyle(RivaColor.textPrimary)
+                            .font(TPCFont.metricM)
+                            .foregroundStyle(TPCColor.textPrimary)
                         Text("lbs")
-                            .font(RivaFont.metricUnit)
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .font(TPCFont.metricUnit)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
                     Text(DetailDate.dayLabel(entry.measuredAt))
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
                 Spacer()
                 if let dose = entry.doseMg {

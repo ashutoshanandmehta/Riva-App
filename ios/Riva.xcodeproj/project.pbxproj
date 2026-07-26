@@ -10,9 +10,22 @@
 		AA0000000000000000000004 /* Riva.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Riva.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		18F8C4DE301649C2006C35E1 /* Exceptions for "Riva" folder in "Riva" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = AA0000000000000000000005 /* Riva */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA0000000000000000000001 /* Riva */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				18F8C4DE301649C2006C35E1 /* Exceptions for "Riva" folder in "Riva" target */,
+			);
 			path = Riva;
 			sourceTree = "<group>";
 		};
@@ -135,6 +148,7 @@
 				DEVELOPMENT_TEAM = TCW3JM44ZF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Riva/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Riva;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Riva uses the camera to scan meals, drinks, and water so you can log them instantly.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -166,6 +180,7 @@
 				DEVELOPMENT_TEAM = TCW3JM44ZF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Riva/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Riva;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Riva uses the camera to scan meals, drinks, and water so you can log them instantly.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

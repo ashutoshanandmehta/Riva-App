@@ -18,7 +18,7 @@ struct TodoCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 header
                 if groups.isEmpty {
                     emptyState
@@ -33,11 +33,11 @@ struct TodoCard: View {
     // MARK: Header
 
     private var header: some View {
-        HStack(spacing: RivaSpacing.xs) {
+        HStack(spacing: TPCSpacing.xs) {
             RivaIconChip(systemImage: "checklist")
             Text("To-dos")
-                .font(RivaFont.cardTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.cardTitle)
+                .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             if remainingCount > 0 {
                 RivaBadge(text: "\(remainingCount) left")
@@ -50,9 +50,9 @@ struct TodoCard: View {
     // MARK: List
 
     private var list: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             ForEach(groups, id: \.category) { group in
-                VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+                VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
                     Text(group.category.title)
                         .rivaOverline()
                     ForEach(group.todos) { todo in
@@ -64,13 +64,13 @@ struct TodoCard: View {
     }
 
     private func row(_ todo: Todo) -> some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             Button {
                 onToggle(todo)
             } label: {
                 Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 19))
-                    .foregroundStyle(todo.isDone ? RivaColor.brand : RivaColor.textTertiary)
+                    .foregroundStyle(todo.isDone ? TPCColor.brand : TPCColor.textTertiary)
                     .frame(width: 28, height: 28)
                     .contentShape(Rectangle())
             }
@@ -80,16 +80,16 @@ struct TodoCard: View {
             Button {
                 onOpen(todo)
             } label: {
-                HStack(spacing: RivaSpacing.xs) {
+                HStack(spacing: TPCSpacing.xs) {
                     Text(todo.title)
-                        .font(RivaFont.body)
-                        .foregroundStyle(todo.isDone ? RivaColor.textTertiary : RivaColor.textPrimary)
-                        .strikethrough(todo.isDone, color: RivaColor.textTertiary)
+                        .font(TPCFont.body)
+                        .foregroundStyle(todo.isDone ? TPCColor.textTertiary : TPCColor.textPrimary)
+                        .strikethrough(todo.isDone, color: TPCColor.textTertiary)
                         .lineLimit(1)
-                    Spacer(minLength: RivaSpacing.xs)
+                    Spacer(minLength: TPCSpacing.xs)
                     Text(todo.scheduleText)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
                 .contentShape(Rectangle())
             }
@@ -99,7 +99,7 @@ struct TodoCard: View {
             if isEditing {
                 Button(action: { onEdit(todo) }) {
                     Image(systemName: "pencil")
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .foregroundStyle(TPCColor.textSecondary)
                         .frame(width: 28, height: 28)
                         .contentShape(Rectangle())
                 }
@@ -108,7 +108,7 @@ struct TodoCard: View {
 
                 Button(action: { onDelete(todo) }) {
                     Image(systemName: "trash")
-                        .foregroundStyle(RivaColor.danger)
+                        .foregroundStyle(TPCColor.danger)
                         .frame(width: 28, height: 28)
                         .contentShape(Rectangle())
                 }
@@ -123,22 +123,22 @@ struct TodoCard: View {
 
     private var emptyState: some View {
         Text("No to-dos yet. Set one and Riva will nudge you at the right time.")
-            .font(RivaFont.footnote)
-            .foregroundStyle(RivaColor.textSecondary)
-            .padding(.vertical, RivaSpacing.xs)
+            .font(TPCFont.footnote)
+            .foregroundStyle(TPCColor.textSecondary)
+            .padding(.vertical, TPCSpacing.xs)
     }
 
     private var footer: some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             Button("Set a to-do", action: onCreate)
                 .buttonStyle(.rivaPrimary)
             if !groups.isEmpty {
                 Button(isEditing ? "Done" : "Edit") {
                     withAnimation(.easeInOut(duration: 0.2)) { isEditing.toggle() }
                 }
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
-                .padding(.horizontal, RivaSpacing.sm)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
+                .padding(.horizontal, TPCSpacing.sm)
             }
         }
     }
@@ -164,5 +164,5 @@ struct TodoCard: View {
         )
         .padding()
     }
-    .background(RivaColor.background)
+    .background(TPCColor.background)
 }

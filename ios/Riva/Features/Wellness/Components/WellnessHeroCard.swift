@@ -11,15 +11,15 @@ struct WellnessHeroCard: View {
     let onEditGoal: (() -> Void)?
 
     var body: some View {
-        RivaShadow.card(
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+        TPCShadow.card(
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 HStack {
                     RivaBadge(text: "Today", style: .onInverse)
                     Spacer()
                     streak
                 }
 
-                HStack(alignment: .bottom, spacing: RivaSpacing.md) {
+                HStack(alignment: .bottom, spacing: TPCSpacing.md) {
                     minutes
                     Spacer()
                     startButton
@@ -28,17 +28,17 @@ struct WellnessHeroCard: View {
                 RivaProgressBar(
                     progress: progress,
                     height: 6,
-                    tint: RivaColor.brandOnInverse,
-                    track: RivaColor.fillOnInverse
+                    tint: TPCColor.brandOnInverse,
+                    track: TPCColor.fillOnInverse
                 )
             }
-            .padding(RivaSpacing.lg)
+            .padding(TPCSpacing.lg)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RivaColor.heroCard,
-                in: RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
+                TPCColor.heroCard,
+                in: RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous)
             )
-            .rivaSurfaceOutline(cornerRadius: RivaRadius.card)
+            .rivaSurfaceOutline(cornerRadius: TPCRadius.card)
         )
     }
 
@@ -48,21 +48,21 @@ struct WellnessHeroCard: View {
     }
 
     private var streak: some View {
-        HStack(spacing: RivaSpacing.xxs) {
+        HStack(spacing: TPCSpacing.xxs) {
             Image(systemName: "flame.fill")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(RivaColor.brandOnInverse)
+                .foregroundStyle(TPCColor.brandOnInverse)
             Text("\(summary.streakDays)-day streak")
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.textOnInversePrimary)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.textOnInversePrimary)
         }
     }
 
     private var minutes: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
             Text("Minutes practiced")
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textOnInverseSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textOnInverseSecondary)
             // The goal numeral opens the goal editor when editing is supported.
             if let onEditGoal {
                 Button(action: onEditGoal) {
@@ -82,28 +82,28 @@ struct WellnessHeroCard: View {
     }
 
     private var minutesValue: some View {
-        HStack(alignment: .lastTextBaseline, spacing: RivaSpacing.xxs) {
+        HStack(alignment: .lastTextBaseline, spacing: TPCSpacing.xxs) {
             Text("\(summary.minutesToday)")
-                .font(RivaFont.metricXL)
-                .foregroundStyle(RivaColor.textOnInversePrimary)
+                .font(TPCFont.metricXL)
+                .foregroundStyle(TPCColor.textOnInversePrimary)
             Text("/ \(summary.goalMinutes)")
-                .font(RivaFont.metricM)
-                .foregroundStyle(RivaColor.textOnInverseSecondary)
+                .font(TPCFont.metricM)
+                .foregroundStyle(TPCColor.textOnInverseSecondary)
         }
     }
 
     private var startButton: some View {
         Button(action: onStart) {
-            HStack(spacing: RivaSpacing.xxs) {
+            HStack(spacing: TPCSpacing.xxs) {
                 Text("Start session")
-                    .font(RivaFont.captionEmphasized)
+                    .font(TPCFont.captionEmphasized)
                 Image(systemName: "chevron.right")
                     .font(.system(size: 11, weight: .semibold))
             }
-            .foregroundStyle(RivaColor.textOnHeroFill)
-            .padding(.horizontal, RivaSpacing.md)
+            .foregroundStyle(TPCColor.textOnHeroFill)
+            .padding(.horizontal, TPCSpacing.md)
             .padding(.vertical, 10)
-            .background(RivaColor.fillOnHero, in: Capsule())
+            .background(TPCColor.fillOnHero, in: Capsule())
         }
         .buttonStyle(.plain)
     }
@@ -116,5 +116,5 @@ struct WellnessHeroCard: View {
         onEditGoal: {}
     )
     .padding()
-    .background(RivaColor.background)
+    .background(TPCColor.background)
 }
