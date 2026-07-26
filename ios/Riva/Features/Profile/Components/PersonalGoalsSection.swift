@@ -7,22 +7,22 @@ struct PersonalGoalsSection: View {
     let onEdit: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             HStack {
                 Text("Personal goals")
                     .rivaOverline()
                 Spacer()
                 Button(action: onEdit) {
                     Text("Edit")
-                        .font(RivaFont.captionEmphasized)
-                        .foregroundStyle(RivaColor.brand)
+                        .font(TPCFont.captionEmphasized)
+                        .foregroundStyle(TPCColor.brand)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Edit goals")
             }
 
-            HStack(spacing: RivaSpacing.md) {
+            HStack(spacing: TPCSpacing.md) {
                 goalTile(
                     systemImage: "scalemass",
                     caption: "Start Weight",
@@ -39,26 +39,26 @@ struct PersonalGoalsSection: View {
 
     private func goalTile(systemImage: String, caption: String, valueLbs: Double?) -> some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Image(systemName: systemImage)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.brand)
                 Text(caption)
                     .font(.system(size: 12))
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .foregroundStyle(TPCColor.textSecondary)
                 if let valueLbs {
                     HStack(alignment: .firstTextBaseline, spacing: 3) {
                         Text(RivaFormat.weight(valueLbs))
                             .font(.system(size: 19, weight: .bold))
-                            .foregroundStyle(RivaColor.textPrimary)
+                            .foregroundStyle(TPCColor.textPrimary)
                         Text("lbs")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
                 } else {
                     Text("Not set")
                         .font(.system(size: 19, weight: .bold))
-                        .foregroundStyle(RivaColor.textTertiary)
+                        .foregroundStyle(TPCColor.textTertiary)
                 }
             }
         }
@@ -76,5 +76,5 @@ struct PersonalGoalsSection: View {
         goalWeightLbs: profile.goalWeight
     ) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

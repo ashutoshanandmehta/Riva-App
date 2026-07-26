@@ -9,17 +9,17 @@ struct SettingsRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: RivaSpacing.sm) {
+            HStack(spacing: TPCSpacing.sm) {
                 RivaIconChip(systemImage: systemImage, size: 34)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .foregroundStyle(TPCColor.textPrimary)
                     if let subtitle {
                         Text(subtitle)
                             .font(.system(size: 12.5))
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
                 }
 
@@ -27,14 +27,14 @@ struct SettingsRow: View {
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(RivaColor.textTertiary)
+                    .foregroundStyle(TPCColor.textTertiary)
             }
-            .padding(RivaSpacing.sm)
+            .padding(TPCSpacing.sm)
             .background(
-                RivaColor.surface,
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.surface,
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
-            .rivaSurfaceOutline(cornerRadius: RivaRadius.tile)
+            .rivaSurfaceOutline(cornerRadius: TPCRadius.tile)
             .shadow(color: .black.opacity(0.04), radius: 8, y: 3)
             .contentShape(Rectangle())
         }
@@ -49,5 +49,5 @@ struct SettingsRow: View {
         SettingsRow(systemImage: "bell", title: "Notifications", subtitle: nil) {}
     }
     .padding()
-    .background(RivaColor.background)
+    .background(TPCColor.background)
 }

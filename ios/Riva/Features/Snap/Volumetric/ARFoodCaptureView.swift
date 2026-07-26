@@ -96,9 +96,9 @@ struct ARFoodCaptureView: View {
                 Spacer()
                 captureCluster
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.top, RivaSpacing.sm)
-            .padding(.bottom, RivaSpacing.xl)
+            .padding(.horizontal, TPCSpacing.screenMargin)
+            .padding(.top, TPCSpacing.sm)
+            .padding(.bottom, TPCSpacing.xl)
         }
     }
 
@@ -120,15 +120,15 @@ struct ARFoodCaptureView: View {
                 colors: [Color(white: 0.16), Color(white: 0.08)],
                 startPoint: .top, endPoint: .bottom
             )
-            VStack(spacing: RivaSpacing.sm) {
+            VStack(spacing: TPCSpacing.sm) {
                 Image(systemName: "camera.metering.center.weighted")
                     .font(.system(size: 40, weight: .regular))
                 Text("Live camera preview runs on a physical iPhone")
-                    .font(RivaFont.footnote)
+                    .font(TPCFont.footnote)
                     .multilineTextAlignment(.center)
             }
             .foregroundStyle(.white.opacity(0.6))
-            .padding(RivaSpacing.xl)
+            .padding(TPCSpacing.xl)
         }
     }
 
@@ -141,27 +141,27 @@ struct ARFoodCaptureView: View {
     }
 
     private var captureCluster: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             instructionPill
             shutter
             Text(isCapturing ? "Keep holding…" : "Hold to Scan")
-                .font(RivaFont.captionEmphasized)
+                .font(TPCFont.captionEmphasized)
                 .foregroundStyle(.white)
         }
     }
 
     private var instructionPill: some View {
-        HStack(spacing: RivaSpacing.xs) {
+        HStack(spacing: TPCSpacing.xs) {
             Image(systemName: isCapturing ? "arrow.trianglehead.2.clockwise.rotate.90" : "hand.tap.fill")
                 .font(.system(size: 13, weight: .semibold))
             Text(isCapturing
                  ? "Keep circling the plate slowly"
                  : "Hold the shutter and slowly circle your plate")
-                .font(RivaFont.captionEmphasized)
+                .font(TPCFont.captionEmphasized)
         }
         .foregroundStyle(.white)
-        .padding(.horizontal, RivaSpacing.md)
-        .padding(.vertical, RivaSpacing.xs)
+        .padding(.horizontal, TPCSpacing.md)
+        .padding(.vertical, TPCSpacing.xs)
         .glassEffect(in: Capsule())
     }
 
@@ -173,11 +173,11 @@ struct ARFoodCaptureView: View {
             if case .capturing(let progress) = model.stage {
                 Circle()
                     .trim(from: 0, to: progress)
-                    .stroke(RivaColor.brand, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                    .stroke(TPCColor.brand, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .frame(width: 88, height: 88)
                 Circle()
-                    .fill(RivaColor.brand)
+                    .fill(TPCColor.brand)
                     .frame(width: 60, height: 60)
             } else {
                 Circle()
@@ -215,24 +215,24 @@ struct ARFoodCaptureView: View {
 
     private var reviewScreen: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
             VStack(spacing: 0) {
-                topBar(onBack: { model.retake() }, tint: RivaColor.textPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.top, RivaSpacing.sm)
+                topBar(onBack: { model.retake() }, tint: TPCColor.textPrimary)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.top, TPCSpacing.sm)
 
                 ScrollView {
-                    VStack(spacing: RivaSpacing.lg) {
+                    VStack(spacing: TPCSpacing.lg) {
                         videoPreview
                         detailsBar
                     }
-                    .padding(.top, RivaSpacing.md)
-                    .padding(.bottom, RivaSpacing.lg)
+                    .padding(.top, TPCSpacing.md)
+                    .padding(.bottom, TPCSpacing.lg)
                 }
 
                 reviewActions
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.bottom, RivaSpacing.lg)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.bottom, TPCSpacing.lg)
             }
         }
     }
@@ -241,16 +241,16 @@ struct ARFoodCaptureView: View {
         Group {
             if model.previewImages.isEmpty {
                 ZStack {
-                    RivaColor.fillNeutral
-                    VStack(spacing: RivaSpacing.sm) {
+                    TPCColor.fillNeutral
+                    VStack(spacing: TPCSpacing.sm) {
                         Image(systemName: "play.rectangle.on.rectangle")
                             .font(.system(size: 38, weight: .regular))
                         Text("Your capture plays here on a physical iPhone")
-                            .font(RivaFont.footnote)
+                            .font(TPCFont.footnote)
                             .multilineTextAlignment(.center)
                     }
-                    .foregroundStyle(RivaColor.textSecondary)
-                    .padding(RivaSpacing.lg)
+                    .foregroundStyle(TPCColor.textSecondary)
+                    .padding(TPCSpacing.lg)
                 }
             } else {
                 Image(uiImage: model.previewImages[safe: previewIndex] ?? model.previewImages[0])
@@ -268,28 +268,28 @@ struct ARFoodCaptureView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 420)
-        .clipShape(RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous))
         .overlay(alignment: .bottom) {
-            HStack(spacing: RivaSpacing.xxs) {
+            HStack(spacing: TPCSpacing.xxs) {
                 Image(systemName: "cube.transparent")
                     .font(.system(size: 12, weight: .semibold))
                 Text("3D capture")
-                    .font(RivaFont.captionEmphasized)
+                    .font(TPCFont.captionEmphasized)
             }
             .foregroundStyle(.white)
-            .padding(.horizontal, RivaSpacing.sm)
+            .padding(.horizontal, TPCSpacing.sm)
             .padding(.vertical, 6)
             .glassEffect(in: Capsule())
-            .padding(.bottom, RivaSpacing.md)
+            .padding(.bottom, TPCSpacing.md)
         }
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.card)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .rivaSurfaceOutline(cornerRadius: TPCRadius.card)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     /// One free-text bar (unstructured): the user describes the dish however
     /// they like. Optional — Proceed works with it empty.
     private var detailsBar: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Add details")
                 .rivaOverline()
             TextField(
@@ -298,29 +298,29 @@ struct ARFoodCaptureView: View {
                 axis: .vertical
             )
             .lineLimit(1...3)
-            .font(RivaFont.body)
-            .foregroundStyle(RivaColor.textPrimary)
-            .padding(.horizontal, RivaSpacing.md)
+            .font(TPCFont.body)
+            .foregroundStyle(TPCColor.textPrimary)
+            .padding(.horizontal, TPCSpacing.md)
             .padding(.vertical, 14)
             .background(
-                RivaColor.fillNeutral,
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.fillNeutral,
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private var reviewActions: some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             Button { model.retake() } label: {
                 Text("Retake")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.brand)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)
                     .background(
-                        RivaColor.brandWash,
-                        in: RoundedRectangle(cornerRadius: RivaRadius.control, style: .continuous)
+                        TPCColor.brandWash,
+                        in: RoundedRectangle(cornerRadius: TPCRadius.control, style: .continuous)
                     )
             }
             .buttonStyle(.plain)
@@ -335,7 +335,7 @@ struct ARFoodCaptureView: View {
     /// Aligned header used on both screens: back button (top-left), then the
     /// "Riva Snap V3" title + 3D badge. `tint` flips to white over the camera.
     private func topBar(onBack: @escaping () -> Void, tint: Color) -> some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             Button(action: onBack) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .semibold))
@@ -345,9 +345,9 @@ struct ARFoodCaptureView: View {
             }
             .accessibilityLabel("Back")
 
-            HStack(spacing: RivaSpacing.xs) {
+            HStack(spacing: TPCSpacing.xs) {
                 Text("Riva Snap V3")
-                    .font(RivaFont.sectionTitle)
+                    .font(TPCFont.sectionTitle)
                     .foregroundStyle(tint)
                 RivaBadge(text: "3D", style: .brand)
             }
@@ -362,20 +362,20 @@ struct ARFoodCaptureView: View {
     /// spinner — the volumetric pipeline typically takes 20-30s.
     private var processingScreen: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
-            VStack(spacing: RivaSpacing.lg) {
+            TPCColor.background.ignoresSafeArea()
+            VStack(spacing: TPCSpacing.lg) {
                 ProgressView().scaleEffect(1.2)
                 Text(model.processingStep.rawValue)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
                     .multilineTextAlignment(.center)
                 RivaProgressBar(progress: model.processingStep.progress)
                     .frame(width: 160)
                 Text("This can take up to 30 seconds.")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
-            .padding(.horizontal, RivaSpacing.xl)
+            .padding(.horizontal, TPCSpacing.xl)
         }
     }
 
@@ -386,24 +386,24 @@ struct ARFoodCaptureView: View {
     /// not a claim of precision, and needs the user's own eyes before it's
     /// logged.
     private var experimentalNotice: some View {
-        HStack(alignment: .top, spacing: RivaSpacing.xs) {
+        HStack(alignment: .top, spacing: TPCSpacing.xs) {
             Image(systemName: "flask")
                 .font(.system(size: 13, weight: .semibold))
             Text("Experimental measurement — check that the portion looks right before logging.")
-                .font(RivaFont.footnote)
+                .font(TPCFont.footnote)
         }
-        .foregroundStyle(RivaColor.textSecondary)
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
+        .foregroundStyle(TPCColor.textSecondary)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
     }
 
     private func resultScreen(_ scan: ScanResult) -> some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
             VStack(spacing: 0) {
-                topBar(onBack: { model.retake() }, tint: RivaColor.textPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.top, RivaSpacing.sm)
+                topBar(onBack: { model.retake() }, tint: TPCColor.textPrimary)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.top, TPCSpacing.sm)
                 experimentalNotice
                 ScanResultCard(
                     scan: scan,
@@ -418,11 +418,11 @@ struct ARFoodCaptureView: View {
 
     private func savingScreen(_ scan: ScanResult) -> some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
             VStack(spacing: 0) {
-                topBar(onBack: { model.retake() }, tint: RivaColor.textPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.top, RivaSpacing.sm)
+                topBar(onBack: { model.retake() }, tint: TPCColor.textPrimary)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.top, TPCSpacing.sm)
                 experimentalNotice
                 ScanResultCard(
                     scan: scan,
@@ -437,40 +437,40 @@ struct ARFoodCaptureView: View {
 
     private func savedScreen(_ totals: DayTotals) -> some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
-            VStack(spacing: RivaSpacing.lg) {
+            TPCColor.background.ignoresSafeArea()
+            VStack(spacing: TPCSpacing.lg) {
                 Spacer()
                 Image(systemName: "checkmark")
                     .font(.system(size: 30, weight: .bold))
-                    .foregroundStyle(RivaColor.textOnBrand)
+                    .foregroundStyle(TPCColor.textOnBrand)
                     .frame(width: 76, height: 76)
-                    .background(RivaColor.brand, in: Circle())
-                VStack(spacing: RivaSpacing.xs) {
+                    .background(TPCColor.brand, in: Circle())
+                VStack(spacing: TPCSpacing.xs) {
                     Text("Logged")
-                        .font(RivaFont.sectionTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.sectionTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text("Today so far: \(totals.calories.formatted()) kcal and \(totals.proteinGrams)g protein.")
-                        .font(RivaFont.body)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.body)
+                        .foregroundStyle(TPCColor.textSecondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.xl)
+                        .padding(.horizontal, TPCSpacing.xl)
                 }
                 Spacer()
                 Button("Done") { onClose() }
                     .buttonStyle(.rivaPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.bottom, RivaSpacing.lg)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.bottom, TPCSpacing.lg)
             }
         }
     }
 
     private func errorScreen(_ message: String) -> some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
             VStack(spacing: 0) {
-                topBar(onBack: { model.retake() }, tint: RivaColor.textPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.top, RivaSpacing.sm)
+                topBar(onBack: { model.retake() }, tint: TPCColor.textPrimary)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.top, TPCSpacing.sm)
                 Spacer()
                 ErrorStateView(message: message, onRetry: { model.retake() })
                 Spacer()
@@ -482,11 +482,11 @@ struct ARFoodCaptureView: View {
 
     private var unsupportedScreen: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
-            VStack(spacing: RivaSpacing.lg) {
-                topBar(onBack: onClose, tint: RivaColor.textPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.top, RivaSpacing.sm)
+            TPCColor.background.ignoresSafeArea()
+            VStack(spacing: TPCSpacing.lg) {
+                topBar(onBack: onClose, tint: TPCColor.textPrimary)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.top, TPCSpacing.sm)
                 Spacer()
                 DetailEmptyState(
                     systemImage: "arkit",

@@ -7,35 +7,35 @@ struct PlaceholderSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             Image(systemName: context.systemImage)
                 .font(.system(size: 30, weight: .semibold))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .frame(width: 76, height: 76)
-                .background(RivaColor.brandWash, in: Circle())
-                .padding(.top, RivaSpacing.xl)
+                .background(TPCColor.brandWash, in: Circle())
+                .padding(.top, TPCSpacing.xl)
 
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Text(context.title)
-                    .font(RivaFont.sectionTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.sectionTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(context.message)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.horizontal, RivaSpacing.xl)
+            .padding(.horizontal, TPCSpacing.xl)
 
             Spacer()
 
             Button("Got it") { dismiss() }
                 .buttonStyle(.rivaPrimary)
-                .padding(.horizontal, RivaSpacing.lg)
-                .padding(.bottom, RivaSpacing.lg)
+                .padding(.horizontal, TPCSpacing.lg)
+                .padding(.bottom, TPCSpacing.lg)
         }
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
     }
 }
 

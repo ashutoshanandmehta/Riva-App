@@ -12,7 +12,7 @@ struct DoseSettingsSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .doseSettings)
 
             switch model.phase {
@@ -30,20 +30,20 @@ struct DoseSettingsSheet: View {
                 form
                 if let message = model.errorMessage {
                     Text(message)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.lg)
+                        .padding(.horizontal, TPCSpacing.lg)
                 }
-                Spacer(minLength: RivaSpacing.xs)
+                Spacer(minLength: TPCSpacing.xs)
                 saveButton
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .task { await model.load() }
         .onChange(of: model.phase) {
             guard case .saved = model.phase else { return }
@@ -55,8 +55,8 @@ struct DoseSettingsSheet: View {
     }
 
     private var form: some View {
-        VStack(spacing: RivaSpacing.md) {
-            HStack(alignment: .top, spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.md) {
+            HStack(alignment: .top, spacing: TPCSpacing.sm) {
                 AccountLabeledField(
                     label: "Medication",
                     prompt: "Semaglutide",
@@ -72,23 +72,23 @@ struct DoseSettingsSheet: View {
                 .frame(width: 128)
             }
 
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text("Cadence")
                     .rivaOverline()
                 Stepper(value: $model.cadenceDays, in: 1...90) {
                     Text(model.cadenceLabel)
-                        .font(RivaFont.body)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.body)
+                        .foregroundStyle(TPCColor.textPrimary)
                 }
-                .padding(.horizontal, RivaSpacing.md)
+                .padding(.horizontal, TPCSpacing.md)
                 .padding(.vertical, 12)
                 .background(
-                    RivaColor.fillNeutral,
-                    in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                    TPCColor.fillNeutral,
+                    in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
                 )
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private var saveButton: some View {
@@ -96,14 +96,14 @@ struct DoseSettingsSheet: View {
             Task { await model.save() }
         } label: {
             if model.phase == .saving {
-                ProgressView().tint(RivaColor.textOnBrand)
+                ProgressView().tint(TPCColor.textOnBrand)
             } else {
                 Text("Save")
             }
         }
         .buttonStyle(.rivaPrimary)
         .disabled(!model.canSave || model.phase == .saving)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 }
 

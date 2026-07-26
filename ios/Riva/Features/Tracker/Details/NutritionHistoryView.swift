@@ -91,19 +91,19 @@ struct NutritionHistoryView: View {
                 }
             }
         }
-        .padding(.top, RivaSpacing.sm)
+        .padding(.top, TPCSpacing.sm)
         .task { await model.load() }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
     }
 
     // MARK: List
 
     private func list(_ groups: [NutritionHistoryViewModel.DayGroup]) -> some View {
-        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
             ForEach(groups) { group in
-                VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+                VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                     Text(DetailDate.dayLabel(group.day))
                         .rivaOverline()
                     ForEach(group.entries) { entry in
@@ -116,33 +116,33 @@ struct NutritionHistoryView: View {
                 Button("Show full history") {
                     Task { await model.loadFull() }
                 }
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
                 .frame(maxWidth: .infinity)
-                .padding(.top, RivaSpacing.xs)
+                .padding(.top, TPCSpacing.xs)
                 .disabled(model.isLoadingFull)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
-        .padding(.bottom, RivaSpacing.xl)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
+        .padding(.bottom, TPCSpacing.xl)
     }
 
     private func entryCard(_ entry: FoodEntry) -> some View {
         RivaCard {
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+                VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
                     Text(entry.displayName)
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text(Self.timeLabel(entry.createdAt))
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
                 Spacer()
                 Text(metric.valueText(entry))
-                    .font(RivaFont.captionEmphasized)
-                    .foregroundStyle(RivaColor.brand)
+                    .font(TPCFont.captionEmphasized)
+                    .foregroundStyle(TPCColor.brand)
             }
         }
     }

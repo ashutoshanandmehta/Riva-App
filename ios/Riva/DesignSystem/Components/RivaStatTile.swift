@@ -1,43 +1,49 @@
 import SwiftUI
 
-/// Compact tinted tile for a single stat ("THIS WEEK  ↓ -1.2 lbs").
-struct RivaStatTile: View {
+/// Compact tinted tile for a single stat ("THIS WEEK  ↓ 2.4 lbs").
+struct TPCStatTile: View {
     let caption: String
     let systemImage: String
     let value: String
     let unit: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text(caption)
-                .rivaOverline()
+                .tpcOverline()
 
             HStack(alignment: .firstTextBaseline, spacing: 5) {
                 Image(systemName: systemImage)
                     .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.positive)
                 Text(value)
-                    .font(RivaFont.metricM)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.metricM)
+                    .foregroundStyle(TPCColor.positive)
                 Text(unit)
-                    .font(RivaFont.metricUnit)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.metricUnit)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
-        .padding(RivaSpacing.sm)
+        .padding(TPCSpacing.sm)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RivaColor.brandWash,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.fillNeutral,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
+                .strokeBorder(TPCColor.surfaceOutline, lineWidth: 1)
         )
     }
 }
 
+typealias RivaStatTile = TPCStatTile
+
 #Preview {
-    HStack(spacing: RivaSpacing.sm) {
-        RivaStatTile(caption: "This week", systemImage: "arrow.down", value: "-1.2", unit: "lbs")
-        RivaStatTile(caption: "Total loss", systemImage: "arrow.down.circle", value: "-18.4", unit: "lbs")
+    HStack(spacing: TPCSpacing.sm) {
+        TPCStatTile(caption: "This week",  systemImage: "arrow.down", value: "↓ 2.4", unit: "lbs")
+        TPCStatTile(caption: "Total loss", systemImage: "arrow.down", value: "↓ 17.6", unit: "lbs")
     }
     .padding()
-    .background(RivaColor.surface)
+    .background(TPCColor.surface)
 }

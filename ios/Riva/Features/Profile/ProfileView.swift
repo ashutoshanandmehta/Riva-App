@@ -26,8 +26,8 @@ struct ProfileView: View {
                 content(bundle)
             }
         }
-        .background(RivaColor.background)
-        .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
+        .background(TPCColor.background)
+        .contentMargins(.bottom, TPCLayout.tabBarClearance, for: .scrollContent)
         .task { await viewModel.load() }
         .onChange(of: appModel.activeAccountSheet) { previous, current in
             // Refresh after a settings sheet closes so edits show right away.
@@ -40,7 +40,7 @@ struct ProfileView: View {
     // MARK: Loaded
 
     private func content(_ bundle: AccountBundle) -> some View {
-        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
             BrandTopBar(onBack: { appModel.closeProfile() }, onSettings: nil)
 
             ProfileHeader(name: bundle.profile.name) {
@@ -66,21 +66,21 @@ struct ProfileView: View {
 
             Text(Self.versionFooter)
                 .font(.system(size: 11))
-                .foregroundStyle(RivaColor.textTertiary)
+                .foregroundStyle(TPCColor.textTertiary)
                 .frame(maxWidth: .infinity)
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
     }
 
     // MARK: Medication settings
 
     private func medicationSettings(_ plan: MedicationPlan?) -> some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text("Medication settings")
                 .rivaOverline()
 
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 SettingsRow(
                     systemImage: "syringe",
                     title: plan?.name ?? "Medication",
@@ -112,17 +112,17 @@ struct ProfileView: View {
 
     private var appearanceSection: some View {
         @Bindable var appModel = appModel
-        return VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        return VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text("Appearance")
                 .rivaOverline()
 
             RivaCard {
-                VStack(alignment: .leading, spacing: RivaSpacing.sm) {
-                    HStack(spacing: RivaSpacing.sm) {
+                VStack(alignment: .leading, spacing: TPCSpacing.sm) {
+                    HStack(spacing: TPCSpacing.sm) {
                         RivaIconChip(systemImage: "circle.lefthalf.filled", size: 34)
                         Text("Theme")
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(RivaColor.textPrimary)
+                            .foregroundStyle(TPCColor.textPrimary)
                         Spacer()
                     }
 
@@ -140,11 +140,11 @@ struct ProfileView: View {
     // MARK: Account
 
     private var accountSection: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text("Account")
                 .rivaOverline()
 
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 SettingsRow(systemImage: "bell", title: "Notifications", subtitle: nil) {
                     appModel.activeAccountSheet = .notifications
                 }
@@ -180,14 +180,14 @@ struct ProfileView: View {
     // MARK: Danger zone
 
     private var dangerZone: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text("Danger Zone")
-                .rivaOverline(RivaColor.danger)
+                .rivaOverline(TPCColor.danger)
 
             Button {
                 isStartFreshPresented = true
             } label: {
-                HStack(spacing: RivaSpacing.xs) {
+                HStack(spacing: TPCSpacing.xs) {
                     Image(systemName: "arrow.counterclockwise")
                     Text("Start Fresh")
                 }

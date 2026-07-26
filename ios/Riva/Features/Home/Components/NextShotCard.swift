@@ -8,14 +8,14 @@ struct NextShotCard: View {
 
     var body: some View {
         RivaCard(style: .inverse) {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                         Text("Next shot")
-                            .rivaOverline(RivaColor.textOnInverseSecondary)
+                            .rivaOverline(TPCColor.textOnInverseSecondary)
                         Text(shot.drugName)
-                            .font(RivaFont.cardHero)
-                            .foregroundStyle(RivaColor.textOnInversePrimary)
+                            .font(TPCFont.cardHero)
+                            .foregroundStyle(TPCColor.textOnInversePrimary)
                         RivaBadge(text: RivaFormat.doseMg(shot.doseMg), style: .onInverse)
                     }
 
@@ -25,16 +25,16 @@ struct NextShotCard: View {
                         progress: shot.cycleProgress(),
                         size: 64,
                         lineWidth: 5.5,
-                        tint: RivaColor.brandOnInverse,
-                        track: RivaColor.fillOnInverse
+                        tint: TPCColor.brandOnInverse,
+                        track: TPCColor.fillOnInverse
                     ) {
                         VStack(spacing: -1) {
                             Text("\(shot.daysRemaining())d")
-                                .font(RivaFont.metricM)
-                                .foregroundStyle(RivaColor.textOnInversePrimary)
+                                .font(TPCFont.metricM)
+                                .foregroundStyle(TPCColor.textOnInversePrimary)
                             Text("left")
                                 .font(.system(size: 10))
-                                .foregroundStyle(RivaColor.textOnInverseSecondary)
+                                .foregroundStyle(TPCColor.textOnInverseSecondary)
                         }
                     }
                     .accessibilityLabel("\(shot.daysRemaining()) days until your next shot")
@@ -45,15 +45,15 @@ struct NextShotCard: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(RivaFormat.shotDate(shot.date))
                                 .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(RivaColor.textOnInversePrimary)
+                                .foregroundStyle(TPCColor.textOnInversePrimary)
                             Text("Suggested site - \(shot.suggestedSite)")
                                 .font(.system(size: 12))
-                                .foregroundStyle(RivaColor.textOnInverseSecondary)
+                                .foregroundStyle(TPCColor.textOnInverseSecondary)
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(RivaColor.textOnInverseSecondary)
+                            .foregroundStyle(TPCColor.textOnInverseSecondary)
                     }
                     .contentShape(Rectangle())
                 }
@@ -67,5 +67,5 @@ struct NextShotCard: View {
 #Preview {
     NextShotCard(shot: MockHomeRepository.snapshot().nextShot) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

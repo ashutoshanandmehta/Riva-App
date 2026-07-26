@@ -12,7 +12,7 @@ struct EditGoalsSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .editGoals)
 
             switch model.phase {
@@ -30,20 +30,20 @@ struct EditGoalsSheet: View {
                 form
                 if let message = model.errorMessage {
                     Text(message)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.lg)
+                        .padding(.horizontal, TPCSpacing.lg)
                 }
-                Spacer(minLength: RivaSpacing.xs)
+                Spacer(minLength: TPCSpacing.xs)
                 saveButton
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .task { await model.load() }
         .onChange(of: model.phase) {
             guard case .saved = model.phase else { return }
@@ -55,8 +55,8 @@ struct EditGoalsSheet: View {
     }
 
     private var form: some View {
-        VStack(spacing: RivaSpacing.md) {
-            HStack(alignment: .top, spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.md) {
+            HStack(alignment: .top, spacing: TPCSpacing.sm) {
                 AccountLabeledField(
                     label: "Protein",
                     prompt: "100",
@@ -72,7 +72,7 @@ struct EditGoalsSheet: View {
                     keyboard: .numberPad
                 )
             }
-            HStack(alignment: .top, spacing: RivaSpacing.sm) {
+            HStack(alignment: .top, spacing: TPCSpacing.sm) {
                 AccountLabeledField(
                     label: "Fiber",
                     prompt: "28",
@@ -89,7 +89,7 @@ struct EditGoalsSheet: View {
                 )
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private var saveButton: some View {
@@ -97,14 +97,14 @@ struct EditGoalsSheet: View {
             Task { await model.save() }
         } label: {
             if model.phase == .saving {
-                ProgressView().tint(RivaColor.textOnBrand)
+                ProgressView().tint(TPCColor.textOnBrand)
             } else {
                 Text("Save")
             }
         }
         .buttonStyle(.rivaPrimary)
         .disabled(!model.canSave || model.phase == .saving)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 }
 

@@ -20,7 +20,7 @@ struct TodoSection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             switch viewModel.state {
             case .loading:
                 loadingCard
@@ -32,9 +32,9 @@ struct TodoSection: View {
 
             if let message = viewModel.errorMessage {
                 Text(message)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.danger)
-                    .padding(.horizontal, RivaSpacing.xs)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.danger)
+                    .padding(.horizontal, TPCSpacing.xs)
                     .onTapGesture { viewModel.dismissError() }
             }
         }
@@ -86,31 +86,31 @@ struct TodoSection: View {
 
     private var loadingCard: some View {
         RivaCard {
-            HStack(spacing: RivaSpacing.sm) {
+            HStack(spacing: TPCSpacing.sm) {
                 RivaIconChip(systemImage: "checklist")
                 Text("To-dos")
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.cardTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Spacer()
-                ProgressView().tint(RivaColor.brand)
+                ProgressView().tint(TPCColor.brand)
             }
         }
     }
 
     private func failedCard(_ message: String) -> some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                 Text("To-dos")
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.cardTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(message)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
                 Button("Try again") {
                     Task { await viewModel.load() }
                 }
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
             }
         }
     }
@@ -121,6 +121,6 @@ struct TodoSection: View {
         TodoSection(repository: MockTodoRepository())
             .padding()
     }
-    .background(RivaColor.background)
+    .background(TPCColor.background)
     .environment(AppModel())
 }

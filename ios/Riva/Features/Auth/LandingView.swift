@@ -1,131 +1,212 @@
 import SwiftUI
 
-/// The marketing landing page, first thing a new user sees. Teal hero
-/// gradient, three feature highlights, one call to action.
 struct LandingView: View {
     @Bindable var model: AuthModel
 
+    @State private var heroIndex = 0
+
+    private let heroImages = ["LandingHero1", "LandingHero2", "LandingHero3", "LandingHero4"]
+    private let heroTimer = Timer.publish(every: 4.2, on: .main, in: .common).autoconnect()
+
+    // Cormorant Garamond variable font — loaded via UIAppFonts in Info.plist.
+    // PostScript name of the default instance is "CormorantGaramond-Light";
+    // falls back to system New York serif if the file is missing from the bundle.
+    private let headlineFont: Font = {
+        if UIFont(name: "CormorantGaramond-Light", size: 44) != nil {
+            return Font.custom("Cormorant Garamond", fixedSize: 44).weight(.medium)
+        }
+        return Font.system(size: 44, weight: .medium, design: .serif)
+    }()
+
+    private let italicFont: Font = {
+        if UIFont(name: "CormorantGaramond-LightItalic", size: 33) != nil {
+            return Font.custom("Cormorant Garamond", fixedSize: 33).italic()
+        }
+        return Font.system(size: 33, weight: .regular, design: .serif).italic()
+    }()
+
     var body: some View {
         ZStack {
+            // 1. Dark base fills full screen
+            TPCColor.heroBackground.ignoresSafeArea()
+
+            // 2. Full-bleed hero photos
+            ZStack {
+                ForEach(Array(heroImages.enumerated()), id: \.offset) { index, name in
+                    Image(name)
+                        .resizable()
+                        .scaledToFill()
+                        .opacity(heroIndex == index ? 1 : 0)
+                        .animation(.easeInOut(duration: 1.2), value: heroIndex)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .clipped()
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+
+            // 3. Gradient — maps design's 500/844px image crop to full-screen SwiftUI.
+            //    Gradient is 100% opaque by 60% screen height so the text area below
+            //    sits on solid dark regardless of what the hero photo contains.
             LinearGradient(
-                colors: [RivaColor.heroTop, RivaColor.heroMid, RivaColor.heroBottom],
+                stops: [
+                    .init(color: TPCColor.heroBackground.opacity(0.62), location: 0.00),
+                    .init(color: TPCColor.heroBackground.opacity(0.30), location: 0.18),
+                    .init(color: TPCColor.heroBackground.opacity(0.45), location: 0.41),
+                    .init(color: TPCColor.heroBackground.opacity(1.00), location: 0.60),
+                    .init(color: TPCColor.heroBackground.opacity(1.00), location: 1.00)
+                ],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
+            .allowsHitTesting(false)
 
-            VStack(spacing: RivaSpacing.lg) {
-                Spacer(minLength: RivaSpacing.xl)
-
-                VStack(spacing: RivaSpacing.sm) {
-                    Image("RivaLogo")
-                        .resizable()
-                        .renderingMode(.template)
-                        .scaledToFit()
-                        .foregroundStyle(.white)
-                        .frame(width: 40, height: 40)
-                        .frame(width: 64, height: 64)
-                        .background(
-                            .white.opacity(0.18),
-                            in: RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        )
-                    Text("Riva Health")
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(.white)
-                }
-
-                VStack(spacing: RivaSpacing.sm) {
-                    Text("Your AI Health Companion for GLP-1 Success")
-                        .font(RivaFont.screenTitle)
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
-                    Text("Personalized insights, medication tracking, and Medicare Bridge Program eligibility checking, all in one place.")
-                        .font(RivaFont.body)
-                        .foregroundStyle(.white.opacity(0.85))
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.horizontal, RivaSpacing.xl)
-
-                VStack(spacing: RivaSpacing.sm) {
-                    featureCard(
-                        icon: "sparkles",
-                        title: "AI-Powered Guidance",
-                        subtitle: "Real-time health adjustments based on your data."
-                    )
-                    featureCard(
-                        icon: "building.columns",
-                        title: "Medicare Bridge Access",
-                        subtitle: "Instant eligibility checks for program benefits."
-                    )
-                    featureCard(
-                        icon: "chart.bar.xaxis",
-                        title: "Track Your Progress",
-                        subtitle: "Visualized dosage and nutrient monitoring."
-                    )
-                }
-                .padding(.horizontal, RivaSpacing.screenMargin)
+            // 4. Content
+            VStack(spacing: 0) {
+                progressDots
+                    .padding(.top, 20)
+                    .padding(.horizontal, 26)
 
                 Spacer()
 
-                VStack(spacing: RivaSpacing.sm) {
-                    Button {
-                        model.getStarted()
-                    } label: {
-                        HStack(spacing: RivaSpacing.xs) {
-                            Text("Get Started")
-                            Image(systemName: "arrow.right")
-                        }
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(RivaColor.heroBottom)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(.white, in: Capsule())
-                    }
+                sealAndWordmark
 
-                    Button {
-                        model.showLogin()
-                    } label: {
-                        Text("Already have an account? **Log in**")
-                            .font(.system(size: 15))
-                            .foregroundStyle(.white.opacity(0.95))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                    }
-                }
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.bottom, RivaSpacing.md)
+                Spacer()
+
+                bottomBlock
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 26)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .onReceive(heroTimer) { _ in
+            withAnimation { heroIndex = (heroIndex + 1) % heroImages.count }
+        }
+    }
+
+    // MARK: Progress dots
+
+    private var progressDots: some View {
+        HStack(spacing: 7) {
+            ForEach(0..<heroImages.count, id: \.self) { i in
+                Capsule()
+                    .fill(i == heroIndex
+                          ? TPCColor.accentPale
+                          : TPCColor.accentPale.opacity(0.28))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 3)
+                    .animation(.easeInOut(duration: 0.4), value: heroIndex)
             }
         }
     }
 
-    private func featureCard(icon: String, title: String, subtitle: String) -> some View {
-        HStack(spacing: RivaSpacing.md) {
-            Image(systemName: icon)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-                .background(.white.opacity(0.16), in: Circle())
+    // MARK: Seal + wordmark
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(.white)
-                Text(subtitle)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(.white.opacity(0.78))
+    private var sealAndWordmark: some View {
+        VStack(spacing: 12) {
+            sealView
+            VStack(spacing: 3) {
+                // 27px Bricolage Grotesque Bold (-0.03em tracking) from design
+                Text("The Peptide Company")
+                    .font(Font.custom("Bricolage Grotesque", fixedSize: 27).weight(.bold))
+                    .kerning(-0.81)
+                    .foregroundStyle(Color(hex: 0xF6F2E8))
+                    .shadow(color: TPCColor.heroBackground.opacity(0.6), radius: 7)
+
+                // 11px DM Sans Bold, 0.24em tracking, uppercase from design
+                Text("The peptides · The habits · Life")
+                    .font(Font.custom("DM Sans", fixedSize: 11).weight(.bold))
+                    .textCase(.uppercase)
+                    .kerning(2.64)
+                    .foregroundStyle(TPCColor.accentPale.opacity(0.9))
+            }
+        }
+    }
+
+    // Seal circle: ultraThinMaterial (≈ backdrop-filter: blur(6px)) +
+    // semi-transparent gold gradient matching design rgba values
+    private var sealView: some View {
+        Text("TPC")
+            .font(Font.custom("Bricolage Grotesque", fixedSize: 21).weight(.heavy))
+            .foregroundStyle(Color(hex: 0xFBF7EC))
+            .shadow(color: TPCColor.heroBackground.opacity(0.7), radius: 6)
+            .frame(width: 104, height: 104)
+            .background(
+                RadialGradient(
+                    colors: [
+                        Color(hex: 0xB08A2E, alpha: 0.70),
+                        Color(hex: 0x10201A, alpha: 0.85)
+                    ],
+                    center: UnitPoint(x: 0.42, y: 0.30),
+                    startRadius: 0,
+                    endRadius: 55
+                ),
+                in: Circle()
+            )
+            .background(.ultraThinMaterial, in: Circle())
+            .overlay(Circle().strokeBorder(TPCColor.accentPale.opacity(0.5), lineWidth: 1.5))
+            .shadow(color: .black.opacity(0.65), radius: 17, x: 0, y: 16)
+    }
+
+    // MARK: Bottom block
+
+    private var bottomBlock: some View {
+        VStack(alignment: .leading, spacing: 14) {
+
+            // Headline — Cormorant Garamond (or system New York serif fallback)
+            VStack(alignment: .leading, spacing: 0) {
+                Text("LOSE THE\nWEIGHT.")
+                    .font(headlineFont)
+                    .foregroundStyle(Color(hex: 0xF6F2E8))
+                    .lineSpacing(0)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("Build habits to keep it off.")
+                    .font(italicFont)
+                    .foregroundStyle(Color(hex: 0xA8C6A8))
+                    .padding(.top, 8)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Spacer(minLength: 0)
+
+            // Trust badges
+            HStack(spacing: 16) {
+                trustBadge("Doctor-prescribed")
+                trustBadge("Cancel anytime")
+                Spacer()
+            }
+
+            // CTAs — defined inline to match design exactly (18px padding, 14.5px font)
+            VStack(spacing: 10) {
+                Button { model.getStarted() } label: {
+                    Text("Check if you qualify")
+                        .font(Font.custom("DM Sans", fixedSize: 14.5).weight(.bold))
+                        .foregroundStyle(Color(hex: 0xFBF7EC))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 18)
+                        .background(TPCColor.brand, in: Capsule())
+                }
+                .buttonStyle(.plain)
+
+                Button { model.showLogin() } label: {
+                    (Text("Already with us?  ")
+                        .font(Font.custom("DM Sans", fixedSize: 11.5).weight(.medium))
+                        .foregroundStyle(Color(hex: 0xF6F2E8, alpha: 0.62))
+                    + Text("Sign in")
+                        .font(Font.custom("DM Sans", fixedSize: 11.5).weight(.bold))
+                        .foregroundStyle(TPCColor.accentPale))
+                }
+                .frame(maxWidth: .infinity)
+            }
         }
-        .padding(RivaSpacing.md)
-        .background(
-            .white.opacity(0.13),
-            in: RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
-                .strokeBorder(.white.opacity(0.16), lineWidth: 1)
-        )
+    }
+
+    private func trustBadge(_ label: String) -> some View {
+        HStack(spacing: 6) {
+            Text("✓").foregroundStyle(TPCColor.accentGold)
+            Text(label).foregroundStyle(Color(hex: 0xF6F2E8, alpha: 0.8))
+        }
+        .font(Font.custom("DM Sans", fixedSize: 11.5).weight(.bold))
     }
 }
 

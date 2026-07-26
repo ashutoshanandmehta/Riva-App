@@ -6,30 +6,30 @@ struct MedicationLevelCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
-                HStack(spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
+                HStack(spacing: TPCSpacing.xs) {
                     RivaIconChip(systemImage: "syringe")
                     Text("Medication level")
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Spacer()
                     RivaBadge(text: "Estimated")
                 }
 
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(String(format: "%.1f", estimate.currentMg))
-                        .font(RivaFont.metricXL)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.metricXL)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text("mg in system")
-                        .font(RivaFont.metricUnit)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.metricUnit)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
 
                 RivaProgressBar(progress: estimate.gaugeFraction, height: 6)
 
                 Text(estimate.explanation)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -39,5 +39,5 @@ struct MedicationLevelCard: View {
 #Preview {
     MedicationLevelCard(estimate: MockHomeRepository.snapshot().medicationLevel)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

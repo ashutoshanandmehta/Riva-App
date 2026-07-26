@@ -16,7 +16,7 @@ struct SnapRadialFan: View {
                 // Invisible spacer defines the fan's coordinate space, so the
                 // tab bar below never shifts when the fan appears.
                 Color.clear
-                    .frame(height: RivaLayout.snapFanRadius + RivaLayout.snapActionSize + 24)
+                    .frame(height: TPCLayout.fabFanRadius + TPCLayout.fabActionSize + 24)
 
                 // Buttons must be *removed* when closed — glass effects inside
                 // a GlassEffectContainer keep rendering even at opacity 0.
@@ -41,8 +41,8 @@ struct SnapRadialFan: View {
     private func offset(for action: SnapAction) -> CGSize {
         let angle = Angle(degrees: action.fanAngleDegrees).radians
         return CGSize(
-            width: cos(angle) * RivaLayout.snapFanRadius,
-            height: -sin(angle) * (RivaLayout.snapFanRadius - 42)
+            width: cos(angle) * TPCLayout.fabFanRadius,
+            height: -sin(angle) * (TPCLayout.fabFanRadius - 42)
         )
     }
 
@@ -52,19 +52,19 @@ struct SnapRadialFan: View {
         Button {
             onSelect(action)
         } label: {
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Image(systemName: action.systemImage)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(RivaColor.brand)
-                    .frame(width: RivaLayout.snapActionSize, height: RivaLayout.snapActionSize)
+                    .foregroundStyle(TPCColor.brand)
+                    .frame(width: TPCLayout.fabActionSize, height: TPCLayout.fabActionSize)
                     .contentShape(Circle())
                     .glassEffect(.regular.interactive(), in: Circle())
 
                 Text(action.title)
-                    .rivaOverline(RivaColor.textPrimary)
+                    .rivaOverline(TPCColor.textPrimary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3.5)
-                    .background(RivaColor.surface, in: Capsule())
+                    .background(TPCColor.surface, in: Capsule())
                     .shadow(color: .black.opacity(0.08), radius: 6, y: 2)
             }
         }
@@ -83,7 +83,7 @@ struct SnapRadialFan: View {
                 Button("Toggle") { withAnimation { open.toggle() } }
                     .padding(.bottom, 40)
             }
-            .background(RivaColor.background)
+            .background(TPCColor.background)
         }
     }
     return FanPreview()

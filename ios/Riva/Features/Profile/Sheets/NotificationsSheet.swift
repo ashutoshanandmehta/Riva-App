@@ -14,7 +14,7 @@ struct NotificationsSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .notifications)
 
             switch model.phase {
@@ -24,23 +24,23 @@ struct NotificationsSheet: View {
                 Spacer()
             case .ready:
                 settings
-                Spacer(minLength: RivaSpacing.xs)
+                Spacer(minLength: TPCSpacing.xs)
                 Button("Done", action: onClose)
                     .buttonStyle(.rivaPrimary)
-                    .padding(.horizontal, RivaSpacing.screenMargin)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .task { await model.load() }
     }
 
     private var settings: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
-            VStack(spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
+            VStack(spacing: TPCSpacing.sm) {
                 Toggle(
                     "Shot day reminder",
                     isOn: Binding(
@@ -48,9 +48,9 @@ struct NotificationsSheet: View {
                         set: { newValue in Task { await model.setEnabled(newValue) } }
                     )
                 )
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textPrimary)
-                .tint(RivaColor.brand)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textPrimary)
+                .tint(TPCColor.brand)
 
                 if model.isEnabled {
                     DatePicker(
@@ -61,31 +61,31 @@ struct NotificationsSheet: View {
                         ),
                         displayedComponents: .hourAndMinute
                     )
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
-                    .tint(RivaColor.brand)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
+                    .tint(TPCColor.brand)
                 }
             }
-            .padding(.horizontal, RivaSpacing.md)
+            .padding(.horizontal, TPCSpacing.md)
             .padding(.vertical, 12)
             .background(
-                RivaColor.fillNeutral,
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.fillNeutral,
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
 
             if model.isEnabled {
                 Text("Repeats every \(model.weekdayName).")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
 
             if model.permissionDenied {
                 Text("Notifications for Riva are turned off. Allow them in Settings to get this reminder.")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
         .animation(.default, value: model.isEnabled)
     }
 }

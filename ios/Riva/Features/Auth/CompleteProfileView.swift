@@ -22,32 +22,32 @@ struct CompleteProfileView: View {
 
     var body: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: RivaSpacing.md) {
-                        VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.md) {
+                        VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
                             Text("Complete your profile")
-                                .font(RivaFont.screenTitle)
-                                .foregroundStyle(RivaColor.textPrimary)
+                                .font(TPCFont.screenTitle)
+                                .foregroundStyle(TPCColor.textPrimary)
                             Text("This helps Riva personalize your targets, doses, and reminders. You can change everything later.")
-                                .font(RivaFont.body)
-                                .foregroundStyle(RivaColor.textSecondary)
+                                .font(TPCFont.body)
+                                .foregroundStyle(TPCColor.textSecondary)
                         }
-                        .padding(.top, RivaSpacing.lg)
+                        .padding(.top, TPCSpacing.lg)
 
                         labeled("Your name") {
                             TextField("Name", text: $name)
                                 .textContentType(.givenName)
                         }
 
-                        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+                        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                             Toggle(isOn: $hasBirthDate.animation()) {
                                 Text("Date of birth")
                                     .rivaOverline()
                             }
-                            .tint(RivaColor.brand)
+                            .tint(TPCColor.brand)
                             if hasBirthDate {
                                 DatePicker("", selection: $birthDate, displayedComponents: .date)
                                     .datePickerStyle(.compact)
@@ -55,12 +55,12 @@ struct CompleteProfileView: View {
                             }
                         }
 
-                        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+                        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                             Text("Gender")
                                 .rivaOverline()
                             LazyVGrid(
                                 columns: [GridItem(.flexible()), GridItem(.flexible())],
-                                spacing: RivaSpacing.xs
+                                spacing: TPCSpacing.xs
                             ) {
                                 ForEach(Self.genders, id: \.code) { option in
                                     chip(option.label, isSelected: gender == option.code) {
@@ -85,20 +85,20 @@ struct CompleteProfileView: View {
 
                         if let notice = model.notice {
                             Text(notice)
-                                .font(RivaFont.footnote)
-                                .foregroundStyle(RivaColor.danger)
+                                .font(TPCFont.footnote)
+                                .foregroundStyle(TPCColor.danger)
                         }
                     }
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.bottom, RivaSpacing.xl)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.bottom, TPCSpacing.xl)
                 }
 
-                VStack(spacing: RivaSpacing.xs) {
+                VStack(spacing: TPCSpacing.xs) {
                     Button {
                         Task { await model.completeProfile(buildUpdate()) }
                     } label: {
                         if model.isWorking {
-                            ProgressView().tint(RivaColor.textOnBrand)
+                            ProgressView().tint(TPCColor.textOnBrand)
                         } else {
                             Text("Finish")
                         }
@@ -107,12 +107,12 @@ struct CompleteProfileView: View {
                     .disabled(model.isWorking || name.trimmingCharacters(in: .whitespaces).isEmpty)
 
                     Button("Skip for now") { model.skipProfileForNow() }
-                        .font(RivaFont.captionEmphasized)
-                        .foregroundStyle(RivaColor.brand)
+                        .font(TPCFont.captionEmphasized)
+                        .foregroundStyle(TPCColor.brand)
                 }
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.vertical, RivaSpacing.sm)
-                .background(RivaColor.background)
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.vertical, TPCSpacing.sm)
+                .background(TPCColor.background)
             }
         }
     }
@@ -136,17 +136,17 @@ struct CompleteProfileView: View {
     }
 
     private func labeled(_ title: String, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text(title)
                 .rivaOverline()
             content()
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textPrimary)
-                .padding(.horizontal, RivaSpacing.md)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textPrimary)
+                .padding(.horizontal, TPCSpacing.md)
                 .padding(.vertical, 12)
                 .background(
-                    RivaColor.fillNeutral,
-                    in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                    TPCColor.fillNeutral,
+                    in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
                 )
         }
     }
@@ -154,12 +154,12 @@ struct CompleteProfileView: View {
     private func chip(_ title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(isSelected ? RivaColor.textOnBrand : RivaColor.textSecondary)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(isSelected ? TPCColor.textOnBrand : TPCColor.textSecondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background(
-                    isSelected ? RivaColor.brandDeep : RivaColor.fillNeutral,
+                    isSelected ? TPCColor.brandDeep : TPCColor.fillNeutral,
                     in: Capsule()
                 )
         }

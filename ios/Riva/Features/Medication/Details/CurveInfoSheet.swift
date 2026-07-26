@@ -9,7 +9,7 @@ struct CurveInfoSheet: View {
             DetailSheetHeader(title: "About the medication curve", onClose: onClose)
 
             ScrollView {
-                VStack(spacing: RivaSpacing.sm) {
+                VStack(spacing: TPCSpacing.sm) {
                     section(
                         heading: "What it shows",
                         text: "The curve is an estimate of how much medication is in your system at each point in the week."
@@ -23,25 +23,25 @@ struct CurveInfoSheet: View {
                         text: "This is an educational estimate, not a measurement, and it is never medical advice. If you have questions about your dose, talk with your clinician."
                     )
                 }
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.top, RivaSpacing.xs)
-                .padding(.bottom, RivaSpacing.xl)
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+                .padding(.bottom, TPCSpacing.xl)
             }
         }
-        .padding(.top, RivaSpacing.sm)
+        .padding(.top, TPCSpacing.sm)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
     }
 
     private func section(heading: String, text: String) -> some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text(heading)
                     .rivaOverline()
                 Text(text)
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
             }
         }
     }

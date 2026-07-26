@@ -52,8 +52,8 @@ struct TrackerView: View {
                 content(dashboard)
             }
         }
-        .background(RivaColor.background)
-        .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
+        .background(TPCColor.background)
+        .contentMargins(.bottom, TPCLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
         .onChange(of: appModel.dashboardRevision) {
@@ -69,7 +69,7 @@ struct TrackerView: View {
     // MARK: Loaded
 
     private func content(_ dashboard: TrackerDashboard) -> some View {
-        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
             BrandTopBar {
                 appModel.showProfile()
             }
@@ -85,7 +85,7 @@ struct TrackerView: View {
             )
             .frame(height: 120)
 
-            HStack(spacing: RivaSpacing.md) {
+            HStack(spacing: TPCSpacing.md) {
                 HydrationCard(
                     hydration: dashboard.hydration,
                     onOpen: { appModel.activeDetail = .hydrationHistory },
@@ -99,7 +99,7 @@ struct TrackerView: View {
             }
             .frame(height: 155)
 
-            HStack(spacing: RivaSpacing.md) {
+            HStack(spacing: TPCSpacing.md) {
                 SideEffectsCard(
                     report: dashboard.sideEffect,
                     onOpen: { appModel.activeDetail = .sideEffectsHistory },
@@ -120,12 +120,12 @@ struct TrackerView: View {
                     Spacer()
                     Image(systemName: "arrow.right")
                 }
-                .padding(.horizontal, RivaSpacing.xs)
+                .padding(.horizontal, TPCSpacing.xs)
             }
             .buttonStyle(.rivaPrimary)
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
     }
 }
 
