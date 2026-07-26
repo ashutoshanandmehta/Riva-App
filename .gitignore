@@ -24,6 +24,10 @@ __pycache__/
 # The kit itself (.claude/, vault/, CLAUDE.md) IS tracked.
 .claude/state/
 .claude/settings.local.json
+# MCP servers are per-developer: the Supabase entry carries a production
+# project_ref and database scope, so committing it would hand every
+# collaborator's agent a live production tool by default.
+.mcp.json
 
 # Secrets — never commit API keys or provisioning secrets
 *.pem

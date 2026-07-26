@@ -515,18 +515,39 @@ def upsert_plan(config: Settings, user_id: str, fields: dict) -> dict:
     return rows[0]
 
 
-def list_weights(config: Settings, user_id: str, limit: int) -> list:
-    return _select(
-        config,
-        "weights",
-        {
-            "user_id": f"eq.{user_id}",
-            "deleted_at": "is.null",
-            "select": "id,pounds,dose_mg,measured_at",
-            "order": "measured_at.desc",
-            "limit": str(limit),
-        },
-    )
+def _timestamp_day_bounds(since: str | None, until: str | None) -> list[str]:
+    """PostgREST filters for an inclusive ISO **date** range over a timestamptz
+    column. `until` becomes an exclusive `< next day` so the whole end day is
+    covered whatever time the row was stamped. Returned as a list because
+    PostgREST takes two bounds as a repeated query parameter."""
+    bounds: list[str] = []
+    if since:
+        bounds.append(f"gte.{since}")
+    if until:
+        bounds.append(f"lt.{(date.fromisoformat(until) + timedelta(days=1)).isoformat()}")
+    return bounds
+
+
+def list_weights(
+    config: Settings,
+    user_id: str,
+    limit: int,
+    since: str | None = None,
+    until: str | None = None,
+) -> list:
+    """Weight history, newest first. `since`/`until` are inclusive ISO dates;
+    omitting both keeps the original limit-only behaviour."""
+    params: dict = {
+        "user_id": f"eq.{user_id}",
+        "deleted_at": "is.null",
+        "select": "id,pounds,dose_mg,measured_at",
+        "order": "measured_at.desc",
+        "limit": str(limit),
+    }
+    bounds = _timestamp_day_bounds(since, until)
+    if bounds:
+        params["measured_at"] = bounds
+    return _select(config, "weights", params)
 
 
 def list_food_entries(config: Settings, user_id: str, limit: int | None = None) -> list[dict]:
@@ -541,18 +562,26 @@ def list_food_entries(config: Settings, user_id: str, limit: int | None = None) 
     return _select(config, "food_entries", params)
 
 
-def list_shots(config: Settings, user_id: str, limit: int) -> list:
-    return _select(
-        config,
-        "shots",
-        {
-            "user_id": f"eq.{user_id}",
-            "deleted_at": "is.null",
-            "select": "id,medication_name,dose_mg,taken_at,injection_site,comfort_rating",
-            "order": "taken_at.desc",
-            "limit": str(limit),
-        },
-    )
+def list_shots(
+    config: Settings,
+    user_id: str,
+    limit: int,
+    since: str | None = None,
+    until: str | None = None,
+) -> list:
+    """Shot history, newest first. `since`/`until` are inclusive ISO dates;
+    omitting both keeps the original limit-only behaviour."""
+    params: dict = {
+        "user_id": f"eq.{user_id}",
+        "deleted_at": "is.null",
+        "select": "id,medication_name,dose_mg,taken_at,injection_site,comfort_rating",
+        "order": "taken_at.desc",
+        "limit": str(limit),
+    }
+    bounds = _timestamp_day_bounds(since, until)
+    if bounds:
+        params["taken_at"] = bounds
+    return _select(config, "shots", params)
 
 
 def list_wellness_sessions(config: Settings, user_id: str, days: int) -> list:
@@ -598,16 +627,27 @@ def cache_suggestions(config: Settings, user_id: str, day: str, payload: dict) -
     )
 
 
-def list_side_effects(config: Settings, user_id: str, days: int) -> list:
-    """Daily logs for the window, each with its effects, newest first."""
-    since = (date.today() - timedelta(days=days)).isoformat()
+def list_side_effects(
+    config: Settings,
+    user_id: str,
+    days: int,
+    since: str | None = None,
+    until: str | None = None,
+) -> list:
+    """Daily logs for the window, each with its effects, newest first.
+
+    `since`/`until` are inclusive ISO dates that override the rolling `days`
+    window; `log_date` is a date column, so both bounds apply directly."""
+    bounds = [f"gte.{since or (date.today() - timedelta(days=days)).isoformat()}"]
+    if until:
+        bounds.append(f"lte.{until}")
     logs = _select(
         config,
         "side_effect_logs",
         {
             "user_id": f"eq.{user_id}",
             "deleted_at": "is.null",
-            "log_date": f"gte.{since}",
+            "log_date": bounds,
             "select": "id,log_date,note",
             "order": "log_date.desc",
         },
