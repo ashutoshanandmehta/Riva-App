@@ -20,6 +20,23 @@ Canonical catalogue of reusable SwiftUI components. Types live under
   Rounded-square icon chip for card headers/list rows.
   Init: `RivaIconChip(systemImage:, tint: = .brand, background: = .brandWash, size: CGFloat = 30)`.
 
+## Text entry
+
+- **`TPCTextField`** — `DesignSystem/Components/TPCFields.swift`
+  Labelled single-line entry: overline caption, filled rounded box, focus ring,
+  and an optional footnote / error line. Promoted from the styling
+  `CompleteProfileView` grew locally.
+  Init: `TPCTextField(label:placeholder:text:footnote:problem:keyboard:contentType:capitalization:submitLabel:onSubmit:)`.
+
+- **`TPCSecureField`** — same file.
+  The password twin, with a reveal toggle (NIST SP 800-63B recommends letting
+  people see what they typed). Uses two swapped fields rather than one, because
+  toggling `SecureField` visibility mid-edit drops the text on iOS.
+  Init: `TPCSecureField(label:placeholder:text:footnote:problem:contentType:submitLabel:onSubmit:)`.
+
+  Note: `TPCPrimaryButtonStyle` does **not** dim on `.disabled`, so screens that
+  gate a CTA on field validation must fade it themselves (see `EmailFlowView`).
+
 ## Buttons
 
 - **`RivaPrimaryButtonStyle`** — `DesignSystem/Components/RivaButtons.swift`

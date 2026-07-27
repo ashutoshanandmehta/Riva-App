@@ -63,6 +63,9 @@ struct LoginView: View {
                 AppleSignInButton(model: model, fromLogin: true)
                     .padding(.horizontal, TPCSpacing.screenMargin)
 
+                EmailAuthButton(model: model, fromLogin: true)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+
                 Button("New to TPC? Get started") {
                     model.getStarted()
                 }

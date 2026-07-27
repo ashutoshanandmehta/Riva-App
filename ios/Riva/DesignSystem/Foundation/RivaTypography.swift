@@ -20,7 +20,7 @@ enum TPCFont {
 
     // MARK: Display — Bricolage Grotesque (variable font, one file covers all weights)
 
-    /// Screen greeting / page titles ("Hey Alex — how's today going?").
+    /// Screen greeting / page titles ("Good morning, Alex").
     static let screenTitle  = Font.custom(Family.display, size: 18).weight(.bold)
     /// In-page section headings ("Today's plan", "Weight tracking").
     static let sectionTitle = Font.custom(Family.display, size: 21).weight(.bold)

@@ -161,3 +161,51 @@ portions. (2) Capture B: volume 45.4 ml, clamped to plausible bound (`action=cla
 undersegmented / partial silhouette, clamped by the plausibility gate. Both errors upstream 
 of the carving step. Accuracy validation (R²≥0.6, grams MAPE≤20%) remains the GO gate; 
 grid sizing + segmentation quality are the next tuning knobs.
+
+## 2026-07-28 — Email + password as the third provider, no credential store of our own
+
+Context: Riva needed an email/password option beside Google and Apple, with an
+emailed OTP confirming the address before a password is chosen, and a reset
+path. The original ask included storing the password unencrypted so it could be
+read back.
+Decision: Build it entirely client-to-GoTrue. Passwords are set via
+`PUT auth/v1/user` and live only as bcrypt in `auth.users.encrypted_password`.
+No new backend endpoint, no `user_credentials` table, no plaintext copy. OTP and
+recovery emails are sent by GoTrue with Gmail configured as custom SMTP in the
+Supabase dashboard. Strength checking is on-device in `PasswordPolicy.swift`
+following NIST SP 800-63B (length + blocklist, no composition rules).
+Rationale: GoTrue already hashes and stores the password, so a readable copy
+would have been *net-new* code — a table, a service-role endpoint, and the app
+posting the raw password to our backend on top of Supabase — whose only effect
+is to make GLP-1 users' passwords readable in a breach. Hashing is also not the
+same thing as encryption, so "skip the crypto for now" costs nothing here: the
+secure path is the zero-work path. Custom SMTP is dashboard configuration
+rather than a backend mailer for the same reason — GoTrue owns the send.
+Consequence: **Supabase custom SMTP must be configured or codes will not
+arrive** — GoTrue's shared sender is heavily rate-limited. Gmail also caps
+~500 sends/day, so a transactional provider (Resend / SendGrid / Postmark) is
+the eventual move.
+
+## 2026-07-28 — Custom Sign in with Apple button so the three providers share one font
+
+Context: On the onboarding and login screens the Google, Apple, and email
+buttons stack together. `SignInWithAppleButton` draws its own SF Pro label
+sized to the frame, so the middle button read as a different typeface at a
+larger size than the DM Sans Bold 15 on either side of it. There is no API to
+restyle the system control's title.
+Decision: Replace it with a custom `AppleSignInButton` — black capsule, white
+`apple.logo` and title in `TPCFont.bodyBold` — driven by a new
+`AppleAuthSession` wrapper around `ASAuthorizationController`. The nonce
+handshake and `AuthModel.completeAppleSignIn(_:fromLogin:)` are unchanged; only
+the control that starts the request is ours.
+Rationale: Apple permits a custom Sign in with Apple button provided it keeps
+the Apple logo, one of the approved titles ("Sign in with Apple" / "Sign up
+with Apple", enforced by the `Title` enum), sufficient contrast, and prominence
+equal to the other providers. All four hold; only the typeface changed. This
+supersedes the earlier comment in `AppleSignInButton.swift` that the system
+control must stay — that was about *restyling Apple's appearance*, which this
+does not do.
+Consequence: The Apple flow no longer gets Apple's own button behaviour for
+free. If App Review ever objects, reverting is `SignInWithAppleButton` back in
+the button body — `AppleAuthSession` is the only other file involved and
+`AuthModel` needs no change either way.

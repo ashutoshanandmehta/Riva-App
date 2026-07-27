@@ -8,12 +8,17 @@ struct HomeHeader: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: TPCSpacing.sm) {
-            Text("Hey \(userName) — ")
-                .font(TPCFont.screenTitle)
-                .foregroundStyle(TPCColor.textPrimary)
-            + Text("how's today going?")
+            // Time-of-day greeting, the way a person opens the day. The
+            // emphasis lands on the name rather than the pleasantry.
+            // `HomeViewModel.greeting` already owned this string — it just had
+            // no caller. "there" is the house stand-in for a missing name
+            // (see `ProfileHeader`), so a nameless account still reads right.
+            Text("\(HomeViewModel.greeting()), ")
                 .font(TPCFont.screenTitle)
                 .foregroundStyle(TPCColor.textSecondary)
+            + Text(userName.isEmpty ? "there" : userName)
+                .font(TPCFont.screenTitle)
+                .foregroundStyle(TPCColor.textPrimary)
 
             Spacer(minLength: 0)
 

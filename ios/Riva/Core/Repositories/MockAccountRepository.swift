@@ -77,7 +77,8 @@ struct MockAccountRepository: AccountRepository {
             nutritionDiet: update.nutritionDiet,
             musclePreserve: update.musclePreserve,
             exerciseMove: update.exerciseMove,
-            sleepRecovery: update.sleepRecovery
+            sleepRecovery: update.sleepRecovery,
+            weightMaintain: update.weightMaintain
         )
     }
 

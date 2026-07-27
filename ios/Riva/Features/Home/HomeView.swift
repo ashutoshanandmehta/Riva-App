@@ -4,11 +4,12 @@ import SwiftUI
 ///
 /// Sections (top → bottom):
 ///   Brand bar + greeting · Week strip · Today card · Today's plan (habits) ·
-///   Calories card · Stat tiles (next shot + weight) · Companion shortcut
+///   Calories card · Weight tracking · Stat tiles (next shot + weight) ·
+///   Companion shortcut
 struct HomeView: View {
     @Environment(AppModel.self) private var appModel
     @State private var viewModel: HomeViewModel
-    /// Owned here, not by `TodoSection`, so the "Knocked out today" counter and
+    /// Owned here, not by `TodoSection`, so the "Habits completed" counter and
     /// the to-do card read the same list — one fetch, and ticking a to-do moves
     /// both at once.
     @State private var todoViewModel: TodoListViewModel
@@ -89,6 +90,12 @@ struct HomeView: View {
                 appModel.open(snapAction: .food)
             }
 
+            // The trend sits with the day's numbers; the chevron opens the same
+            // full history the Tracker links to.
+            WeightTrackingCard(summary: snapshot.weight) {
+                appModel.activeDetail = .weightHistory
+            }
+
             statTiles(snapshot)
 
             companionShortcut
@@ -152,7 +159,7 @@ struct HomeView: View {
 
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("Knocked out today")
+                        Text("Habits completed")
                             .font(TPCFont.footnote)
                             .foregroundStyle(TPCColor.textOnInverseSecondary)
 

@@ -84,7 +84,10 @@ struct PracticeTileCard: View {
                         Text(practice.title)
                             .font(TPCFont.footnote)
                             .foregroundStyle(TPCColor.textSecondary)
-                            .lineLimit(1)
+                            // Two lines reserved so a longer name wraps rather
+                            // than truncating to "Yoga for Digesti…", and the
+                            // paired tiles in a grid row stay level.
+                            .lineLimit(2, reservesSpace: true)
                     }
                     DurationChip(text: practice.durationText)
                 }
@@ -118,6 +121,11 @@ struct SuggestedPracticeCard: View {
                         Text(suggestion.practice.title)
                             .font(TPCFont.cardTitle)
                             .foregroundStyle(TPCColor.textPrimary)
+                            // These scroll side by side in a fixed 200pt card,
+                            // so a title that wraps ("Yoga for Digestion") would
+                            // make its card taller than its neighbours. Reserve
+                            // the second line for every card instead.
+                            .lineLimit(2, reservesSpace: true)
                         Text("\(suggestion.practice.durationText) · \(suggestion.practice.kind.title)")
                             .font(TPCFont.footnote)
                             .foregroundStyle(TPCColor.textSecondary)

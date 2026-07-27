@@ -329,6 +329,9 @@ struct APIHomeRepository: HomeRepository {
         return HomeSnapshot(
             user: UserProfile(firstName: firstName == "there" ? "there" : firstName),
             quote: "Consistency is your superpower.",
+            // Same mapper the Tracker uses, off the same payload — one fetch
+            // still serves both tabs.
+            weight: DashboardMapping.weightSummary(payload),
             medicationLevel: MedicationLevelEstimate(
                 currentMg: (level * 100).rounded() / 100,
                 peakMg: max(planDose * 2, level, 0.5),

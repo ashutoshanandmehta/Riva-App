@@ -5,8 +5,10 @@ struct HomeSnapshot: Equatable, Sendable {
     var user: UserProfile
     /// Motivational strapline under the greeting.
     var quote: String
-    // Weight moved to the Tracker tab (`TrackerDashboard.weight`), so Home no
-    // longer carries a month of WeightPoints it never renders.
+    /// The same month of weigh-ins the Tracker charts. Home shows the trend
+    /// under today's calories; the Tracker keeps it too, and remains the way
+    /// through to the full history.
+    var weight: WeightSummary
     var medicationLevel: MedicationLevelEstimate
     var nextShot: ScheduledShot
     var nutrients: [NutrientProgress]

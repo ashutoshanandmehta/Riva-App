@@ -12,6 +12,7 @@ struct CompanionView: View {
 
     @State private var mode: Mode = .ai
     @State private var model: CompanionViewModel
+    @FocusState private var isInputFocused: Bool
 
     init(repository: any CompanionRepository) {
         _model = State(initialValue: CompanionViewModel(repository: repository))
@@ -106,6 +107,10 @@ struct CompanionView: View {
             .onChange(of: model.isThinking) {
                 withAnimation { proxy.scrollTo("bottom", anchor: .bottom) }
             }
+            // Tapping or dragging the transcript puts the keyboard away —
+            // `.vertical` text fields have no return key to submit with.
+            .scrollDismissesKeyboard(.interactively)
+            .simultaneousGesture(TapGesture().onEnded { isInputFocused = false })
         }
     }
 
@@ -257,7 +262,7 @@ struct CompanionView: View {
             HStack(spacing: 8) {
                 ForEach(CompanionCopy.quickChips, id: \.self) { chip in
                     Button {
-                        Task { await model.send(chip) }
+                        send(chip)
                     } label: {
                         Text(chip)
                             .font(.system(size: 12.5, weight: .semibold))
@@ -284,6 +289,7 @@ struct CompanionView: View {
                     .font(TPCFont.body)
                     .foregroundStyle(TPCColor.textPrimary)
                     .lineLimit(1...4)
+                    .focused($isInputFocused)
                     .onSubmit { send() }
 
                 Button {
@@ -319,9 +325,12 @@ struct CompanionView: View {
 
     // MARK: Send
 
-    private func send() {
-        let text = model.draft
-        Task { await model.send(text) }
+    /// Sends `text`, or the draft when called from the input bar. Focus is
+    /// released either way so the reply isn't hidden behind the keyboard.
+    private func send(_ text: String? = nil) {
+        let message = text ?? model.draft
+        isInputFocused = false
+        Task { await model.send(message) }
     }
 }
 

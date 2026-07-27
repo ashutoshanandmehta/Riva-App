@@ -39,6 +39,9 @@ struct RootView: View {
             }
         }
         .background(TPCColor.background)
+        // Tabs stay mounted, so leaving one does not release its keyboard.
+        .onChange(of: appModel.selectedTab) { RivaKeyboard.dismiss() }
+        .onChange(of: appModel.isProfilePresented) { RivaKeyboard.dismiss() }
         .sheet(item: $appModel.activePlaceholder) { context in
             PlaceholderSheet(context: context)
         }

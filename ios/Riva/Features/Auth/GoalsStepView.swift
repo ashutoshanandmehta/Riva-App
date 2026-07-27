@@ -23,7 +23,7 @@ struct GoalsStepView: View {
                                 .foregroundStyle(TPCColor.textSecondary)
                         }
 
-                        ForEach(OnboardingGoal.allCases) { goal in
+                        ForEach(OnboardingGoal.intakeOptions) { goal in
                             goalCard(goal)
                         }
                     }
@@ -131,6 +131,9 @@ struct GoalsStepView: View {
             .padding(.horizontal, TPCSpacing.screenMargin)
 
             AppleSignInButton(model: model, fromLogin: false, label: .signUp)
+                .padding(.horizontal, TPCSpacing.screenMargin)
+
+            EmailAuthButton(model: model, fromLogin: false)
                 .padding(.horizontal, TPCSpacing.screenMargin)
 
             Text("Your goals sync to your account after sign in.")

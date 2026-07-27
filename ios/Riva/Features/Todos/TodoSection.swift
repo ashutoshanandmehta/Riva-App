@@ -4,7 +4,7 @@ import SwiftUI
 /// cards and to-do state never leaks into `AppModel`.
 ///
 /// The view model is injected rather than owned: Home reads the same list for
-/// its "Knocked out today" counter, so one fetch serves both and a toggle here
+/// its "Habits completed" counter, so one fetch serves both and a toggle here
 /// moves the counter there.
 struct TodoSection: View {
     @Environment(AppModel.self) private var appModel

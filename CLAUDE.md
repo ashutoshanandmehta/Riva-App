@@ -68,20 +68,7 @@ implement the plan, the plan was underspecified. Fix the plan, do not escalate t
 You run in auto-accept-edits mode; the deny rules in `settings.json` are approximate. Do
 not route around a gate — request approval explicitly.
 
-## 7. Data & environment
 
-- **Production DB is Supabase** (remote Postgres, RLS). There is **no production connection
-  string in this environment** by design. Server-authoritative writes go through the
-  `log_scan` / `log_*` RPCs with the service-role key; clients only authenticate.
-- **Local sandbox DB**: a Postgres container at **`localhost:5433`** (`docker-compose.yml`),
-  seeded from `backend/supabase/migrations/*.sql`. Integration tests target this only —
-  `guard-bash.py` blocks any `psql`/DB access that is not `localhost:5433`.
-- **Python**: `uv` + `backend/.venv` (Python 3.12). **Not `pip`.** `requests` is not
-  installed — use `httpx` / stdlib `urllib`.
-- **Vision provider is Claude only**: Anthropic Messages API, default `claude-sonnet-5`
-  (override `RIVA_SCAN_MODEL`). See `vault/Services.md`.
-- **Secrets** live in `backend/.env` (gitignored) + Render env. Never in code or chat;
-  rotate anything that leaks. `.env` reads are blocked.
 
 ## 8. Definition of done
 

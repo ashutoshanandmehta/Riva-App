@@ -31,6 +31,12 @@ struct HealthGoalFlags: Codable, Sendable, Equatable {
     let musclePreserve: Bool
     let exerciseMove: Bool
     let sleepRecovery: Bool
+    /// Optional, not defaulted: synthesised `Decodable` ignores property
+    /// defaults and throws on a missing key, so a non-optional here would fail
+    /// to decode against a backend that has not shipped migration 0006 yet.
+    var weightMaintain: Bool?
+
+    var wantsWeightMaintenance: Bool { weightMaintain ?? false }
 }
 
 struct MedicationPlan: Codable, Sendable, Equatable {
@@ -100,17 +106,25 @@ struct GoalsUpdate: Encodable, Sendable {
 /// `health_goals` flag in the database.
 enum OnboardingGoal: String, Sendable, Identifiable, CaseIterable {
     case weightMgmt = "weight_mgmt"
+    case weightMaintain = "weight_maintain"
     case glp1Support = "glp1_support"
     case nutritionDiet = "nutrition_diet"
     case musclePreserve = "muscle_preserve"
     case exerciseMove = "exercise_move"
     case sleepRecovery = "sleep_recovery"
 
+    /// What the signup intake form offers. Deliberately narrower than
+    /// `allCases`: the rest stay in the enum so accounts that already chose
+    /// them keep decoding, and so the profile's goal editor can still show
+    /// the full set.
+    static let intakeOptions: [OnboardingGoal] = [.weightMgmt, .weightMaintain]
+
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .weightMgmt: "Lose weight"
+        case .weightMaintain: "Maintain weight"
         case .glp1Support: "GLP-1 support"
         case .nutritionDiet: "Nutrition and diet"
         case .musclePreserve: "Preserve muscle"
@@ -122,6 +136,7 @@ enum OnboardingGoal: String, Sendable, Identifiable, CaseIterable {
     var subtitle: String {
         switch self {
         case .weightMgmt: "Reach a healthier weight and keep it off."
+        case .weightMaintain: "Hold steady where I am today."
         case .glp1Support: "Guidance through my medication journey."
         case .nutritionDiet: "Eat better with less guesswork."
         case .musclePreserve: "Protect strength while losing weight."
@@ -133,6 +148,7 @@ enum OnboardingGoal: String, Sendable, Identifiable, CaseIterable {
     var systemImage: String {
         switch self {
         case .weightMgmt: "arrow.down.right.circle"
+        case .weightMaintain: "equal.circle"
         case .glp1Support: "syringe"
         case .nutritionDiet: "fork.knife"
         case .musclePreserve: "figure.strengthtraining.traditional"
@@ -142,11 +158,12 @@ enum OnboardingGoal: String, Sendable, Identifiable, CaseIterable {
     }
 }
 
-/// Full-set update for the six health goal flags (onboarding submits the
+/// Full-set update for the health goal flags (onboarding submits the
 /// complete selection, so unselected goals are explicitly false).
 struct HealthGoalsUpdate: Encodable, Sendable {
     let glp1Support: Bool
     let weightMgmt: Bool
+    let weightMaintain: Bool
     let nutritionDiet: Bool
     let musclePreserve: Bool
     let exerciseMove: Bool
@@ -155,6 +172,7 @@ struct HealthGoalsUpdate: Encodable, Sendable {
     init(selected: Set<OnboardingGoal>) {
         glp1Support = selected.contains(.glp1Support)
         weightMgmt = selected.contains(.weightMgmt)
+        weightMaintain = selected.contains(.weightMaintain)
         nutritionDiet = selected.contains(.nutritionDiet)
         musclePreserve = selected.contains(.musclePreserve)
         exerciseMove = selected.contains(.exerciseMove)

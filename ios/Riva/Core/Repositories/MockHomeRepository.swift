@@ -20,6 +20,7 @@ struct MockHomeRepository: HomeRepository {
         HomeSnapshot(
             user: UserProfile(firstName: "Sarah"),
             quote: "Consistency is your superpower.",
+            weight: MockTrackerRepository.dashboard().weight,
             medicationLevel: MedicationLevelEstimate(
                 currentMg: 1.8,
                 peakMg: 4.0,

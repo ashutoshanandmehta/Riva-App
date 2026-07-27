@@ -62,6 +62,24 @@ actor DeviceAuthRepository: AuthRepository {
         throw AuthError.service("Apple sign in is not enabled for device accounts.")
     }
 
+    @discardableResult
+    func signIn(email: String, password: String) async throws -> AuthSession {
+        throw AuthError.service("Email sign in is not enabled for device accounts.")
+    }
+
+    func updatePassword(_ password: String) async throws {
+        throw AuthError.service("Device accounts have no password to change.")
+    }
+
+    func requestPasswordReset(email: String) async throws {
+        throw AuthError.service("Email sign in is not enabled for device accounts.")
+    }
+
+    @discardableResult
+    func verifyPasswordReset(email: String, code: String) async throws -> AuthSession {
+        throw AuthError.service("Email sign in is not enabled for device accounts.")
+    }
+
     func validAccessToken() async throws -> String? {
         if let session, session.isFresh { return session.accessToken }
         return try await provision().accessToken

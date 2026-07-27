@@ -1,7 +1,7 @@
 import Foundation
 
-/// Supabase Auth (GoTrue) over plain URLSession: email code sign-in, session
-/// persistence in the Keychain, and silent refresh.
+/// Supabase Auth (GoTrue) over plain URLSession: email code sign-in, email +
+/// password, session persistence in the Keychain, and silent refresh.
 ///
 /// Deliberately dependency-free; if the app later adopts the Supabase SDK,
 /// only this file changes.
@@ -105,6 +105,52 @@ actor SupabaseAuthRepository: AuthRepository {
         return try adopt(tokenData: data)
     }
 
+    // MARK: Email + password
+
+    @discardableResult
+    func signIn(email: String, password: String) async throws -> AuthSession {
+        let data = try await call(
+            path: "auth/v1/token?grant_type=password",
+            body: ["email": email, "password": password]
+        )
+        return try adopt(tokenData: data)
+    }
+
+    /// GoTrue takes a password change as a `PUT` on the user behind the
+    /// bearer token, so this needs a live session — the code step just before
+    /// it is what provides one.
+    func updatePassword(_ password: String) async throws {
+        guard let token = try await validAccessToken() else {
+            throw AuthError.service("That code expired. Request a new one and try again.")
+        }
+        let data = try await call(
+            path: "auth/v1/user",
+            method: "PUT",
+            body: ["password": password],
+            bearer: token
+        )
+        // The response is a bare user object, not a token pair, so there is
+        // no new session to adopt — but a changed password revokes other
+        // refresh tokens, so confirm ours still identifies the same account.
+        guard let user = try? JSONDecoder().decode(TokenResponse.User.self, from: data),
+              user.id == session?.userID else {
+            throw AuthError.service("Could not set that password. Try again.")
+        }
+    }
+
+    func requestPasswordReset(email: String) async throws {
+        _ = try await call(path: "auth/v1/recover", body: ["email": email])
+    }
+
+    @discardableResult
+    func verifyPasswordReset(email: String, code: String) async throws -> AuthSession {
+        let data = try await call(
+            path: "auth/v1/verify",
+            body: ["type": "recovery", "email": email, "token": code]
+        )
+        return try adopt(tokenData: data)
+    }
+
     private static func fragmentParameters(of url: URL) -> [String: String] {
         guard let fragment = URLComponents(url: url, resolvingAgainstBaseURL: false)?.fragment else {
             return [:]
@@ -178,16 +224,24 @@ actor SupabaseAuthRepository: AuthRepository {
         return adopted
     }
 
-    private func call(path: String, body: [String: Any]) async throws -> Data {
+    private func call(
+        path: String,
+        method: String = "POST",
+        body: [String: Any],
+        bearer: String? = nil
+    ) async throws -> Data {
         // Composed with URL(string:relativeTo:) because appendingPathComponent
         // would percent-escape the "?" in the refresh grant path.
         guard let url = URL(string: path, relativeTo: baseURL) else {
             throw AuthError.unreachable
         }
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = method
         request.setValue(anonKey, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let bearer {
+            request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
+        }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let data: Data

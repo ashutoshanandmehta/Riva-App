@@ -35,6 +35,10 @@ struct RivaApp: App {
                     GoalsStepView(model: authModel)
                 case .login:
                     LoginView(model: authModel)
+                case .emailLogin:
+                    EmailLoginView(model: authModel)
+                case .emailFlow(let flow):
+                    EmailFlowView(model: authModel, flow: flow)
                 case .completingProfile:
                     CompleteProfileView(model: authModel)
                 case .signedIn:

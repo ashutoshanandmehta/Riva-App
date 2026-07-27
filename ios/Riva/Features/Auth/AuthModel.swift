@@ -3,9 +3,9 @@ import CryptoKit
 import Foundation
 import Observation
 
-/// The front door state machine: landing page, onboarding goals, Google
-/// sign in (create or log in), profile completion, then the app. The user
-/// signs in exactly once; the session persists in the Keychain.
+/// The front door state machine: landing page, onboarding goals, sign in
+/// (Google, Apple, or email + password), profile completion, then the app.
+/// The user signs in exactly once; the session persists in the Keychain.
 @MainActor
 @Observable
 final class AuthModel {
@@ -17,16 +17,48 @@ final class AuthModel {
         case landing
         /// "What brings you to The Peptide Company?" goal selection, then account creation.
         case onboarding
-        /// Returning user: straight to Google sign in.
+        /// Returning user: the provider buttons.
         case login
+        /// Returning user typing an email and password.
+        case emailLogin
+        /// The three-step email wizard, for creating an account or re-keying one.
+        case emailFlow(EmailFlow)
         /// Right after account creation: profile details.
         case completingProfile
         case signedIn
     }
 
+    /// The two email journeys are the same three steps — enter an address,
+    /// confirm the six digit code, choose a password. Sign-up creates the
+    /// account on the way through; reset re-keys one that already exists.
+    enum EmailFlow: Equatable {
+        case signUp
+        case reset
+
+        var title: String {
+            switch self {
+            case .signUp: "Create your account"
+            case .reset: "Reset your password"
+            }
+        }
+    }
+
+    enum EmailStep: Equatable {
+        case address
+        case code
+        case password
+    }
+
     private(set) var stage: Stage = .checking
     private(set) var isWorking = false
     private(set) var notice: String?
+
+    /// Where the email wizard has got to.
+    private(set) var emailStep: EmailStep = .address
+
+    /// The address the in-flight code went to. Shown on the code screen and
+    /// reused for the verify call, so the user cannot edit it out from under us.
+    private(set) var pendingEmail = ""
 
     /// Set right after a returning login so the app can show a brief
     /// "Welcome back" splash. Empty string = greet without a name; nil = no
@@ -49,11 +81,24 @@ final class AuthModel {
         guard stage == .checking else { return }
         #if DEBUG
         // Screenshot hook: -riva.auth landing|goals|login|profile
+        //   |email|emailcode|emailpassword|emaillogin|reset
         if let forced = UserDefaults.standard.string(forKey: "riva.auth") {
             switch forced {
             case "goals": stage = .onboarding
             case "login": stage = .login
             case "profile": stage = .completingProfile
+            case "email":
+                stage = .emailFlow(.signUp)
+            case "emailcode":
+                pendingEmail = "user@example.com"
+                emailStep = .code
+                stage = .emailFlow(.signUp)
+            case "emailpassword":
+                pendingEmail = "user@example.com"
+                emailStep = .password
+                stage = .emailFlow(.signUp)
+            case "emaillogin": stage = .emailLogin
+            case "reset": stage = .emailFlow(.reset)
             default: stage = .landing
             }
             return
@@ -77,6 +122,56 @@ final class AuthModel {
     func backToLanding() {
         notice = nil
         stage = .landing
+    }
+
+    /// Create an account with an email address: code first, then a password.
+    func startEmailSignUp() {
+        notice = nil
+        pendingEmail = ""
+        emailStep = .address
+        stage = .emailFlow(.signUp)
+    }
+
+    /// Returning user, typing an email and password.
+    func showEmailLogin() {
+        notice = nil
+        stage = .emailLogin
+    }
+
+    /// "Forgot password?" — the same wizard, re-keying an existing account.
+    func startPasswordReset() {
+        notice = nil
+        pendingEmail = ""
+        emailStep = .address
+        stage = .emailFlow(.reset)
+    }
+
+    /// Back button for the email screens: retreat one step inside the wizard,
+    /// or leave it from the first step.
+    ///
+    /// Backing out of the password step is an abandon, not a retreat: the code
+    /// has already been spent for a session, so there is nothing to return to.
+    func backFromEmail() async {
+        notice = nil
+        switch stage {
+        case .emailLogin:
+            stage = .login
+        case .emailFlow(let flow):
+            switch emailStep {
+            case .address:
+                stage = flow == .signUp ? .onboarding : .emailLogin
+            case .code:
+                emailStep = .address
+            case .password:
+                await repository.signOut()
+                pendingEmail = ""
+                emailStep = .address
+                stage = flow == .signUp ? .landing : .login
+                notice = "You'll need a new code to finish that."
+            }
+        default:
+            stage = .landing
+        }
     }
 
     // MARK: Sign out / reset
@@ -220,6 +315,141 @@ final class AuthModel {
         SHA256.hash(data: Data(input.utf8))
             .map { String(format: "%02x", $0) }
             .joined()
+    }
+
+    // MARK: Email + password
+
+    /// Step one: send a six digit code to `email`.
+    ///
+    /// Sign-up uses GoTrue's OTP grant (which creates the account on first
+    /// use); reset uses the recovery grant. Recovery deliberately reports
+    /// success for addresses that don't exist, so an attacker cannot use this
+    /// screen to discover who has an account.
+    func submitEmail(_ email: String) async {
+        guard !isWorking, case .emailFlow(let flow) = stage else { return }
+        let address = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard Self.isPlausibleEmail(address) else {
+            notice = "That doesn't look like an email address."
+            return
+        }
+
+        isWorking = true
+        notice = nil
+        do {
+            switch flow {
+            case .signUp: try await repository.requestCode(email: address)
+            case .reset: try await repository.requestPasswordReset(email: address)
+            }
+            pendingEmail = address
+            emailStep = .code
+        } catch {
+            notice = error.localizedDescription
+        }
+        isWorking = false
+    }
+
+    /// Re-sends the code to `pendingEmail` without leaving the code screen.
+    func resendCode() async {
+        guard !isWorking, case .emailFlow(let flow) = stage, !pendingEmail.isEmpty else { return }
+        isWorking = true
+        notice = nil
+        do {
+            switch flow {
+            case .signUp: try await repository.requestCode(email: pendingEmail)
+            case .reset: try await repository.requestPasswordReset(email: pendingEmail)
+            }
+            notice = "Sent another code to \(pendingEmail)."
+        } catch {
+            notice = error.localizedDescription
+        }
+        isWorking = false
+    }
+
+    /// Step two: exchange the code for a session. That session is what lets
+    /// step three set a password, so this must succeed before the password
+    /// screen appears.
+    func submitCode(_ code: String) async {
+        guard !isWorking, case .emailFlow(let flow) = stage else { return }
+        let token = code.filter(\.isNumber)
+        guard token.count == Self.codeLength else {
+            notice = "Enter the \(Self.codeLength) digit code from your email."
+            return
+        }
+
+        isWorking = true
+        notice = nil
+        do {
+            switch flow {
+            case .signUp:
+                try await repository.verifyCode(email: pendingEmail, code: token)
+            case .reset:
+                try await repository.verifyPasswordReset(email: pendingEmail, code: token)
+            }
+            emailStep = .password
+        } catch {
+            notice = error.localizedDescription
+        }
+        isWorking = false
+    }
+
+    /// Step three: set the password on the session the code just produced.
+    ///
+    /// Sign-up carries on to profile completion; a reset drops the user
+    /// straight into the app, since they already have one.
+    func submitPassword(_ password: String, confirmation: String) async {
+        guard !isWorking, case .emailFlow(let flow) = stage else { return }
+        guard password == confirmation else {
+            notice = "Those two passwords don't match."
+            return
+        }
+        let assessment = PasswordPolicy.assess(password, email: pendingEmail)
+        guard assessment.isAcceptable else {
+            notice = assessment.problem ?? "Pick a stronger password."
+            return
+        }
+
+        isWorking = true
+        notice = nil
+        do {
+            try await repository.updatePassword(password)
+            await routeAfterSignIn(fromLogin: flow == .reset)
+        } catch {
+            notice = error.localizedDescription
+        }
+        isWorking = false
+    }
+
+    /// Returning user signing in with an address and password.
+    func signInWithEmail(email: String, password: String) async {
+        guard !isWorking else { return }
+        let address = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard Self.isPlausibleEmail(address), !password.isEmpty else {
+            notice = "Enter your email and password."
+            return
+        }
+
+        isWorking = true
+        notice = nil
+        do {
+            try await repository.signIn(email: address, password: password)
+            await routeAfterSignIn(fromLogin: true)
+        } catch {
+            notice = error.localizedDescription
+        }
+        isWorking = false
+    }
+
+    /// GoTrue emails six digits.
+    static let codeLength = 6
+
+    /// Deliberately loose: the code we email is the real check, so this only
+    /// catches typos before spending a send.
+    static func isPlausibleEmail(_ address: String) -> Bool {
+        guard !address.contains(" "), address.count >= 6 else { return false }
+        let parts = address.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2, !parts[0].isEmpty else { return false }
+        let domain = parts[1]
+        return domain.contains(".") && !domain.hasPrefix(".") && !domain.hasSuffix(".")
     }
 
     // MARK: Profile completion

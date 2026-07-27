@@ -100,6 +100,20 @@ struct MockAuthRepository: AuthRepository {
         await currentSession()!
     }
 
+    @discardableResult
+    func signIn(email: String, password: String) async throws -> AuthSession {
+        await currentSession()!
+    }
+
+    func updatePassword(_ password: String) async throws {}
+
+    func requestPasswordReset(email: String) async throws {}
+
+    @discardableResult
+    func verifyPasswordReset(email: String, code: String) async throws -> AuthSession {
+        await currentSession()!
+    }
+
     func validAccessToken() async throws -> String? { "mock" }
 
     func signOut() async {}
