@@ -58,18 +58,18 @@ struct RootView: View {
             SnapScanView(
                 mode: mode,
                 scanRepository: dependencies.scanRepository
-            ) {
+            ) { totals in
                 appModel.activeScanMode = nil
-                appModel.applyLoggedTotals(nil)
+                appModel.applyLoggedTotals(totals)
             }
         }
         .fullScreenCover(isPresented: $appModel.activeVolumetricScan) {
             ARFoodCaptureView(
                 volumetricScanRepository: dependencies.volumetricScanRepository,
                 accept: dependencies.scanRepository.accept
-            ) {
+            ) { totals in
                 appModel.activeVolumetricScan = false
-                appModel.applyLoggedTotals(nil)
+                appModel.applyLoggedTotals(totals)
             }
         }
     }

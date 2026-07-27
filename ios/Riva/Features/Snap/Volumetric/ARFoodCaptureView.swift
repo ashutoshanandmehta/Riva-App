@@ -17,7 +17,9 @@ import UIKit
 /// throughout: visibility of status, recognition over recall, clear affordances
 /// and feedback, and a minimalist primary task.
 struct ARFoodCaptureView: View {
-    let onClose: () -> Void
+    /// Hands back the day's totals when the flow logged something, so the
+    /// dashboards update with it rather than waiting on a refetch.
+    let onClose: (DayTotals?) -> Void
 
     @State private var model: ARFoodCaptureViewModel
     @State private var previewIndex = 0
@@ -25,10 +27,15 @@ struct ARFoodCaptureView: View {
     init(
         volumetricScanRepository: any VolumetricScanRepository,
         accept: @escaping @Sendable (ScanResult) async throws -> DayTotals,
-        onClose: @escaping () -> Void
+        onClose: @escaping (DayTotals?) -> Void
     ) {
         self.onClose = onClose
         _model = State(initialValue: ARFoodCaptureViewModel(repository: volumetricScanRepository, accept: accept))
+    }
+
+    /// Leaves the flow, carrying the day's totals when a scan was logged.
+    private func close() {
+        onClose(model.loggedTotals)
     }
 
     var body: some View {
@@ -92,7 +99,7 @@ struct ARFoodCaptureView: View {
             reticle
 
             VStack(spacing: 0) {
-                topBar(onBack: onClose, tint: .white)
+                topBar(onBack: close, tint: .white)
                 Spacer()
                 captureCluster
             }
@@ -389,7 +396,7 @@ struct ARFoodCaptureView: View {
         HStack(alignment: .top, spacing: TPCSpacing.xs) {
             Image(systemName: "flask")
                 .font(.system(size: 13, weight: .semibold))
-            Text("Experimental measurement — check that the portion looks right before logging.")
+            Text("This one is experimental. Have a quick look at the portion before you log it.")
                 .font(TPCFont.footnote)
         }
         .foregroundStyle(TPCColor.textSecondary)
@@ -446,17 +453,17 @@ struct ARFoodCaptureView: View {
                     .frame(width: 76, height: 76)
                     .background(TPCColor.brand, in: Circle())
                 VStack(spacing: TPCSpacing.xs) {
-                    Text("Logged")
+                    Text("All set")
                         .font(TPCFont.sectionTitle)
                         .foregroundStyle(TPCColor.textPrimary)
-                    Text("Today so far: \(totals.calories.formatted()) kcal and \(totals.proteinGrams)g protein.")
+                    Text("That puts you at \(totals.calories.formatted()) kcal and \(totals.proteinGrams)g of protein today.")
                         .font(TPCFont.body)
                         .foregroundStyle(TPCColor.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, TPCSpacing.xl)
                 }
                 Spacer()
-                Button("Done") { onClose() }
+                Button("Done") { close() }
                     .buttonStyle(.rivaPrimary)
                     .padding(.horizontal, TPCSpacing.screenMargin)
                     .padding(.bottom, TPCSpacing.lg)
@@ -484,7 +491,7 @@ struct ARFoodCaptureView: View {
         ZStack {
             TPCColor.background.ignoresSafeArea()
             VStack(spacing: TPCSpacing.lg) {
-                topBar(onBack: onClose, tint: TPCColor.textPrimary)
+                topBar(onBack: close, tint: TPCColor.textPrimary)
                     .padding(.horizontal, TPCSpacing.screenMargin)
                     .padding(.top, TPCSpacing.sm)
                 Spacer()

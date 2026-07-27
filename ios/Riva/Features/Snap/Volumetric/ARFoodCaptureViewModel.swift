@@ -57,6 +57,16 @@ final class ARFoodCaptureViewModel {
     private let processingStepSeconds: Double = 7
 
     private(set) var stage: Stage = .idle
+
+    /// The day's running totals returned by an accepted scan, so closing the
+    /// flow can hand them to the dashboards for an instant update instead of
+    /// leaving them stale until the background refetch lands. Nil until
+    /// something is logged.
+    var loggedTotals: DayTotals? {
+        guard case .saved(let totals) = stage else { return nil }
+        return totals
+    }
+
     private(set) var processingStep: ProcessingStep = .uploading
     /// Transient problem shown near the Accept action on the result screen
     /// (a failed log, not a failed scan — the scan itself is `stage`).

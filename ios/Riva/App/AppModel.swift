@@ -34,7 +34,8 @@ final class AppModel {
     private(set) var dashboardRevision = 0
     /// The day's updated totals from the most recent log, so the mounted
     /// dashboards can update instantly before the background refetch lands.
-    /// Nil when a write carried no totals (e.g. weight, shots, scans).
+    /// Nil when a write carried no totals (e.g. weight, shots) or the flow was
+    /// closed without logging anything.
     private(set) var pendingTotals: DayTotals?
 
     /// App-wide appearance, persisted across launches.
@@ -148,8 +149,8 @@ final class AppModel {
 
     /// Applies the totals returned by a log so dashboards can update
     /// optimistically, then bumps the revision to trigger their background
-    /// reconcile. `totals` is nil for writes that return none (weight,
-    /// shots, scans), which just refetch as before.
+    /// reconcile. `totals` is nil for writes that return none (weight, shots),
+    /// which just refetch as before.
     func applyLoggedTotals(_ totals: DayTotals?) {
         pendingTotals = totals
         dashboardRevision += 1

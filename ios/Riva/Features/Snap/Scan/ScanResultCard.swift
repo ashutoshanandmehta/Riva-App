@@ -69,7 +69,7 @@ struct ScanResultCard: View {
         case .water: actual = "water"
         case .notFood: actual = "not food or drink"
         }
-        return "Heads up: you chose to log \(scan.requestedMode), but this looks like \(actual). Accept logs what is actually in the photo."
+        return "You picked \(scan.requestedMode), but this photo looks like \(actual). We will log what is actually there."
     }
 
     private var notFoodCard: some View {
@@ -78,7 +78,7 @@ struct ScanResultCard: View {
                 Text("Nothing to log here")
                     .font(TPCFont.cardTitle)
                     .foregroundStyle(TPCColor.textPrimary)
-                Text(scan.reason ?? "This photo does not look like food, a drink, or water.")
+                Text(scan.reason ?? "We could not spot any food or drink in this one. Try another photo and we will take a look.")
                     .font(TPCFont.footnote)
                     .foregroundStyle(TPCColor.textSecondary)
             }
@@ -93,7 +93,7 @@ struct ScanResultCard: View {
                         .font(TPCFont.cardTitle)
                         .foregroundStyle(TPCColor.textPrimary)
                     if let water = scan.water {
-                        Text("Looks like \(water.containerType.isEmpty ? "a container" : articled(water.containerType)) holding about \(water.volumeOz) fl oz (\(water.volumeMl) ml).")
+                        Text("Looks like \(water.containerType.isEmpty ? "a container" : articled(water.containerType)) with about \(water.volumeOz) fl oz in it, roughly \(water.volumeMl) ml.")
                             .font(TPCFont.footnote)
                             .foregroundStyle(TPCColor.textSecondary)
                     }
@@ -147,8 +147,10 @@ struct ScanResultCard: View {
                 Text("\(item.portionDesc), about \(Int(item.portionGrams.rounded()))g")
                     .font(TPCFont.footnote)
                     .foregroundStyle(TPCColor.textSecondary)
+                // Plain language over jargon: "matched" only means anything if
+                // you already know the numbers come from the USDA database.
                 RivaBadge(
-                    text: item.matched ? "Matched" : "AI estimate",
+                    text: item.matched ? "USDA data" : "Our best guess",
                     style: item.matched ? .brand : .neutral
                 )
             }
@@ -190,14 +192,14 @@ struct ScanResultCard: View {
                     if isSaving {
                         ProgressView().tint(TPCColor.textOnBrand)
                     } else {
-                        Text("Accept")
+                        Text("Add to my day")
                     }
                 }
                 .buttonStyle(.rivaPrimary)
                 .disabled(isSaving)
             }
 
-            Button("Scan again") { onScanAgain() }
+            Button("Try another photo") { onScanAgain() }
                 .font(TPCFont.captionEmphasized)
                 .foregroundStyle(TPCColor.brand)
                 .disabled(isSaving)

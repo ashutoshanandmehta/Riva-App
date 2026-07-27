@@ -19,6 +19,15 @@ final class SnapScanViewModel {
 
     private(set) var stage: Stage = .capture
 
+    /// The day's running totals returned by an accepted scan, so closing the
+    /// flow can hand them to the dashboards for an instant update instead of
+    /// leaving them stale until the background refetch lands. Nil until
+    /// something is logged.
+    var loggedTotals: DayTotals? {
+        guard case .saved(let totals, _) = stage else { return nil }
+        return totals
+    }
+
     var mode: ScanMode
     /// Optional free-text note the user adds before scanning, passed to the
     /// vision model to sharpen its read ("extra cheese, medium plate").

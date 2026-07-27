@@ -5,7 +5,9 @@ import SwiftUI
 /// or pick a photo, scan it, review, accept. The user is already signed in
 /// by the time this appears.
 struct SnapScanView: View {
-    let onClose: () -> Void
+    /// Hands back the day's totals when the flow logged something, so the
+    /// dashboards update with it rather than waiting on a refetch.
+    let onClose: (DayTotals?) -> Void
 
     @State private var model: SnapScanViewModel
     @State private var libraryItem: PhotosPickerItem?
@@ -13,7 +15,7 @@ struct SnapScanView: View {
 
     init(mode: ScanMode,
          scanRepository: any ScanRepository,
-         onClose: @escaping () -> Void) {
+         onClose: @escaping (DayTotals?) -> Void) {
         self.onClose = onClose
         _model = State(initialValue: SnapScanViewModel(
             mode: mode,
@@ -80,7 +82,7 @@ struct SnapScanView: View {
                 .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             Button {
-                onClose()
+                onClose(model.loggedTotals)
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold))
@@ -255,7 +257,7 @@ struct SnapScanView: View {
                 .background(TPCColor.brand, in: Circle())
 
             VStack(spacing: TPCSpacing.xs) {
-                Text("Logged")
+                Text("All set")
                     .font(TPCFont.sectionTitle)
                     .foregroundStyle(TPCColor.textPrimary)
                 Text(summary(totals: totals, loggedWater: loggedWater))
@@ -268,7 +270,7 @@ struct SnapScanView: View {
             Spacer()
 
             VStack(spacing: TPCSpacing.sm) {
-                Button("Done") { onClose() }
+                Button("Done") { onClose(totals) }
                     .buttonStyle(.rivaPrimary)
                 Button("Scan something else") { model.scanAgain() }
                     .font(TPCFont.captionEmphasized)
@@ -281,9 +283,9 @@ struct SnapScanView: View {
 
     private func summary(totals: DayTotals, loggedWater: Bool) -> String {
         if loggedWater {
-            return "Today so far: \(totals.waterOunces) oz of water."
+            return "That puts you at \(totals.waterOunces) oz of water today."
         }
-        return "Today so far: \(totals.calories.formatted()) kcal and \(totals.proteinGrams)g protein."
+        return "That puts you at \(totals.calories.formatted()) kcal and \(totals.proteinGrams)g of protein today."
     }
 }
 
@@ -291,5 +293,5 @@ struct SnapScanView: View {
     SnapScanView(
         mode: .food,
         scanRepository: MockScanRepository()
-    ) {}
+    ) { _ in }
 }
