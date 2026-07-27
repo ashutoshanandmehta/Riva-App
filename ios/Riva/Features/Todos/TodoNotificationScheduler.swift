@@ -57,7 +57,7 @@ enum TodoNotificationScheduler {
         for todo in todos {
             guard let trigger = trigger(for: todo, now: now) else { continue }
             let content = UNMutableNotificationContent()
-            content.title = "Riva to-do"
+            content.title = "TPC to-do"
             content.body = todo.title
             content.sound = .default
             let request = UNNotificationRequest(

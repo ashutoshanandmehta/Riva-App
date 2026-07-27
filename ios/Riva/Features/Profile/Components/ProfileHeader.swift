@@ -26,7 +26,7 @@ struct ProfileHeader: View {
                 Text(displayName)
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(TPCColor.textPrimary)
-                Text("Riva member")
+                Text("TPC member")
                     .font(TPCFont.footnote)
                     .foregroundStyle(TPCColor.textSecondary)
             }

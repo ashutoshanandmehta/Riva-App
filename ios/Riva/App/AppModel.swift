@@ -245,7 +245,7 @@ struct PlaceholderContext: Identifiable, Equatable {
         id: "tracker.logSideEffect",
         title: "Log Side Effect",
         systemImage: "exclamationmark.bubble",
-        message: "Quick symptom logging is coming soon. Tracking side effects helps Riva time your doses and coaching."
+        message: "Quick symptom logging is coming soon. Tracking side effects helps TPC time your doses and coaching."
     )
 
     static let logSleep = PlaceholderContext(

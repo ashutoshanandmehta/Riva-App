@@ -13,7 +13,7 @@ final class AuthModel {
         case checking
         /// The marketing landing page.
         case landing
-        /// "What brings you to Riva?" goal selection, then account creation.
+        /// "What brings you to The Peptide Company?" goal selection, then account creation.
         case onboarding
         /// Returning user: straight to Google sign in.
         case login

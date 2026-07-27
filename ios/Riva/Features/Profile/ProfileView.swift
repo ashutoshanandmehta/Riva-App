@@ -211,13 +211,13 @@ struct ProfileView: View {
         }
     }
 
-    /// "Riva App Version 0.1.0 (Build 1)", read from the bundle so it can
+    /// "The Peptide Company Version 0.1.0 (Build 1)", read from the bundle so it can
     /// never drift from the shipped binary.
     private static var versionFooter: String {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? "?"
         let build = info?["CFBundleVersion"] as? String ?? "?"
-        return "Riva App Version \(version) (Build \(build))"
+        return "The Peptide Company Version \(version) (Build \(build))"
     }
 }
 

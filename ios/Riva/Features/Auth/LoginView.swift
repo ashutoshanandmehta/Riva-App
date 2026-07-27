@@ -28,9 +28,7 @@ struct LoginView: View {
                 Spacer()
 
                 VStack(spacing: TPCSpacing.sm) {
-                    Text("TPC")
-                        .font(.system(size: 40, weight: .bold))
-                        .foregroundStyle(TPCColor.brand)
+                    TPCSeal(size: 72)
                     Text("Welcome back")
                         .font(TPCFont.sectionTitle)
                         .foregroundStyle(TPCColor.textPrimary)

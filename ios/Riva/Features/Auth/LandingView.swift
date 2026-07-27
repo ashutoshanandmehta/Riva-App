@@ -124,29 +124,14 @@ struct LandingView: View {
         }
     }
 
-    // Seal circle: ultraThinMaterial (≈ backdrop-filter: blur(6px)) +
-    // semi-transparent gold gradient matching design rgba values
+    // Seal circle: the shared brand mark, in the brand grotesque and carrying a
+    // drop shadow so it separates from the photo hero behind it.
     private var sealView: some View {
-        Text("TPC")
-            .font(Font.custom("Bricolage Grotesque", fixedSize: 21).weight(.heavy))
-            .foregroundStyle(Color(hex: 0xFBF7EC))
-            .shadow(color: TPCColor.heroBackground.opacity(0.7), radius: 6)
-            .frame(width: 104, height: 104)
-            .background(
-                RadialGradient(
-                    colors: [
-                        Color(hex: 0xB08A2E, alpha: 0.70),
-                        Color(hex: 0x10201A, alpha: 0.85)
-                    ],
-                    center: UnitPoint(x: 0.42, y: 0.30),
-                    startRadius: 0,
-                    endRadius: 55
-                ),
-                in: Circle()
-            )
-            .background(.ultraThinMaterial, in: Circle())
-            .overlay(Circle().strokeBorder(TPCColor.accentPale.opacity(0.5), lineWidth: 1.5))
-            .shadow(color: .black.opacity(0.65), radius: 17, x: 0, y: 16)
+        TPCSeal(
+            size: 104,
+            font: Font.custom("Bricolage Grotesque", fixedSize: 21).weight(.heavy),
+            shadow: true
+        )
     }
 
     // MARK: Bottom block

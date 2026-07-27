@@ -48,7 +48,7 @@ struct TodoEditorSheet: View {
                         repeatPicker
                         schedule
                         if notificationsDenied {
-                            Text("Notifications for Riva are turned off. Allow them in Settings to be reminded.")
+                            Text("Notifications for The Peptide Company are turned off. Allow them in Settings to be reminded.")
                                 .font(TPCFont.footnote)
                                 .foregroundStyle(TPCColor.textSecondary)
                         }

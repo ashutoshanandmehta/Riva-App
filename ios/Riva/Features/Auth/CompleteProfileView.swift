@@ -31,7 +31,7 @@ struct CompleteProfileView: View {
                             Text("Complete your profile")
                                 .font(TPCFont.screenTitle)
                                 .foregroundStyle(TPCColor.textPrimary)
-                            Text("This helps Riva personalize your targets, doses, and reminders. You can change everything later.")
+                            Text("This helps TPC personalize your targets, doses, and reminders. You can change everything later.")
                                 .font(TPCFont.body)
                                 .foregroundStyle(TPCColor.textSecondary)
                         }

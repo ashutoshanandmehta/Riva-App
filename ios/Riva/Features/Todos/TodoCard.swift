@@ -122,7 +122,7 @@ struct TodoCard: View {
     // MARK: Empty state and footer
 
     private var emptyState: some View {
-        Text("No to-dos yet. Set one and Riva will nudge you at the right time.")
+        Text("No to-dos yet. Set one and TPC will nudge you at the right time.")
             .font(TPCFont.footnote)
             .foregroundStyle(TPCColor.textSecondary)
             .padding(.vertical, TPCSpacing.xs)

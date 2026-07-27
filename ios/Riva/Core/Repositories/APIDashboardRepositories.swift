@@ -333,7 +333,7 @@ struct APIHomeRepository: HomeRepository {
                 currentMg: (level * 100).rounded() / 100,
                 peakMg: max(planDose * 2, level, 0.5),
                 explanation: payload.shots.isEmpty
-                    ? "Log your first shot and Riva estimates the medication in your system through the week."
+                    ? "Log your first shot and TPC estimates the medication in your system through the week."
                     : "Estimated from your logged shots with a one week half life. Solid is past, dashed projects ahead."
             ),
             nextShot: DashboardMapping.nextShot(payload),

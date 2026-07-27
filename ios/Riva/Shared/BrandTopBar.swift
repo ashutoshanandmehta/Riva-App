@@ -25,7 +25,7 @@ struct BrandTopBar: View {
                 .padding(.trailing, TPCSpacing.xxs)
             }
 
-            tpcSeal
+            TPCSeal()
             Text("The Peptide Company")
                 .tpcOverline(TPCColor.accentLink)
 
@@ -45,27 +45,6 @@ struct BrandTopBar: View {
         }
     }
 
-    private var tpcSeal: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color(hex: 0xB08A2E), Color(hex: 0x7E5F14)],
-                        center: UnitPoint(x: 0.4, y: 0.3),
-                        startRadius: 0,
-                        endRadius: 15
-                    )
-                )
-                .overlay(
-                    Circle()
-                        .strokeBorder(TPCColor.accentPale.opacity(0.45), lineWidth: 1)
-                )
-            Text("TPC")
-                .font(.system(size: 8, weight: .heavy, design: .rounded))
-                .foregroundStyle(Color(hex: 0xFBF7EC))
-        }
-        .frame(width: 30, height: 30)
-    }
 }
 
 #Preview {

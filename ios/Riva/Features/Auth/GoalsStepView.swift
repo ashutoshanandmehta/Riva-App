@@ -15,7 +15,7 @@ struct GoalsStepView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: TPCSpacing.md) {
                         VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
-                            Text("What brings you to Riva?")
+                            Text("What brings you to The Peptide Company?")
                                 .font(TPCFont.screenTitle)
                                 .foregroundStyle(TPCColor.textPrimary)
                             Text("Select all that apply to help us personalize your journey.")
