@@ -1,14 +1,14 @@
 import SwiftUI
 
 /// Circular progress ring with arbitrary center content
-/// (nutrient rings, next-shot countdown).
-struct RivaProgressRing<Center: View>: View {
+/// (calorie ring, nutrient rings, next-shot countdown).
+struct TPCProgressRing<Center: View>: View {
     /// Progress in `0...1`; values outside the range are clamped.
     let progress: Double
     var size: CGFloat = 68
     var lineWidth: CGFloat = 6
-    var tint: Color = RivaColor.brand
-    var track: Color = RivaColor.brandSoft
+    var tint: Color = TPCColor.brand
+    var track: Color = TPCColor.surfaceOutline
     @ViewBuilder let center: () -> Center
 
     var body: some View {
@@ -28,23 +28,26 @@ struct RivaProgressRing<Center: View>: View {
     private var clamped: Double { min(max(progress, 0), 1) }
 }
 
+typealias RivaProgressRing = TPCProgressRing
+
 #Preview {
     HStack(spacing: 24) {
-        RivaProgressRing(progress: 0.86) {
-            Text("95g").font(RivaFont.metricM)
-        }
-        RivaProgressRing(
-            progress: 0.71,
-            tint: RivaColor.brandOnInverse,
-            track: RivaColor.fillOnInverse
-        ) {
-            VStack(spacing: 0) {
-                Text("2d").font(RivaFont.metricM).foregroundStyle(.white)
-                Text("left").font(.system(size: 10)).foregroundStyle(RivaColor.textOnInverseSecondary)
+        TPCProgressRing(progress: 0.71, size: 92, lineWidth: 8) {
+            VStack(spacing: 1) {
+                Text("470").font(TPCFont.metricM).foregroundStyle(TPCColor.textPrimary)
+                Text("LEFT").font(TPCFont.overline).foregroundStyle(TPCColor.textTertiary)
             }
         }
+        TPCProgressRing(
+            progress: 0.74,
+            tint: TPCColor.accentGold,
+            track: TPCColor.fillOnInverse
+        ) {
+            Text("2d").font(TPCFont.metricM).foregroundStyle(TPCColor.textOnInversePrimary)
+        }
         .padding(8)
-        .background(RivaColor.surfaceInverse, in: Circle())
+        .background(TPCColor.surfaceInverse, in: Circle())
     }
     .padding()
+    .background(TPCColor.background)
 }

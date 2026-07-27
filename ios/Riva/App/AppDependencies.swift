@@ -9,7 +9,6 @@ struct AppDependencies {
     let homeRepository: any HomeRepository
     let medicationRepository: any MedicationRepository
     let trackerRepository: any TrackerRepository
-    let profileRepository: any ProfileRepository
     let authRepository: any AuthRepository
     let scanRepository: any ScanRepository
     let logRepository: any LogRepository
@@ -23,6 +22,9 @@ struct AppDependencies {
     /// accepted volumetric scan reuses `scanRepository.accept`, not a
     /// separate endpoint.
     let volumetricScanRepository: any VolumetricScanRepository
+    /// Backs the AI companion tab. Conversation state lives server-side; the
+    /// client only holds the thread id it was given.
+    let companionRepository: any CompanionRepository
 
     /// Production wiring: everything reads and writes the Riva backend.
     /// Mock repositories exist only for previews.
@@ -37,14 +39,14 @@ struct AppDependencies {
             homeRepository: APIHomeRepository(service: dashboards),
             medicationRepository: APIMedicationRepository(service: dashboards),
             trackerRepository: APITrackerRepository(service: dashboards),
-            profileRepository: MockProfileRepository(),
             authRepository: auth,
             scanRepository: APIScanRepository(auth: auth),
             logRepository: APILogRepository(auth: auth),
             accountRepository: APIAccountRepository(auth: auth),
             wellnessRepository: APIWellnessRepository(service: dashboards, auth: auth),
             todoRepository: APITodoRepository(auth: auth),
-            volumetricScanRepository: APIVolumetricScanRepository()
+            volumetricScanRepository: APIVolumetricScanRepository(),
+            companionRepository: APICompanionRepository(auth: auth)
         )
     }
 }

@@ -5,11 +5,11 @@ struct LoadingStateView: View {
     var message = "Loading…"
 
     var body: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             ProgressView()
             Text(message)
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 160)
@@ -22,21 +22,21 @@ struct ErrorStateView: View {
     let onRetry: () -> Void
 
     var body: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             Image(systemName: "wifi.exclamationmark")
                 .font(.system(size: 28))
-                .foregroundStyle(RivaColor.textSecondary)
+                .foregroundStyle(TPCColor.textSecondary)
             Text(message)
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textSecondary)
                 .multilineTextAlignment(.center)
             Button("Try again", action: onRetry)
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 140)
-        .padding(.horizontal, RivaSpacing.xxl)
+        .padding(.horizontal, TPCSpacing.xxl)
     }
 }
 

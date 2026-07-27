@@ -13,7 +13,7 @@ struct WeightBarsStrip: View {
         let maxW = dailyLbs.max() ?? 1
         let span = max(maxW - minW, 0.1)
 
-        HStack(alignment: .bottom, spacing: RivaSpacing.xs) {
+        HStack(alignment: .bottom, spacing: TPCSpacing.xs) {
             ForEach(Array(dailyLbs.enumerated()), id: \.offset) { index, weight in
                 let normalized = 0.62 + 0.38 * ((weight - minW) / span)
                 let isToday = index == dailyLbs.count - 1
@@ -28,15 +28,15 @@ struct WeightBarsStrip: View {
     }
 
     private func barColor(index: Int, isToday: Bool) -> Color {
-        if isToday { return RivaColor.brand }
+        if isToday { return TPCColor.brand }
         // Older days fade toward the soft tint.
         let position = Double(index) / Double(max(dailyLbs.count - 1, 1))
-        return RivaColor.brandSoft.opacity(0.55 + 0.45 * position)
+        return TPCColor.brandSoft.opacity(0.55 + 0.45 * position)
     }
 }
 
 #Preview {
     WeightBarsStrip(dailyLbs: [185.4, 185.8, 185.1, 185.3, 184.9, 185.0, 184.2])
         .padding()
-        .background(RivaColor.surface)
+        .background(TPCColor.surface)
 }

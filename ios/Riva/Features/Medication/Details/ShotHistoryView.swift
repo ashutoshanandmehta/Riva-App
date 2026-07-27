@@ -35,33 +35,33 @@ struct ShotHistoryView: View {
                 }
             }
         }
-        .padding(.top, RivaSpacing.sm)
+        .padding(.top, TPCSpacing.sm)
         .task { await model.load() }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
     }
 
     // MARK: List
 
     private func list(_ shots: [ShotEntry]) -> some View {
-        LazyVStack(spacing: RivaSpacing.sm) {
+        LazyVStack(spacing: TPCSpacing.sm) {
             ForEach(shots) { shot in
                 shotCard(shot)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
-        .padding(.bottom, RivaSpacing.xl)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
+        .padding(.bottom, TPCSpacing.xl)
     }
 
     private func shotCard(_ shot: ShotEntry) -> some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 HStack(alignment: .top) {
                     Text("\(shot.medicationName) \(RivaFormat.doseMg(shot.doseMg))")
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Spacer()
                     if let rating = shot.comfortRating {
                         RivaBadge(text: "Comfort \(rating) of 5", style: .brand)
@@ -69,16 +69,16 @@ struct ShotHistoryView: View {
                 }
 
                 Text(DetailDate.dayLabel(shot.takenAt))
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
 
                 HStack(spacing: 6) {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                     Text(siteName(shot.injectionSite))
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
             }
         }

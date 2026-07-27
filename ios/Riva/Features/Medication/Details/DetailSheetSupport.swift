@@ -9,22 +9,22 @@ struct DetailSheetHeader: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             Button {
                 onClose()
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .frame(width: 34, height: 34)
-                    .background(RivaColor.fillNeutral, in: Circle())
+                    .background(TPCColor.fillNeutral, in: Circle())
             }
             .accessibilityLabel("Close")
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.vertical, RivaSpacing.sm)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.vertical, TPCSpacing.sm)
     }
 }
 
@@ -34,18 +34,18 @@ struct DetailEmptyState: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             Image(systemName: systemImage)
                 .font(.system(size: 28))
-                .foregroundStyle(RivaColor.textSecondary)
+                .foregroundStyle(TPCColor.textSecondary)
             Text(message)
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 140)
-        .padding(.horizontal, RivaSpacing.xxl)
+        .padding(.horizontal, TPCSpacing.xxl)
     }
 }
 

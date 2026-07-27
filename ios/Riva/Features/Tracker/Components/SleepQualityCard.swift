@@ -9,21 +9,21 @@ struct SleepQualityCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text("Sleep quality")
                     .rivaOverline()
 
                 Text(headline)
-                    .font(RivaFont.metricM)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.metricM)
+                    .foregroundStyle(TPCColor.textPrimary)
 
                 HStack(spacing: 5) {
                     Image(systemName: "moon.fill")
                         .font(.system(size: 11))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                     Text(subheadline)
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                 }
 
                 Spacer()
@@ -39,14 +39,14 @@ struct SleepQualityCard: View {
     }
 
     private var bars: some View {
-        HStack(alignment: .bottom, spacing: RivaSpacing.xs) {
+        HStack(alignment: .bottom, spacing: TPCSpacing.xs) {
             ForEach(Array(sleep.recentNights.enumerated()), id: \.offset) { _, night in
                 Capsule()
-                    .fill(RivaColor.textPrimary.opacity(0.8))
+                    .fill(TPCColor.textPrimary.opacity(0.8))
                     .frame(width: 4)
                     .frame(height: max(44 * night, 6))
             }
-            Spacer(minLength: RivaSpacing.xs)
+            Spacer(minLength: TPCSpacing.xs)
             RivaQuickAddButton(accessibilityLabel: "Log sleep", action: onAdd)
         }
         .frame(height: 44, alignment: .bottom)
@@ -78,7 +78,7 @@ struct SleepQualityCard: View {
 
 #Preview {
     SleepQualityCard(sleep: MockTrackerRepository.dashboard().sleep) {}
-        .frame(width: 170, height: 200)
+        .frame(width: 170)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

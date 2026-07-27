@@ -13,13 +13,13 @@ struct WelcomeBackView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [RivaColor.heroTop, RivaColor.heroMid, RivaColor.heroBottom],
+                colors: [TPCColor.heroTop, TPCColor.heroMid, TPCColor.heroBottom],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
 
-            VStack(spacing: RivaSpacing.lg) {
+            VStack(spacing: TPCSpacing.lg) {
                 Image("RivaLogo")
                     .resizable()
                     .renderingMode(.template)
@@ -31,7 +31,7 @@ struct WelcomeBackView: View {
                     .scaleEffect(appeared ? 1 : 0.6)
                     .opacity(appeared ? 1 : 0)
 
-                VStack(spacing: RivaSpacing.xs) {
+                VStack(spacing: TPCSpacing.xs) {
                     Text("Welcome back")
                         .font(.system(size: 20, weight: .medium))
                         .foregroundStyle(.white.opacity(0.9))
@@ -43,12 +43,12 @@ struct WelcomeBackView: View {
                     }
 
                     Text("Your data is right where you left it.")
-                        .font(RivaFont.body)
+                        .font(TPCFont.body)
                         .foregroundStyle(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
-                        .padding(.top, RivaSpacing.xs)
+                        .padding(.top, TPCSpacing.xs)
                 }
-                .padding(.horizontal, RivaSpacing.xl)
+                .padding(.horizontal, TPCSpacing.xl)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 12)
             }

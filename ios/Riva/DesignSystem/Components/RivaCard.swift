@@ -1,18 +1,18 @@
 import SwiftUI
 
-/// The standard Riva card container.
+/// The standard TPC card container.
 ///
-/// All dashboard modules sit inside a `RivaCard` so surface treatment
+/// All dashboard modules sit inside a `TPCCard` so surface treatment
 /// (radius, padding, elevation) stays uniform and future theming is a
 /// one-file change.
-struct RivaCard<Content: View>: View {
+struct TPCCard<Content: View>: View {
 
     enum Style {
-        /// White elevated surface (default).
+        /// Warm white elevated surface (default).
         case standard
-        /// High-contrast dark surface (e.g. Next Shot).
+        /// High-contrast dark surface (today card, hero cards).
         case inverse
-        /// Soft brand-tinted surface, no elevation (e.g. the coach note).
+        /// Soft gold-tinted surface (companion prompt, coach note).
         case tinted
     }
 
@@ -21,40 +21,58 @@ struct RivaCard<Content: View>: View {
 
     var body: some View {
         let card = content()
-            .padding(RivaSpacing.lg)
+            .padding(TPCSpacing.lg)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 backgroundColor,
-                in: RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
+                in: RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous)
             )
-            .rivaSurfaceOutline(cornerRadius: RivaRadius.card)
+            .overlay(
+                RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous)
+                    .strokeBorder(borderColor, lineWidth: 1)
+            )
 
         switch style {
-        case .standard: RivaShadow.card(card)
+        case .standard: TPCShadow.card(card)
         case .inverse, .tinted: card
         }
     }
 
     private var backgroundColor: Color {
         switch style {
-        case .standard: RivaColor.surface
-        case .inverse: RivaColor.surfaceInverse
-        case .tinted: RivaColor.brandWash
+        case .standard: TPCColor.surface
+        case .inverse:  TPCColor.surfaceInverse
+        case .tinted:   TPCColor.brandSoft
+        }
+    }
+
+    private var borderColor: Color {
+        switch style {
+        case .standard: TPCColor.surfaceOutline
+        case .inverse:  .clear
+        case .tinted:   TPCColor.brand.opacity(0.22)
         }
     }
 }
 
+typealias RivaCard = TPCCard
+
 #Preview("Card styles") {
-    VStack(spacing: RivaSpacing.md) {
-        RivaCard {
-            Text("Standard card").font(RivaFont.cardTitle)
+    VStack(spacing: TPCSpacing.md) {
+        TPCCard {
+            Text("Standard card").font(TPCFont.cardTitle)
+                .foregroundStyle(TPCColor.textPrimary)
         }
-        RivaCard(style: .inverse) {
+        TPCCard(style: .inverse) {
             Text("Inverse card")
-                .font(RivaFont.cardTitle)
-                .foregroundStyle(RivaColor.textOnInversePrimary)
+                .font(TPCFont.cardTitle)
+                .foregroundStyle(TPCColor.textOnInversePrimary)
+        }
+        TPCCard(style: .tinted) {
+            Text("Tinted card").font(TPCFont.cardTitle)
+                .foregroundStyle(TPCColor.textPrimary)
         }
     }
     .padding()
-    .background(RivaColor.background)
+    .background(TPCColor.background)
 }

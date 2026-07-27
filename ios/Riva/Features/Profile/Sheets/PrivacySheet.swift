@@ -14,7 +14,7 @@ struct PrivacySheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .privacy)
 
             if case .deleted(let message) = model.phase {
@@ -23,11 +23,11 @@ struct PrivacySheet: View {
                 content
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .onChange(of: model.phase) {
             guard case .deleted = model.phase else { return }
             Task {
@@ -46,22 +46,22 @@ struct PrivacySheet: View {
     }
 
     private var content: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             Text("Your data lives in a private account in the Riva backend, isolated per user and reachable only from this device's sign in. It is never sold or shared for advertising. You can take a full copy or erase everything whenever you like.")
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textSecondary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, RivaSpacing.screenMargin)
+                .padding(.horizontal, TPCSpacing.screenMargin)
 
             if let message = model.errorMessage {
                 Text(message)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.danger)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.danger)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, RivaSpacing.lg)
+                    .padding(.horizontal, TPCSpacing.lg)
             }
 
-            Spacer(minLength: RivaSpacing.xs)
+            Spacer(minLength: TPCSpacing.xs)
 
             exportButton
             deleteButton
@@ -72,7 +72,7 @@ struct PrivacySheet: View {
         Group {
             if let url = model.exportURL {
                 ShareLink(item: url) {
-                    HStack(spacing: RivaSpacing.xs) {
+                    HStack(spacing: TPCSpacing.xs) {
                         Image(systemName: "square.and.arrow.up")
                         Text("Share riva-export.json")
                     }
@@ -83,7 +83,7 @@ struct PrivacySheet: View {
                     Task { await model.export() }
                 } label: {
                     if model.phase == .exporting {
-                        ProgressView().tint(RivaColor.textOnBrand)
+                        ProgressView().tint(TPCColor.textOnBrand)
                     } else {
                         Text("Export my data")
                     }
@@ -92,7 +92,7 @@ struct PrivacySheet: View {
                 .disabled(model.phase != .idle)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 
     private var deleteButton: some View {
@@ -100,14 +100,14 @@ struct PrivacySheet: View {
             isDeleteConfirmPresented = true
         } label: {
             if model.phase == .deleting {
-                ProgressView().tint(RivaColor.danger)
+                ProgressView().tint(TPCColor.danger)
             } else {
                 Text("Delete my data")
             }
         }
         .buttonStyle(.rivaDestructive)
         .disabled(model.phase != .idle)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 }
 

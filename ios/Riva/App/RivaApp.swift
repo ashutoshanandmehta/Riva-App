@@ -26,7 +26,7 @@ struct RivaApp: App {
                 case .checking:
                     // Looking up the stored session; sub-second.
                     ZStack {
-                        RivaColor.background.ignoresSafeArea()
+                        TPCColor.background.ignoresSafeArea()
                         ProgressView()
                     }
                 case .landing:
@@ -55,7 +55,7 @@ struct RivaApp: App {
                 }
             }
             .task { await authModel.start() }
-            .tint(RivaColor.brand)
+            .tint(TPCColor.brand)
             // User-selected theme; `nil` (System) follows the device.
             .preferredColorScheme(appModel.appearance.colorScheme)
             // The "3D scan (beta)" ARKit capture flow now has real in-app

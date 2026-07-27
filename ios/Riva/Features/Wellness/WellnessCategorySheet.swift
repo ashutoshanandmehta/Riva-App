@@ -11,7 +11,7 @@ struct WellnessCategorySheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
+                LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
                     ForEach(WellnessKind.allCases, id: \.self) { kind in
                         let practices = WellnessPractice.catalog.filter { $0.kind == kind }
                         if !practices.isEmpty {
@@ -19,13 +19,13 @@ struct WellnessCategorySheet: View {
                         }
                     }
                 }
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.top, RivaSpacing.sm)
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.sm)
             }
             .navigationTitle("All practices")
             .navigationBarTitleDisplayMode(.large)
-            .background(RivaColor.background)
-            .toolbarBackground(RivaColor.background, for: .navigationBar)
+            .background(TPCColor.background)
+            .toolbarBackground(TPCColor.background, for: .navigationBar)
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
@@ -40,10 +40,10 @@ struct WellnessCategorySheet: View {
     }
 
     private func section(kind: WellnessKind, practices: [WellnessPractice]) -> some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             Text(kind.title.uppercased())
-                .rivaOverline(RivaColor.textSecondary)
-                .padding(.top, RivaSpacing.xs)
+                .rivaOverline(TPCColor.textSecondary)
+                .padding(.top, TPCSpacing.xs)
 
             ForEach(practices) { practice in
                 practiceRow(practice)
@@ -54,32 +54,32 @@ struct WellnessCategorySheet: View {
     private func practiceRow(_ practice: WellnessPractice) -> some View {
         Button { selectedPractice = practice } label: {
             RivaCard {
-                HStack(spacing: RivaSpacing.md) {
+                HStack(spacing: TPCSpacing.md) {
                     RivaIconChip(
                         systemImage: practice.icon,
-                        tint: RivaColor.brand,
-                        background: RivaColor.brandSoft,
+                        tint: TPCColor.brand,
+                        background: TPCColor.brandSoft,
                         size: 44
                     )
-                    VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
-                        HStack(spacing: RivaSpacing.xs) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
+                        HStack(spacing: TPCSpacing.xs) {
                             Text(practice.title)
-                                .font(RivaFont.cardTitle)
-                                .foregroundStyle(RivaColor.textPrimary)
+                                .font(TPCFont.cardTitle)
+                                .foregroundStyle(TPCColor.textPrimary)
                             Text(practice.durationText.uppercased())
-                                .rivaOverline(RivaColor.brand)
+                                .rivaOverline(TPCColor.brand)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 3)
-                                .background(RivaColor.brandWash, in: Capsule())
+                                .background(TPCColor.brandWash, in: Capsule())
                         }
                         Text(practice.subtitle)
-                            .font(RivaFont.footnote)
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .font(TPCFont.footnote)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(RivaColor.textTertiary)
+                        .foregroundStyle(TPCColor.textTertiary)
                 }
             }
         }

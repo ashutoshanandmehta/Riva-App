@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// App scaffold: hosts the tab content, the floating Liquid Glass tab bar,
-/// the radial snap menu, and the shared placeholder sheet.
+/// App scaffold: tab content, floating Liquid Glass tab bar, + FAB, and
+/// all shared sheets / full-screen covers.
 struct RootView: View {
     @Environment(AppModel.self) private var appModel
     let dependencies: AppDependencies
@@ -12,30 +12,33 @@ struct RootView: View {
         ZStack(alignment: .bottom) {
             tabContent
 
-            // Profile slides in over the tab content, keeping the tab bar
-            // visible (drawn later in this ZStack).
+            // Profile slides in over the tab content.
             if appModel.isProfilePresented {
                 ProfileView(account: dependencies.accountRepository)
-                .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
             }
 
-            // Dim the content while the snap menu is open; tap to dismiss.
-            if appModel.isSnapMenuOpen {
+            // Dim the content while the FAB fan is open; tap to dismiss.
+            if appModel.isFABOpen {
                 Color.black.opacity(0.18)
                     .ignoresSafeArea()
                     .transition(.opacity)
-                    .onTapGesture { appModel.closeSnapMenu() }
+                    .onTapGesture { appModel.closeFAB() }
             }
 
-            VStack(spacing: 0) {
-                SnapRadialFan(isOpen: appModel.isSnapMenuOpen) { action in
-                    appModel.open(snapAction: action)
+            // Tab bar + FAB stacked at the bottom
+            ZStack(alignment: .bottomTrailing) {
+                VStack(spacing: 0) {
+                    RivaTabBar()
                 }
-                RivaTabBar()
+                .padding(.bottom, TPCSpacing.xs)
+
+                TPCFloatingActionButton()
+                    .padding(.trailing, 20)
+                    .padding(.bottom, TPCLayout.tabBarHeight + TPCSpacing.sm)
             }
-            .padding(.bottom, RivaSpacing.xs)
         }
-        .background(RivaColor.background)
+        .background(TPCColor.background)
         .sheet(item: $appModel.activePlaceholder) { context in
             PlaceholderSheet(context: context)
         }
@@ -71,8 +74,8 @@ struct RootView: View {
         }
     }
 
-    /// All tabs stay mounted so per-tab state (scroll position, loaded data)
-    /// survives switching — matching platform TabView behavior.
+    /// All tabs stay mounted so per-tab scroll position and loaded data
+    /// survive switching — matching platform TabView behaviour.
     private var tabContent: some View {
         ZStack {
             tabPage(.home) {
@@ -88,6 +91,9 @@ struct RootView: View {
                     account: dependencies.accountRepository
                 )
             }
+            tabPage(.companion) {
+                CompanionView(repository: dependencies.companionRepository)
+            }
             tabPage(.medication) {
                 MedicationView(repository: dependencies.medicationRepository)
             }
@@ -97,7 +103,7 @@ struct RootView: View {
         }
     }
 
-    // MARK: Account sheets and details
+    // MARK: Account sheets
 
     @ViewBuilder
     private func accountSheet(for sheet: AccountSheet) -> some View {
@@ -123,6 +129,8 @@ struct RootView: View {
             )
         }
     }
+
+    // MARK: Detail screens
 
     @ViewBuilder
     private func detailScreen(for detail: DetailScreen) -> some View {

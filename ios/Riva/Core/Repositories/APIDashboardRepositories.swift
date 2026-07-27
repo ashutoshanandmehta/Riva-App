@@ -31,6 +31,9 @@ struct DashboardPayload: Codable, Sendable {
     /// Optional so responses from a backend without wellness support still
     /// decode; readers degrade to zeros via `DashboardMapping.wellnessSummary`.
     let wellness: Wellness?
+    /// Consecutive days with nutrition logged. Optional for the same reason —
+    /// an older backend omits it and Home simply hides the streak chip.
+    let streakDays: Int?
 }
 
 // MARK: - Shared fetch + parsing
@@ -123,35 +126,120 @@ enum DashboardMapping {
         )
     }
 
-    static func weightSummary(_ payload: DashboardPayload) -> WeightSummary {
-        let ordered = payload.weights.reversed()  // API is newest first
-        var history = ordered.map {
-            WeightPoint(date: DashboardService.parseTimestamp($0.measuredAt), weightLbs: $0.pounds)
+    /// A calendar in the user's profile timezone. "Today" has to mean their
+    /// local day — the same day the `log_*` functions compute server-side.
+    static func profileCalendar(_ payload: DashboardPayload) -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        if let zone = TimeZone(identifier: payload.profile.timezone) {
+            calendar.timeZone = zone
         }
-        let current = history.last?.weightLbs ?? payload.profile.startWeight ?? 0
-        if history.isEmpty, current > 0 {
-            // A single synthetic point keeps the chart axes stable.
-            history = [WeightPoint(date: .now, weightLbs: current)]
+        return calendar
+    }
+
+    /// The latest weight logged today, or nil. `payload.weights` is newest
+    /// first, so the first match is the most recent one.
+    static func weightToday(_ payload: DashboardPayload, now: Date = .now) -> Double? {
+        let calendar = profileCalendar(payload)
+        return payload.weights.first { entry in
+            calendar.isDate(
+                DashboardService.parseTimestamp(entry.measuredAt), inSameDayAs: now
+            )
+        }?.pounds
+    }
+
+    /// This week Monday→Sunday, each day marked logged only when that day has
+    /// real nutrition activity. `week_nutrition` covers the last seven days, so
+    /// every day of the current week is always in range.
+    static func weekActivity(_ payload: DashboardPayload, now: Date = .now) -> [HomeDayStatus] {
+        var calendar = profileCalendar(payload)
+        calendar.firstWeekday = 2  // Monday
+        let today = calendar.startOfDay(for: now)
+        let daysFromMonday = (calendar.component(.weekday, from: today) + 5) % 7
+        guard let monday = calendar.date(byAdding: .day, value: -daysFromMonday, to: today) else {
+            return []
         }
-        let start = payload.profile.startWeight ?? history.first?.weightLbs ?? current
-        let target = payload.profile.goalWeight ?? current
-        let weekAgo = Date().addingTimeInterval(-7 * 86_400)
-        let weekBase = history.last(where: { $0.date <= weekAgo })?.weightLbs
-            ?? history.first?.weightLbs ?? current
+
+        let logged = Set(
+            payload.weekNutrition
+                .filter { $0.calories > 0 || $0.waterOunces > 0 }
+                .map(\.day)
+        )
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = calendar.timeZone
+
+        let letters = ["M", "T", "W", "T", "F", "S", "S"]
+        return (0..<7).map { offset in
+            let day = calendar.date(byAdding: .day, value: offset, to: monday) ?? monday
+            let key = formatter.string(from: day)
+            return HomeDayStatus(
+                dayKey: key,
+                letter: letters[offset],
+                isToday: calendar.isDate(day, inSameDayAs: today),
+                isLogged: logged.contains(key)
+            )
+        }
+    }
+
+    /// Days of history the Weight Tracking chart plots — matches its "Past
+    /// month" badge. The payload carries up to 90 rows.
+    static let weightChartDays = 30
+
+    /// Progress toward the target weight, or nil when no goal is set. The
+    /// journey is measured from the starting weight, so it is independent of
+    /// the charted window.
+    static func weightGoal(_ payload: DashboardPayload) -> WeightGoalProgress? {
+        guard let target = payload.profile.goalWeight else { return nil }
+        let ordered = payload.weights.reversed()
+        let current = ordered.last?.pounds ?? payload.profile.startWeight ?? 0
+        let start = payload.profile.startWeight ?? ordered.first?.pounds ?? current
         let progress: Double
         if start > target, start > 0 {
             progress = min(max((start - current) / (start - target), 0), 1)
         } else {
             progress = 0
         }
+        return WeightGoalProgress(currentLbs: current, targetLbs: target, progress: progress)
+    }
+
+    static func weightSummary(_ payload: DashboardPayload, now: Date = .now) -> WeightSummary {
+        let ordered = payload.weights.reversed()  // API is newest first
+        let full = ordered.map {
+            WeightPoint(date: DashboardService.parseTimestamp($0.measuredAt), weightLbs: $0.pounds)
+        }
+        let current = full.last?.weightLbs ?? payload.profile.startWeight ?? 0
+        // The journey total is measured against the whole history, so read the
+        // starting weight before the chart window trims anything away.
+        let start = payload.profile.startWeight ?? full.first?.weightLbs ?? current
+
+        var history = trimmedToChartWindow(full, now: now)
+        if history.isEmpty, current > 0 {
+            // A single synthetic point keeps the chart axes stable.
+            history = [WeightPoint(date: now, weightLbs: current)]
+        }
+
+        let weekAgo = now.addingTimeInterval(-7 * 86_400)
+        let weekBase = full.last(where: { $0.date <= weekAgo })?.weightLbs
+            ?? full.first?.weightLbs ?? current
+
         return WeightSummary(
             history: history,
             currentLbs: current,
-            targetLbs: target,
             weeklyChangeLbs: current - weekBase,
             totalChangeLbs: current - start,
-            goalProgress: progress
+            goal: weightGoal(payload)
         )
+    }
+
+    /// The trailing `weightChartDays` of history. Someone whose last weigh-in
+    /// predates the window keeps that one reading rather than losing the chart.
+    private static func trimmedToChartWindow(
+        _ history: [WeightPoint], now: Date
+    ) -> [WeightPoint] {
+        let cutoff = now.addingTimeInterval(-Double(weightChartDays) * 86_400)
+        let recent = history.filter { $0.date >= cutoff }
+        return recent.isEmpty ? Array(history.suffix(1)) : recent
     }
 
     static func nextShot(_ payload: DashboardPayload) -> ScheduledShot {
@@ -249,32 +337,39 @@ struct APIHomeRepository: HomeRepository {
                     : "Estimated from your logged shots with a one week half life. Solid is past, dashed projects ahead."
             ),
             nextShot: DashboardMapping.nextShot(payload),
+            // Calories drive the ring; protein/carbs/fiber are the macro bars.
+            // Hydration lives on its own Tracker card, so it is not repeated here.
             nutrients: [
                 NutrientProgress(
-                    title: "Protein",
-                    valueText: "\(today?.proteinGrams ?? 0)g",
-                    targetText: "of \(goals.proteinGoal)g",
-                    progress: progress(today?.proteinGrams, goals.proteinGoal)
-                ),
-                NutrientProgress(
-                    title: "Water",
-                    valueText: "\((today?.waterOunces ?? 0) / 8)",
-                    targetText: "of \(max(goals.waterGoal / 8, 1)) glasses",
-                    progress: progress(today?.waterOunces, goals.waterGoal)
-                ),
-                NutrientProgress(
                     title: "Calories",
-                    valueText: "\(today?.calories ?? 0)",
-                    targetText: "of \(DashboardMapping.calorieGoalKcal) kcal",
-                    progress: progress(today?.calories, DashboardMapping.calorieGoalKcal)
+                    value: Double(today?.calories ?? 0),
+                    goal: Double(DashboardMapping.calorieGoalKcal),
+                    unit: " kcal"
                 ),
-            ]
+                NutrientProgress(
+                    title: "Protein",
+                    value: Double(today?.proteinGrams ?? 0),
+                    goal: Double(goals.proteinGoal),
+                    unit: "g"
+                ),
+                NutrientProgress(
+                    title: "Carbs",
+                    value: Double(today?.carbGrams ?? 0),
+                    goal: Double(goals.carbGoal),
+                    unit: "g"
+                ),
+                NutrientProgress(
+                    title: "Fiber",
+                    value: Double(today?.fiberGrams ?? 0),
+                    goal: Double(goals.fiberGoal),
+                    unit: "g"
+                ),
+            ],
+            week: DashboardMapping.weekActivity(payload),
+            streakDays: payload.streakDays ?? 0,
+            weightTodayLbs: DashboardMapping.weightToday(payload),
+            goal: DashboardMapping.weightGoal(payload)
         )
-    }
-
-    private func progress(_ value: Int?, _ goal: Int) -> Double {
-        guard goal > 0 else { return 0 }
-        return min(max(Double(value ?? 0) / Double(goal), 0), 1)
     }
 }
 
@@ -417,7 +512,7 @@ struct APITrackerRepository: TrackerRepository {
                 isOnTrack: weight.weeklyChangeLbs <= 0,
                 dailyLbs: weekWeights.map(\.pounds),
                 totalLostLbs: max(-weight.totalChangeLbs, 0),
-                goalLbs: weight.targetLbs
+                goalLbs: weight.goal?.targetLbs ?? weight.currentLbs
             ),
             coachNote: CoachNote(message: coachMessage),
             lastDoseDate: lastDose,

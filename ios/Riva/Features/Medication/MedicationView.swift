@@ -11,20 +11,27 @@ struct MedicationView: View {
     }
 
     var body: some View {
-        ScrollView {
-            switch viewModel.state {
-            case .loading:
-                LoadingStateView(message: "Loading your plan…")
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
+        VStack(spacing: 0) {
+            // Pinned: the brand bar stays put while the tab scrolls under it.
+            BrandTopBar(onSettings: { appModel.showProfile() })
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+
+            ScrollView {
+                switch viewModel.state {
+                case .loading:
+                    LoadingStateView(message: "Loading your plan…")
+                case .failed(let message):
+                    ErrorStateView(message: message) {
+                        Task { await viewModel.load() }
+                    }
+                case .loaded(let dashboard):
+                    content(dashboard)
                 }
-            case .loaded(let dashboard):
-                content(dashboard)
             }
         }
-        .background(RivaColor.background)
-        .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
+        .background(TPCColor.background)
+        .contentMargins(.bottom, TPCLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
         .onChange(of: appModel.dashboardRevision) {
@@ -35,11 +42,7 @@ struct MedicationView: View {
     // MARK: Loaded
 
     private func content(_ dashboard: MedicationDashboard) -> some View {
-        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
-            BrandTopBar {
-                appModel.showProfile()
-            }
-
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
             header(dashboard)
 
             CurrentDoseCard(titration: dashboard.titration, nextDose: dashboard.nextDose)
@@ -47,7 +50,7 @@ struct MedicationView: View {
             Button {
                 appModel.activeQuickLog = .shot
             } label: {
-                HStack(spacing: RivaSpacing.xs) {
+                HStack(spacing: TPCSpacing.xs) {
                     Image(systemName: "syringe")
                     Text("Log Weekly Shot")
                 }
@@ -62,23 +65,23 @@ struct MedicationView: View {
                 appModel.activeDetail = .shotHistory
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
     }
 
     private func header(_ dashboard: MedicationDashboard) -> some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Medication")
-                .font(RivaFont.screenTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.screenTitle)
+                .foregroundStyle(TPCColor.textPrimary)
 
             HStack(spacing: 6) {
                 Image(systemName: "calendar")
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.brand)
                 Text("Injection Day: \(RivaFormat.weekdayName(dashboard.nextDose.date))")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
     }

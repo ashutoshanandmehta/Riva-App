@@ -23,10 +23,9 @@ struct MockTrackerRepository: TrackerRepository {
             weight: WeightSummary(
                 history: weightHistory(endingAt: .now),
                 currentLbs: 164.2,
-                targetLbs: 145,
                 weeklyChangeLbs: -1.2,
                 totalChangeLbs: -18.4,
-                goalProgress: 0.65
+                goal: WeightGoalProgress(currentLbs: 164.2, targetLbs: 145, progress: 0.65)
             ),
             hydration: HydrationStatus(glasses: 6, goalGlasses: 8),
             protein: ProteinStatus(grams: 85, goalGrams: 110),

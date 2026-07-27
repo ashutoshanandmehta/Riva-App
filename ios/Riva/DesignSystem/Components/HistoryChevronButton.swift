@@ -10,7 +10,7 @@ struct HistoryChevronButton: View {
         Button(action: action) {
             Image(systemName: "chevron.up.chevron.down")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(RivaColor.textTertiary)
+                .foregroundStyle(TPCColor.textTertiary)
                 .frame(width: 28, height: 28)
                 .contentShape(Rectangle())
         }
@@ -22,5 +22,5 @@ struct HistoryChevronButton: View {
 #Preview {
     HistoryChevronButton(accessibilityLabel: "History") {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

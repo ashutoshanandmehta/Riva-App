@@ -12,7 +12,7 @@ struct ScanResultCard: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: RivaSpacing.md) {
+            VStack(spacing: TPCSpacing.md) {
                 if scan.modeMismatch {
                     mismatchBanner
                 }
@@ -29,35 +29,35 @@ struct ScanResultCard: View {
 
                 if let errorMessage {
                     Text(errorMessage)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
                 }
 
                 actions
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.top, RivaSpacing.xs)
-            .padding(.bottom, RivaSpacing.xl)
+            .padding(.horizontal, TPCSpacing.screenMargin)
+            .padding(.top, TPCSpacing.xs)
+            .padding(.bottom, TPCSpacing.xl)
         }
     }
 
     // MARK: Sections
 
     private var mismatchBanner: some View {
-        HStack(alignment: .top, spacing: RivaSpacing.sm) {
+        HStack(alignment: .top, spacing: TPCSpacing.sm) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(RivaColor.warning)
+                .foregroundStyle(TPCColor.warning)
             Text(mismatchText)
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textPrimary)
         }
-        .padding(RivaSpacing.md)
+        .padding(TPCSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RivaColor.warning.opacity(0.12),
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.warning.opacity(0.12),
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
     }
 
@@ -74,34 +74,34 @@ struct ScanResultCard: View {
 
     private var notFoodCard: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                 Text("Nothing to log here")
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.cardTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text(scan.reason ?? "This photo does not look like food, a drink, or water.")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
     }
 
     private var waterCard: some View {
-        VStack(spacing: RivaSpacing.md) {
+        VStack(spacing: TPCSpacing.md) {
             RivaCard {
-                VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+                VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                     Text("Water")
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     if let water = scan.water {
                         Text("Looks like \(water.containerType.isEmpty ? "a container" : articled(water.containerType)) holding about \(water.volumeOz) fl oz (\(water.volumeMl) ml).")
-                            .font(RivaFont.footnote)
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .font(TPCFont.footnote)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
                 }
             }
 
             if let water = scan.water {
-                HStack(spacing: RivaSpacing.sm) {
+                HStack(spacing: TPCSpacing.sm) {
                     RivaStatTile(
                         caption: "Water",
                         systemImage: "drop",
@@ -121,16 +121,16 @@ struct ScanResultCard: View {
 
     private var itemsCard: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 if let plate = scan.plate, !plate.isEmpty {
                     Text(plate)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
 
                 ForEach(Array(scan.items.enumerated()), id: \.offset) { index, item in
                     if index > 0 {
-                        Divider().overlay(RivaColor.fillNeutral)
+                        Divider().overlay(TPCColor.fillNeutral)
                     }
                     itemRow(item)
                 }
@@ -139,33 +139,33 @@ struct ScanResultCard: View {
     }
 
     private func itemRow(_ item: ScanItem) -> some View {
-        HStack(alignment: .top, spacing: RivaSpacing.sm) {
-            VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+        HStack(alignment: .top, spacing: TPCSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
                 Text(item.name.capitalized)
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.cardTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text("\(item.portionDesc), about \(Int(item.portionGrams.rounded()))g")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
                 RivaBadge(
                     text: item.matched ? "Matched" : "AI estimate",
                     style: item.matched ? .brand : .neutral
                 )
             }
             Spacer()
-            VStack(alignment: .trailing, spacing: RivaSpacing.xxs) {
+            VStack(alignment: .trailing, spacing: TPCSpacing.xxs) {
                 Text("\(item.calories)")
-                    .font(RivaFont.metricM)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.metricM)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text("kcal")
-                    .font(RivaFont.metricUnit)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.metricUnit)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
     }
 
     private var totalsTiles: some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             RivaStatTile(
                 caption: "Calories",
                 systemImage: "flame",
@@ -182,13 +182,13 @@ struct ScanResultCard: View {
     }
 
     private var actions: some View {
-        VStack(spacing: RivaSpacing.sm) {
+        VStack(spacing: TPCSpacing.sm) {
             if scan.scanType != .notFood {
                 Button {
                     onAccept()
                 } label: {
                     if isSaving {
-                        ProgressView().tint(RivaColor.textOnBrand)
+                        ProgressView().tint(TPCColor.textOnBrand)
                     } else {
                         Text("Accept")
                     }
@@ -198,11 +198,11 @@ struct ScanResultCard: View {
             }
 
             Button("Scan again") { onScanAgain() }
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
                 .disabled(isSaving)
         }
-        .padding(.top, RivaSpacing.xs)
+        .padding(.top, TPCSpacing.xs)
     }
 
     // MARK: Formatting
@@ -224,7 +224,7 @@ struct ScanResultCard: View {
 
 #Preview("Meal result") {
     ZStack {
-        RivaColor.background.ignoresSafeArea()
+        TPCColor.background.ignoresSafeArea()
         ScanResultCard(
             scan: MockScanRepository.sampleMeal,
             errorMessage: nil,

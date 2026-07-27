@@ -7,28 +7,28 @@ struct GoalsStepView: View {
 
     var body: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 header
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: RivaSpacing.md) {
-                        VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
+                    VStack(alignment: .leading, spacing: TPCSpacing.md) {
+                        VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
                             Text("What brings you to Riva?")
-                                .font(RivaFont.screenTitle)
-                                .foregroundStyle(RivaColor.textPrimary)
+                                .font(TPCFont.screenTitle)
+                                .foregroundStyle(TPCColor.textPrimary)
                             Text("Select all that apply to help us personalize your journey.")
-                                .font(RivaFont.body)
-                                .foregroundStyle(RivaColor.textSecondary)
+                                .font(TPCFont.body)
+                                .foregroundStyle(TPCColor.textSecondary)
                         }
 
                         ForEach(OnboardingGoal.allCases) { goal in
                             goalCard(goal)
                         }
                     }
-                    .padding(.horizontal, RivaSpacing.screenMargin)
-                    .padding(.bottom, RivaSpacing.xl)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
+                    .padding(.bottom, TPCSpacing.xl)
                 }
 
                 footer
@@ -43,9 +43,9 @@ struct GoalsStepView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .foregroundStyle(TPCColor.textSecondary)
                     .frame(width: 34, height: 34)
-                    .background(RivaColor.fillNeutral, in: Circle())
+                    .background(TPCColor.fillNeutral, in: Circle())
             }
             .accessibilityLabel("Back")
 
@@ -54,11 +54,11 @@ struct GoalsStepView: View {
             Button("Already a user? Log in") {
                 model.showLogin()
             }
-            .font(RivaFont.captionEmphasized)
-            .foregroundStyle(RivaColor.brand)
+            .font(TPCFont.captionEmphasized)
+            .foregroundStyle(TPCColor.brand)
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.vertical, RivaSpacing.sm)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.vertical, TPCSpacing.sm)
     }
 
     private func goalCard(_ goal: OnboardingGoal) -> some View {
@@ -68,39 +68,39 @@ struct GoalsStepView: View {
                 model.toggle(goal)
             }
         } label: {
-            HStack(spacing: RivaSpacing.md) {
+            HStack(spacing: TPCSpacing.md) {
                 Image(systemName: goal.systemImage)
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(isSelected ? RivaColor.textOnBrand : RivaColor.brand)
+                    .foregroundStyle(isSelected ? TPCColor.textOnBrand : TPCColor.brand)
                     .frame(width: 42, height: 42)
                     .background(
-                        isSelected ? RivaColor.brand : RivaColor.brandWash,
+                        isSelected ? TPCColor.brand : TPCColor.brandWash,
                         in: Circle()
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(goal.title)
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text(goal.subtitle)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
                 Spacer(minLength: 0)
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 20))
-                    .foregroundStyle(isSelected ? RivaColor.brand : RivaColor.textTertiary)
+                    .foregroundStyle(isSelected ? TPCColor.brand : TPCColor.textTertiary)
             }
-            .padding(RivaSpacing.md)
+            .padding(TPCSpacing.md)
             .background(
-                RivaColor.surface,
-                in: RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
+                TPCColor.surface,
+                in: RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous)
+                RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous)
                     .strokeBorder(
-                        isSelected ? RivaColor.brand.opacity(0.5) : RivaColor.surfaceOutline,
+                        isSelected ? TPCColor.brand.opacity(0.5) : TPCColor.surfaceOutline,
                         lineWidth: isSelected ? 1.5 : 1
                     )
             )
@@ -109,33 +109,33 @@ struct GoalsStepView: View {
     }
 
     private var footer: some View {
-        VStack(spacing: RivaSpacing.xs) {
+        VStack(spacing: TPCSpacing.xs) {
             if let notice = model.notice {
                 Text(notice)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.danger)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.danger)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, RivaSpacing.lg)
+                    .padding(.horizontal, TPCSpacing.lg)
             }
             Button {
                 Task { await model.continueWithGoogle(fromLogin: false) }
             } label: {
                 if model.isWorking {
-                    ProgressView().tint(RivaColor.textOnBrand)
+                    ProgressView().tint(TPCColor.textOnBrand)
                 } else {
                     Text("Create account with Google")
                 }
             }
             .buttonStyle(.rivaPrimary)
             .disabled(model.isWorking)
-            .padding(.horizontal, RivaSpacing.screenMargin)
+            .padding(.horizontal, TPCSpacing.screenMargin)
 
             Text("Your goals sync to your account after sign in.")
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textTertiary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textTertiary)
         }
-        .padding(.vertical, RivaSpacing.sm)
-        .background(RivaColor.background)
+        .padding(.vertical, TPCSpacing.sm)
+        .background(TPCColor.background)
     }
 }
 

@@ -11,7 +11,7 @@ extension AttributedString {
         for run in text.runs {
             let isBold = run.inlinePresentationIntent?.contains(.stronglyEmphasized) ?? false
             if isBold {
-                text[run.range].foregroundColor = RivaColor.brand
+                text[run.range].foregroundColor = TPCColor.brand
             }
         }
         return text

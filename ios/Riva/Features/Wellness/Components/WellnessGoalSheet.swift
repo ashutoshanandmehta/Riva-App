@@ -18,28 +18,28 @@ struct WellnessGoalSheet: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.md) {
+        VStack(alignment: .leading, spacing: TPCSpacing.md) {
             Text("Daily practice goal")
-                .font(RivaFont.sectionTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
 
             RivaCard {
                 Stepper(value: $goal, in: 10...180, step: 5) {
-                    HStack(alignment: .lastTextBaseline, spacing: RivaSpacing.xxs) {
+                    HStack(alignment: .lastTextBaseline, spacing: TPCSpacing.xxs) {
                         Text("\(goal)")
-                            .font(RivaFont.metricM)
-                            .foregroundStyle(RivaColor.textPrimary)
+                            .font(TPCFont.metricM)
+                            .foregroundStyle(TPCColor.textPrimary)
                         Text("min / day")
-                            .font(RivaFont.metricUnit)
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .font(TPCFont.metricUnit)
+                            .foregroundStyle(TPCColor.textSecondary)
                     }
                 }
             }
 
             if let errorMessage {
                 Text(errorMessage)
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.danger)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.danger)
             }
 
             Button(isSaving ? "Saving…" : "Save goal") {
@@ -48,9 +48,9 @@ struct WellnessGoalSheet: View {
             .buttonStyle(.rivaPrimary)
             .disabled(isSaving)
         }
-        .padding(RivaSpacing.screenMargin)
+        .padding(TPCSpacing.screenMargin)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(RivaColor.background)
+        .background(TPCColor.background)
         .presentationDetents([.height(280)])
         .presentationDragIndicator(.visible)
     }

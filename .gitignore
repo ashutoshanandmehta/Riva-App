@@ -50,3 +50,8 @@ backend/eval/volumetric/reports/
 backend/eval/volumetric/samples_n5k/*.png
 backend/eval/realworld/reports/
 backend/eval/realworld/dataset/**/capture.mp4
+
+# Supabase CLI link state. Per-developer, and `pooler-url` carries a production
+# connection string — never committable.
+supabase/.temp/
+backend/supabase/.temp/

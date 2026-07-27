@@ -10,30 +10,36 @@ struct HydrationCard: View {
     let onAdd: () -> Void
 
     var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .bottom) {
-                RivaColor.surface
+        // The water level reads the card's height from behind the content: a
+        // GeometryReader in `.background` measures its parent instead of
+        // defining it, so the card still sizes to what's inside it.
+        content
+            .background {
+                GeometryReader { proxy in
+                    ZStack(alignment: .bottom) {
+                        TPCColor.surface
 
-                // Water level.
-                LinearGradient(
-                    colors: [RivaColor.brandSoft.opacity(0.45), RivaColor.brandSoft],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: proxy.size.height * hydration.progress)
-
-                content
+                        // Water level.
+                        LinearGradient(
+                            colors: [TPCColor.brandSoft.opacity(0.45), TPCColor.brandSoft],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: proxy.size.height * hydration.progress)
+                    }
+                }
             }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: RivaRadius.card, style: .continuous))
-        .rivaSurfaceOutline(cornerRadius: RivaRadius.card)
-        .shadow(color: .black.opacity(0.06), radius: 14, x: 0, y: 6)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Hydration: \(hydration.glasses) of \(hydration.goalGlasses) glasses")
+            .clipShape(RoundedRectangle(cornerRadius: TPCRadius.card, style: .continuous))
+            .rivaSurfaceOutline(cornerRadius: TPCRadius.card)
+            .shadow(color: .black.opacity(0.06), radius: 14, x: 0, y: 6)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(
+                "Hydration: \(hydration.glasses) of \(hydration.goalGlasses) glasses"
+            )
     }
 
     private var content: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             HStack {
                 Text("Hydration")
                     .rivaOverline()
@@ -43,11 +49,11 @@ struct HydrationCard: View {
 
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text("\(hydration.glasses)")
-                    .font(RivaFont.metricM)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.metricM)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Text("/ \(hydration.goalGlasses) glasses")
-                    .font(RivaFont.footnote)
-                    .foregroundStyle(RivaColor.textSecondary)
+                    .font(TPCFont.footnote)
+                    .foregroundStyle(TPCColor.textSecondary)
             }
 
             Spacer()
@@ -57,14 +63,15 @@ struct HydrationCard: View {
                 RivaQuickAddButton(accessibilityLabel: "Add a glass of water", action: onAdd)
             }
         }
-        .padding(RivaSpacing.md)
+        // Matches RivaCard's inset so this tile and its row-mate line up.
+        .padding(TPCSpacing.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
 #Preview {
     HydrationCard(hydration: MockTrackerRepository.dashboard().hydration, onOpen: {}, onAdd: {})
-        .frame(width: 170, height: 155)
+        .frame(width: 170)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

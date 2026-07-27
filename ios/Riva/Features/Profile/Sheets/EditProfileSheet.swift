@@ -13,7 +13,7 @@ struct EditProfileSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: RivaSpacing.lg) {
+        VStack(spacing: TPCSpacing.lg) {
             AccountSheetHeader(sheet: .editProfile)
 
             switch model.phase {
@@ -31,19 +31,19 @@ struct EditProfileSheet: View {
                 form
                 if let message = model.errorMessage {
                     Text(message)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.lg)
+                        .padding(.horizontal, TPCSpacing.lg)
                 }
                 saveButton
             }
         }
-        .padding(.top, RivaSpacing.xl)
-        .padding(.bottom, RivaSpacing.lg)
+        .padding(.top, TPCSpacing.xl)
+        .padding(.bottom, TPCSpacing.lg)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
         .task { await model.load() }
         .onChange(of: model.phase) {
             guard case .saved = model.phase else { return }
@@ -56,7 +56,7 @@ struct EditProfileSheet: View {
 
     private var form: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 AccountLabeledField(label: "Name", prompt: "Your name", text: $model.name)
 
                 dateOfBirthSection
@@ -71,7 +71,7 @@ struct EditProfileSheet: View {
                     keyboard: .decimalPad
                 )
 
-                HStack(alignment: .top, spacing: RivaSpacing.sm) {
+                HStack(alignment: .top, spacing: TPCSpacing.sm) {
                     AccountLabeledField(
                         label: "Start weight",
                         prompt: "192",
@@ -88,21 +88,21 @@ struct EditProfileSheet: View {
                     )
                 }
             }
-            .padding(.horizontal, RivaSpacing.screenMargin)
-            .padding(.bottom, RivaSpacing.sm)
+            .padding(.horizontal, TPCSpacing.screenMargin)
+            .padding(.bottom, TPCSpacing.sm)
         }
         .scrollDismissesKeyboard(.interactively)
     }
 
     private var dateOfBirthSection: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Date of birth")
                 .rivaOverline()
-            VStack(spacing: RivaSpacing.xs) {
+            VStack(spacing: TPCSpacing.xs) {
                 Toggle("Share date of birth", isOn: $model.hasDateOfBirth.animation())
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
-                    .tint(RivaColor.brand)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
+                    .tint(TPCColor.brand)
                 if model.hasDateOfBirth {
                     DatePicker(
                         "Date of birth",
@@ -110,27 +110,27 @@ struct EditProfileSheet: View {
                         in: ...Date.now,
                         displayedComponents: .date
                     )
-                    .font(RivaFont.body)
-                    .foregroundStyle(RivaColor.textPrimary)
-                    .tint(RivaColor.brand)
+                    .font(TPCFont.body)
+                    .foregroundStyle(TPCColor.textPrimary)
+                    .tint(TPCColor.brand)
                 }
             }
-            .padding(.horizontal, RivaSpacing.md)
+            .padding(.horizontal, TPCSpacing.md)
             .padding(.vertical, 12)
             .background(
-                RivaColor.fillNeutral,
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.fillNeutral,
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
         }
     }
 
     private var genderSection: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
+        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
             Text("Gender")
                 .rivaOverline()
             LazyVGrid(
                 columns: [GridItem(.flexible()), GridItem(.flexible())],
-                spacing: RivaSpacing.xs
+                spacing: TPCSpacing.xs
             ) {
                 ForEach(EditProfileViewModel.genderOptions, id: \.value) { option in
                     AccountChip(title: option.label, isSelected: model.gender == option.value) {
@@ -146,14 +146,14 @@ struct EditProfileSheet: View {
             Task { await model.save() }
         } label: {
             if model.phase == .saving {
-                ProgressView().tint(RivaColor.textOnBrand)
+                ProgressView().tint(TPCColor.textOnBrand)
             } else {
                 Text("Save")
             }
         }
         .buttonStyle(.rivaPrimary)
         .disabled(!model.canSave || model.phase == .saving)
-        .padding(.horizontal, RivaSpacing.screenMargin)
+        .padding(.horizontal, TPCSpacing.screenMargin)
     }
 }
 

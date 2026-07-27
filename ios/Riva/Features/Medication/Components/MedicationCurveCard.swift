@@ -11,7 +11,7 @@ struct MedicationCurveCard: View {
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 header
                 chart
                 insightBanner
@@ -24,13 +24,13 @@ struct MedicationCurveCard: View {
     private var header: some View {
         HStack {
             Text("Medication Curve")
-                .font(RivaFont.cardTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.cardTitle)
+                .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             Button(action: onInfo) {
                 Image(systemName: "info.circle")
                     .font(.system(size: 16))
-                    .foregroundStyle(RivaColor.textTertiary)
+                    .foregroundStyle(TPCColor.textTertiary)
                     .frame(width: 32, height: 32)
                     .contentShape(Circle())
             }
@@ -52,7 +52,7 @@ struct MedicationCurveCard: View {
                 .interpolationMethod(.catmullRom)
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [RivaColor.brand.opacity(0.16), RivaColor.brand.opacity(0.02)],
+                        colors: [TPCColor.brand.opacity(0.16), TPCColor.brand.opacity(0.02)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -64,21 +64,21 @@ struct MedicationCurveCard: View {
                 )
                 .interpolationMethod(.catmullRom)
                 .lineStyle(StrokeStyle(lineWidth: 2.2, lineCap: .round))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
             }
 
             RuleMark(y: .value("Threshold", curve.therapeuticThreshold))
                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 4]))
-                .foregroundStyle(RivaColor.textTertiary.opacity(0.55))
+                .foregroundStyle(TPCColor.textTertiary.opacity(0.55))
 
             if let today = curve.point(closestTo: .now) {
                 // White halo behind the marker so it reads over the line.
                 PointMark(x: .value("Time", today.date), y: .value("Level", today.level))
                     .symbolSize(150)
-                    .foregroundStyle(RivaColor.surface)
+                    .foregroundStyle(TPCColor.surface)
                 PointMark(x: .value("Time", today.date), y: .value("Level", today.level))
                     .symbolSize(70)
-                    .foregroundStyle(RivaColor.brand)
+                    .foregroundStyle(TPCColor.brand)
             }
         }
         .chartYScale(domain: 0...yMax)
@@ -102,7 +102,7 @@ struct MedicationCurveCard: View {
         return Text(isToday ? "TODAY" : RivaFormat.weekdayName(date).prefix(3).uppercased())
             .font(.system(size: 10, weight: isToday ? .bold : .semibold))
             .kerning(0.5)
-            .foregroundStyle(isToday ? RivaColor.brand : RivaColor.textTertiary)
+            .foregroundStyle(isToday ? TPCColor.brand : TPCColor.textTertiary)
     }
 
     private var yMax: Double {
@@ -135,21 +135,21 @@ struct MedicationCurveCard: View {
     // MARK: Insight
 
     private var insightBanner: some View {
-        HStack(alignment: .top, spacing: RivaSpacing.sm) {
+        HStack(alignment: .top, spacing: TPCSpacing.sm) {
             Image(systemName: "sparkles")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
                 .padding(.top, 1)
             Text(insight.message)
-                .font(RivaFont.footnote)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.footnote)
+                .foregroundStyle(TPCColor.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(RivaSpacing.sm)
+        .padding(TPCSpacing.sm)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RivaColor.brandWash,
-            in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+            TPCColor.brandWash,
+            in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
         )
     }
 }
@@ -158,5 +158,5 @@ struct MedicationCurveCard: View {
     let dashboard = MockMedicationRepository.dashboard()
     return MedicationCurveCard(curve: dashboard.curve, insight: dashboard.insight) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

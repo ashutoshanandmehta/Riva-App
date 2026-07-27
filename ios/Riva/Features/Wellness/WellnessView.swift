@@ -24,20 +24,27 @@ struct WellnessView: View {
     }
 
     var body: some View {
-        ScrollView {
-            switch viewModel.state {
-            case .loading:
-                LoadingStateView(message: "Loading your practices…")
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
+        VStack(spacing: 0) {
+            // Pinned: the brand bar stays put while the tab scrolls under it.
+            BrandTopBar(onSettings: { appModel.showProfile() })
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+
+            ScrollView {
+                switch viewModel.state {
+                case .loading:
+                    LoadingStateView(message: "Loading your practices…")
+                case .failed(let message):
+                    ErrorStateView(message: message) {
+                        Task { await viewModel.load() }
+                    }
+                case .loaded(let dashboard):
+                    content(dashboard)
                 }
-            case .loaded(let dashboard):
-                content(dashboard)
             }
         }
-        .background(RivaColor.background)
-        .contentMargins(.bottom, RivaLayout.tabBarClearance, for: .scrollContent)
+        .background(TPCColor.background)
+        .contentMargins(.bottom, TPCLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
         .onChange(of: appModel.dashboardRevision) {
@@ -64,13 +71,11 @@ struct WellnessView: View {
     // MARK: Loaded
 
     private func content(_ dashboard: WellnessDashboard) -> some View {
-        LazyVStack(alignment: .leading, spacing: RivaSpacing.md) {
-            BrandTopBar(onSettings: { appModel.showProfile() })
-
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
             Text("How would you like\nto feel today?")
-                .font(RivaFont.screenTitle)
-                .foregroundStyle(RivaColor.textPrimary)
-                .padding(.top, RivaSpacing.xs)
+                .font(TPCFont.screenTitle)
+                .foregroundStyle(TPCColor.textPrimary)
+                .padding(.top, TPCSpacing.xs)
 
             WellnessHeroCard(
                 summary: dashboard.summary,
@@ -84,30 +89,30 @@ struct WellnessView: View {
 
             suggestionsSection(dashboard.suggestions)
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
     }
 
     // MARK: Your practices
 
     private var practicesSection: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
             HStack {
                 Text("Your practices")
-                    .font(RivaFont.sectionTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.sectionTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
                 Spacer()
                 Button("See all") { showSeeAll = true }
-                    .font(RivaFont.captionEmphasized)
-                    .foregroundStyle(RivaColor.brand)
+                    .font(TPCFont.captionEmphasized)
+                    .foregroundStyle(TPCColor.brand)
             }
-            .padding(.top, RivaSpacing.xs)
+            .padding(.top, TPCSpacing.xs)
 
             if let yoga = WellnessPractice.practice(id: "yoga_beginners") {
                 PracticeRowCard(practice: yoga) { selectedPractice = yoga }
             }
 
-            HStack(alignment: .top, spacing: RivaSpacing.md) {
+            HStack(alignment: .top, spacing: TPCSpacing.md) {
                 tile(id: "exercise_walk")
                 tile(id: "meditation_isha")
             }
@@ -127,14 +132,14 @@ struct WellnessView: View {
     @ViewBuilder
     private func suggestionsSection(_ suggestions: [SuggestedPractice]) -> some View {
         if !suggestions.isEmpty {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                 Text("Suggested for you")
-                    .font(RivaFont.sectionTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
-                    .padding(.top, RivaSpacing.xs)
+                    .font(TPCFont.sectionTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
+                    .padding(.top, TPCSpacing.xs)
 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(alignment: .top, spacing: RivaSpacing.md) {
+                    HStack(alignment: .top, spacing: TPCSpacing.md) {
                         ForEach(suggestions) { suggestion in
                             SuggestedPracticeCard(suggestion: suggestion) {
                                 selectedPractice = suggestion.practice

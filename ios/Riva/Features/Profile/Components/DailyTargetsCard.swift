@@ -6,14 +6,14 @@ struct DailyTargetsCard: View {
 
     var body: some View {
         RivaCard(style: .tinted) {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
-                HStack(spacing: RivaSpacing.xs) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
+                HStack(spacing: TPCSpacing.xs) {
                     Image(systemName: "target")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                     Text("Daily Targets")
-                        .font(RivaFont.cardTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.cardTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                 }
 
                 targetRow(label: "Protein", chip: "\(goals.proteinGoal)g")
@@ -25,15 +25,15 @@ struct DailyTargetsCard: View {
     private func targetRow(label: String, chip: String) -> some View {
         HStack {
             Text(label)
-                .font(RivaFont.body)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.body)
+                .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             Text(chip)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(RivaColor.textPrimary)
+                .foregroundStyle(TPCColor.textPrimary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3.5)
-                .background(RivaColor.surface, in: Capsule())
+                .background(TPCColor.surface, in: Capsule())
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label) target: \(chip)")
@@ -43,5 +43,5 @@ struct DailyTargetsCard: View {
 #Preview {
     DailyTargetsCard(goals: MockAccountRepository.sampleBundle.nutritionGoals)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

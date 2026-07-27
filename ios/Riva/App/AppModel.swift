@@ -9,7 +9,7 @@ final class AppModel {
     private static let appearanceKey = "riva.appearance"
 
     var selectedTab: AppTab = .home
-    var isSnapMenuOpen = false
+    var isFABOpen = false
     /// Whether the profile screen is presented over the tab content.
     var isProfilePresented = false
     /// Non-nil while a placeholder sheet is presented.
@@ -51,7 +51,7 @@ final class AppModel {
         // UI-test / screenshot hooks: launch with the snap menu open, on a
         // specific tab (`-riva.tab medication`), or with the profile shown.
         if ProcessInfo.processInfo.arguments.contains("-riva.snapMenuOpen") {
-            isSnapMenuOpen = true
+            isFABOpen = true
         }
         if ProcessInfo.processInfo.arguments.contains("-riva.profile") {
             isProfilePresented = true
@@ -93,7 +93,7 @@ final class AppModel {
         withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
             selectedTab = tab
         }
-        closeSnapMenu()
+        closeFAB()
         closeProfile()
     }
 
@@ -110,23 +110,23 @@ final class AppModel {
         }
     }
 
-    func toggleSnapMenu() {
+    func toggleFAB() {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-            isSnapMenuOpen.toggle()
+            isFABOpen.toggle()
         }
     }
 
-    func closeSnapMenu() {
-        guard isSnapMenuOpen else { return }
+    func closeFAB() {
+        guard isFABOpen else { return }
         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-            isSnapMenuOpen = false
+            isFABOpen = false
         }
     }
 
-    /// Radial menu selection. Food and Water open the live scanner; Weight
+    /// FAB action selection. Food and Water open the live scanner; Weight
     /// opens the quick-log sheet.
     func open(snapAction: SnapAction) {
-        closeSnapMenu()
+        closeFAB()
         switch snapAction {
         case .food:
             activeScanMode = .food

@@ -45,6 +45,13 @@ final class TodoListViewModel {
         todos.count { !$0.isDone }
     }
 
+    /// Ticked off today. `isDone` is resolved server-side against the profile
+    /// timezone, so this needs no day math — it also backs Home's
+    /// "Knocked out today" counter.
+    var completedCount: Int {
+        todos.count { $0.isDone }
+    }
+
     // MARK: Loading
 
     func load() async {

@@ -6,67 +6,67 @@ struct LoginView: View {
 
     var body: some View {
         ZStack {
-            RivaColor.background.ignoresSafeArea()
+            TPCColor.background.ignoresSafeArea()
 
-            VStack(spacing: RivaSpacing.lg) {
+            VStack(spacing: TPCSpacing.lg) {
                 HStack {
                     Button {
                         model.backToLanding()
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(RivaColor.textSecondary)
+                            .foregroundStyle(TPCColor.textSecondary)
                             .frame(width: 34, height: 34)
-                            .background(RivaColor.fillNeutral, in: Circle())
+                            .background(TPCColor.fillNeutral, in: Circle())
                     }
                     .accessibilityLabel("Back")
                     Spacer()
                 }
-                .padding(.horizontal, RivaSpacing.screenMargin)
-                .padding(.top, RivaSpacing.sm)
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.sm)
 
                 Spacer()
 
-                VStack(spacing: RivaSpacing.sm) {
-                    Text("Riva")
+                VStack(spacing: TPCSpacing.sm) {
+                    Text("TPC")
                         .font(.system(size: 40, weight: .bold))
-                        .foregroundStyle(RivaColor.brand)
+                        .foregroundStyle(TPCColor.brand)
                     Text("Welcome back")
-                        .font(RivaFont.sectionTitle)
-                        .foregroundStyle(RivaColor.textPrimary)
+                        .font(TPCFont.sectionTitle)
+                        .foregroundStyle(TPCColor.textPrimary)
                     Text("Sign in with the Google account you used before, and your data is right where you left it.")
-                        .font(RivaFont.body)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.body)
+                        .foregroundStyle(TPCColor.textSecondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.xxl)
+                        .padding(.horizontal, TPCSpacing.xxl)
                 }
 
                 if let notice = model.notice {
                     Text(notice)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.danger)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.danger)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, RivaSpacing.lg)
+                        .padding(.horizontal, TPCSpacing.lg)
                 }
 
                 Button {
                     Task { await model.continueWithGoogle(fromLogin: true) }
                 } label: {
                     if model.isWorking {
-                        ProgressView().tint(RivaColor.textOnBrand)
+                        ProgressView().tint(TPCColor.textOnBrand)
                     } else {
                         Text("Continue with Google")
                     }
                 }
                 .buttonStyle(.rivaPrimary)
                 .disabled(model.isWorking)
-                .padding(.horizontal, RivaSpacing.screenMargin)
+                .padding(.horizontal, TPCSpacing.screenMargin)
 
-                Button("New to Riva? Get started") {
+                Button("New to TPC? Get started") {
                     model.getStarted()
                 }
-                .font(RivaFont.captionEmphasized)
-                .foregroundStyle(RivaColor.brand)
+                .font(TPCFont.captionEmphasized)
+                .foregroundStyle(TPCColor.brand)
 
                 Spacer()
                 Spacer()

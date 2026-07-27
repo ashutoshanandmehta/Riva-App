@@ -36,37 +36,37 @@ struct SideEffectsHistoryView: View {
                 }
             }
         }
-        .padding(.top, RivaSpacing.sm)
+        .padding(.top, TPCSpacing.sm)
         .task { await model.load() }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .presentationBackground(RivaColor.background)
+        .presentationBackground(TPCColor.background)
     }
 
     // MARK: List
 
     private func list(_ days: [SideEffectDayLog]) -> some View {
-        LazyVStack(spacing: RivaSpacing.sm) {
+        LazyVStack(spacing: TPCSpacing.sm) {
             ForEach(days) { day in
                 dayCard(day)
             }
         }
-        .padding(.horizontal, RivaSpacing.screenMargin)
-        .padding(.top, RivaSpacing.xs)
-        .padding(.bottom, RivaSpacing.xl)
+        .padding(.horizontal, TPCSpacing.screenMargin)
+        .padding(.top, TPCSpacing.xs)
+        .padding(.bottom, TPCSpacing.xl)
     }
 
     private func dayCard(_ day: SideEffectDayLog) -> some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+            VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                 Text(DetailDate.dayLabel(day.logDate))
-                    .font(RivaFont.cardTitle)
-                    .foregroundStyle(RivaColor.textPrimary)
+                    .font(TPCFont.cardTitle)
+                    .foregroundStyle(TPCColor.textPrimary)
 
                 LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: 112), spacing: RivaSpacing.xs, alignment: .leading)],
+                    columns: [GridItem(.adaptive(minimum: 112), spacing: TPCSpacing.xs, alignment: .leading)],
                     alignment: .leading,
-                    spacing: RivaSpacing.xs
+                    spacing: TPCSpacing.xs
                 ) {
                     ForEach(day.effects, id: \.effect) { entry in
                         severityChip(entry)
@@ -75,8 +75,8 @@ struct SideEffectsHistoryView: View {
 
                 if let note = day.note, !note.isEmpty {
                     Text(note)
-                        .font(RivaFont.footnote)
-                        .foregroundStyle(RivaColor.textSecondary)
+                        .font(TPCFont.footnote)
+                        .foregroundStyle(TPCColor.textSecondary)
                 }
             }
         }
@@ -94,10 +94,10 @@ struct SideEffectsHistoryView: View {
             RivaBadge(text: label, style: .brand)
         default:
             Text(label)
-                .rivaOverline(RivaColor.warning)
+                .rivaOverline(TPCColor.warning)
                 .padding(.horizontal, 9)
                 .padding(.vertical, 4.5)
-                .background(RivaColor.warning.opacity(0.12), in: Capsule())
+                .background(TPCColor.warning.opacity(0.12), in: Capsule())
         }
     }
 

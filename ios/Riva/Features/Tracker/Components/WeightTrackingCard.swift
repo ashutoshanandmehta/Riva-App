@@ -1,19 +1,19 @@
 import Charts
 import SwiftUI
 
-/// Weight Tracking card: monthly trend chart, weekly/total deltas, and goal
-/// progress toward the target weight. Leads the Tracker tab.
+/// Weight Tracking card: monthly trend chart plus weekly and total deltas.
+/// Leads the Tracker tab. Journey progress toward the target weight lives on
+/// Home, so it is deliberately absent here.
 struct WeightTrackingCard: View {
     let summary: WeightSummary
     let onDetails: () -> Void
 
     var body: some View {
         RivaCard {
-            VStack(alignment: .leading, spacing: RivaSpacing.md) {
+            VStack(alignment: .leading, spacing: TPCSpacing.md) {
                 header
                 chart
                 statTiles
-                goalProgress
             }
         }
     }
@@ -21,11 +21,11 @@ struct WeightTrackingCard: View {
     // MARK: Header
 
     private var header: some View {
-        HStack(spacing: RivaSpacing.xs) {
+        HStack(spacing: TPCSpacing.xs) {
             RivaIconChip(systemImage: "chart.xyaxis.line")
             Text("Weight Tracking")
-                .font(RivaFont.cardTitle)
-                .foregroundStyle(RivaColor.textPrimary)
+                .font(TPCFont.cardTitle)
+                .foregroundStyle(TPCColor.textPrimary)
             Spacer()
             RivaBadge(text: "Past month")
             HistoryChevronButton(accessibilityLabel: "Weight history", action: onDetails)
@@ -42,7 +42,7 @@ struct WeightTrackingCard: View {
             )
             .interpolationMethod(.catmullRom)
             .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
-            .foregroundStyle(RivaColor.brand)
+            .foregroundStyle(TPCColor.brand)
 
             // A line needs two points. With a single weigh-in — every new
             // account, and this is the Tracker's lead card — the plot would
@@ -53,7 +53,7 @@ struct WeightTrackingCard: View {
                     y: .value("Weight", entry.weightLbs)
                 )
                 .symbolSize(80)
-                .foregroundStyle(RivaColor.brand)
+                .foregroundStyle(TPCColor.brand)
             }
         }
         .chartYScale(domain: yDomain)
@@ -66,7 +66,7 @@ struct WeightTrackingCard: View {
                     if let date {
                         Text(label(for: date))
                             .font(.system(size: 10))
-                            .foregroundStyle(RivaColor.textTertiary)
+                            .foregroundStyle(TPCColor.textTertiary)
                     }
                 }
             }
@@ -74,10 +74,10 @@ struct WeightTrackingCard: View {
         .chartYAxis {
             AxisMarks(position: .leading, values: .automatic(desiredCount: 3)) { _ in
                 AxisGridLine()
-                    .foregroundStyle(RivaColor.brandSoft.opacity(0.8))
+                    .foregroundStyle(TPCColor.brandSoft.opacity(0.8))
                 AxisValueLabel()
                     .font(.system(size: 10))
-                    .foregroundStyle(RivaColor.textTertiary)
+                    .foregroundStyle(TPCColor.textTertiary)
             }
         }
         .frame(height: 120)
@@ -111,7 +111,7 @@ struct WeightTrackingCard: View {
     // MARK: Stats
 
     private var statTiles: some View {
-        HStack(spacing: RivaSpacing.sm) {
+        HStack(spacing: TPCSpacing.sm) {
             RivaStatTile(
                 caption: "This week",
                 systemImage: summary.weeklyChangeLbs <= 0 ? "arrow.down" : "arrow.up",
@@ -127,48 +127,10 @@ struct WeightTrackingCard: View {
         }
     }
 
-    // MARK: Goal progress
-
-    private var goalProgress: some View {
-        VStack(alignment: .leading, spacing: RivaSpacing.xs) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: RivaSpacing.xxs) {
-                    Text("Goal progress")
-                        .rivaOverline()
-                    HStack(alignment: .firstTextBaseline, spacing: 5) {
-                        Text(RivaFormat.weight(summary.currentLbs))
-                            .font(RivaFont.metricXL)
-                            .foregroundStyle(RivaColor.textPrimary)
-                        Text("lbs")
-                            .font(RivaFont.metricUnit)
-                            .foregroundStyle(RivaColor.textSecondary)
-                    }
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: RivaSpacing.xxs) {
-                    Text("Target")
-                        .rivaOverline()
-                    Text("\(RivaFormat.weight(summary.targetLbs).replacingOccurrences(of: ".0", with: "")) lbs")
-                        .font(RivaFont.captionEmphasized)
-                        .foregroundStyle(RivaColor.brand)
-                }
-            }
-
-            RivaProgressBar(progress: summary.goalProgress)
-
-            HStack {
-                Text("\(Int((summary.goalProgress * 100).rounded()))% complete")
-                Spacer()
-                Text("\(RivaFormat.weight(summary.lbsToGo)) lbs to go")
-            }
-            .font(.system(size: 11.5))
-            .foregroundStyle(RivaColor.textSecondary)
-        }
-    }
 }
 
 #Preview {
     WeightTrackingCard(summary: MockTrackerRepository.dashboard().weight) {}
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }

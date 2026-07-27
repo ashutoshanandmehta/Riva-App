@@ -1,14 +1,14 @@
 import SwiftUI
 
 /// Small uppercase pill badge ("PAST MONTH", "ESTIMATED", "12.5 mg").
-struct RivaBadge: View {
+struct TPCBadge: View {
 
     enum Style {
-        /// Neutral gray chip on light surfaces.
+        /// Neutral fill on light surfaces.
         case neutral
-        /// Brand-tinted chip on light surfaces.
+        /// Gold-tinted chip on light surfaces.
         case brand
-        /// Chip tuned for `surfaceInverse` (dose pill on the dark card).
+        /// Chip tuned for inverse (dark card) surfaces.
         case onInverse
     }
 
@@ -17,7 +17,7 @@ struct RivaBadge: View {
 
     var body: some View {
         Text(text)
-            .rivaOverline(foreground)
+            .tpcOverline(foreground)
             .padding(.horizontal, 9)
             .padding(.vertical, 4.5)
             .background(fill, in: Capsule())
@@ -25,28 +25,32 @@ struct RivaBadge: View {
 
     private var foreground: Color {
         switch style {
-        case .neutral: RivaColor.textSecondary
-        case .brand: RivaColor.brand
-        case .onInverse: RivaColor.brandOnInverse
+        case .neutral:   TPCColor.textSecondary
+        case .brand:     TPCColor.brand
+        case .onInverse: TPCColor.accentPale
         }
     }
 
     private var fill: Color {
         switch style {
-        case .neutral: RivaColor.fillNeutral
-        case .brand: RivaColor.brandWash
-        case .onInverse: RivaColor.fillOnInverse
+        case .neutral:   TPCColor.fillNeutral
+        case .brand:     TPCColor.brandSoft
+        case .onInverse: TPCColor.fillOnInverse
         }
     }
 }
 
+// Legacy alias
+typealias RivaBadge = TPCBadge
+
 #Preview("Badges") {
     HStack {
-        RivaBadge(text: "Past month")
-        RivaBadge(text: "Estimated")
-        RivaBadge(text: "12.5 mg", style: .onInverse)
+        TPCBadge(text: "Past month")
+        TPCBadge(text: "Estimated", style: .brand)
+        TPCBadge(text: "12.5 mg", style: .onInverse)
             .padding(6)
-            .background(RivaColor.surfaceInverse)
+            .background(TPCColor.surfaceInverse)
     }
     .padding()
+    .background(TPCColor.background)
 }

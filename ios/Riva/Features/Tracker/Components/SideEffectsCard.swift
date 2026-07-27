@@ -11,7 +11,7 @@ struct SideEffectsCard: View {
     var body: some View {
         Button(action: onOpen) {
             RivaCard {
-                VStack(alignment: .leading, spacing: RivaSpacing.sm) {
+                VStack(alignment: .leading, spacing: TPCSpacing.sm) {
                     Text("Side effects")
                         .rivaOverline()
 
@@ -38,26 +38,26 @@ struct SideEffectsCard: View {
     private var figure: some View {
         Image(systemName: "figure.stand")
             .font(.system(size: 44, weight: .light))
-            .foregroundStyle(RivaColor.textTertiary)
+            .foregroundStyle(TPCColor.textTertiary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
-                RivaColor.fillNeutral.opacity(0.6),
-                in: RoundedRectangle(cornerRadius: RivaRadius.tile, style: .continuous)
+                TPCColor.fillNeutral.opacity(0.6),
+                in: RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous)
             )
     }
 
     private var severityColor: Color {
         switch report.severity {
-        case .none: RivaColor.textSecondary
-        case .mild, .moderate: RivaColor.danger
-        case .severe: RivaColor.danger
+        case .none: TPCColor.textSecondary
+        case .mild, .moderate: TPCColor.danger
+        case .severe: TPCColor.danger
         }
     }
 }
 
 #Preview {
     SideEffectsCard(report: MockTrackerRepository.dashboard().sideEffect, onOpen: {}, onAdd: {})
-        .frame(width: 170, height: 200)
+        .frame(width: 170)
         .padding()
-        .background(RivaColor.background)
+        .background(TPCColor.background)
 }
