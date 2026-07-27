@@ -130,7 +130,8 @@ struct LandingView: View {
         TPCSeal(
             size: 104,
             font: Font.custom("Bricolage Grotesque", fixedSize: 21).weight(.heavy),
-            shadow: true
+            shadow: true,
+            glass: true
         )
     }
 
