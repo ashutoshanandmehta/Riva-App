@@ -22,6 +22,15 @@ protocol AuthRepository: Sendable {
     @discardableResult
     func adoptOAuthCallback(_ callback: URL) async throws -> AuthSession
 
+    /// Exchanges an Apple identity token for a session. Native Sign in with
+    /// Apple hands back a signed JWT rather than an OAuth redirect, so this
+    /// goes to GoTrue's id_token grant instead of `adoptOAuthCallback`.
+    ///
+    /// `nonce` is the raw value; the token embeds its SHA256 hash, and Apple
+    /// verifies the pair to bind the token to this sign-in attempt.
+    @discardableResult
+    func signInWithApple(idToken: String, nonce: String) async throws -> AuthSession
+
     /// A usable access token, refreshing behind the scenes when the current
     /// one is about to expire. Returns nil when signed out (or the refresh
     /// was rejected), which means the UI should show sign-in.

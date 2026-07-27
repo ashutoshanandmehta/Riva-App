@@ -57,6 +57,11 @@ actor DeviceAuthRepository: AuthRepository {
         throw AuthError.service("Google sign in is not enabled for device accounts.")
     }
 
+    @discardableResult
+    func signInWithApple(idToken: String, nonce: String) async throws -> AuthSession {
+        throw AuthError.service("Apple sign in is not enabled for device accounts.")
+    }
+
     func validAccessToken() async throws -> String? {
         if let session, session.isFresh { return session.accessToken }
         return try await provision().accessToken

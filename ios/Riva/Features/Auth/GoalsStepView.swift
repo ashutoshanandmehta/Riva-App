@@ -130,6 +130,9 @@ struct GoalsStepView: View {
             .disabled(model.isWorking)
             .padding(.horizontal, TPCSpacing.screenMargin)
 
+            AppleSignInButton(model: model, fromLogin: false, label: .signUp)
+                .padding(.horizontal, TPCSpacing.screenMargin)
+
             Text("Your goals sync to your account after sign in.")
                 .font(TPCFont.footnote)
                 .foregroundStyle(TPCColor.textTertiary)

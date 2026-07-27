@@ -96,6 +96,15 @@ actor SupabaseAuthRepository: AuthRepository {
         return adopted
     }
 
+    @discardableResult
+    func signInWithApple(idToken: String, nonce: String) async throws -> AuthSession {
+        let data = try await call(
+            path: "auth/v1/token?grant_type=id_token",
+            body: ["provider": "apple", "id_token": idToken, "nonce": nonce]
+        )
+        return try adopt(tokenData: data)
+    }
+
     private static func fragmentParameters(of url: URL) -> [String: String] {
         guard let fragment = URLComponents(url: url, resolvingAgainstBaseURL: false)?.fragment else {
             return [:]

@@ -95,6 +95,11 @@ struct MockAuthRepository: AuthRepository {
         await currentSession()!
     }
 
+    @discardableResult
+    func signInWithApple(idToken: String, nonce: String) async throws -> AuthSession {
+        await currentSession()!
+    }
+
     func validAccessToken() async throws -> String? { "mock" }
 
     func signOut() async {}

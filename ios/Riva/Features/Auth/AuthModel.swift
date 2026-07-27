@@ -1,3 +1,5 @@
+import AuthenticationServices
+import CryptoKit
 import Foundation
 import Observation
 
@@ -127,25 +129,97 @@ final class AuthModel {
                 callbackScheme: BackendEnvironment.oauthCallbackScheme
             )
             try await repository.adoptOAuthCallback(callback)
-
-            if fromLogin {
-                // A returning login never sees the profile-creation form. Go
-                // straight in and greet them by name.
-                let bundle = try? await account.me()
-                let first = bundle?.profile.name
-                    .split(separator: " ").first.map(String.init)
-                welcomeBackName = (first == nil || first == "there") ? "" : first
-                stage = .signedIn
-            } else {
-                if !selectedGoals.isEmpty {
-                    try? await account.updateHealthGoals(HealthGoalsUpdate(selected: selectedGoals))
-                }
-                stage = .completingProfile
-            }
+            await routeAfterSignIn(fromLogin: fromLogin)
         } catch {
             notice = error.localizedDescription
         }
         isWorking = false
+    }
+
+    /// Where a completed sign-in lands, shared by every provider: returning
+    /// users skip the profile form, new accounts go on to fill it in.
+    private func routeAfterSignIn(fromLogin: Bool) async {
+        if fromLogin {
+            // A returning login never sees the profile-creation form. Go
+            // straight in and greet them by name.
+            let bundle = try? await account.me()
+            let first = bundle?.profile.name
+                .split(separator: " ").first.map(String.init)
+            welcomeBackName = (first == nil || first == "there") ? "" : first
+            stage = .signedIn
+        } else {
+            if !selectedGoals.isEmpty {
+                try? await account.updateHealthGoals(HealthGoalsUpdate(selected: selectedGoals))
+            }
+            stage = .completingProfile
+        }
+    }
+
+    // MARK: Sign in with Apple
+
+    /// Raw nonce for the in-flight Apple request. Apple embeds its SHA256 in
+    /// the identity token; Supabase needs the raw value to verify the pair.
+    private var pendingAppleNonce: String?
+
+    /// Called from the button's `onRequest`. Returns the hashed nonce to put
+    /// on the request, keeping the raw one for the exchange afterwards.
+    func prepareAppleNonce() -> String {
+        let raw = Self.randomNonce()
+        pendingAppleNonce = raw
+        return Self.sha256(raw)
+    }
+
+    func completeAppleSignIn(_ result: Result<ASAuthorization, any Error>, fromLogin: Bool) async {
+        guard !isWorking else { return }
+
+        switch result {
+        case .failure(let error):
+            // Dismissing the sheet is not a failure worth shouting about.
+            if (error as? ASAuthorizationError)?.code != .canceled {
+                notice = error.localizedDescription
+            }
+            pendingAppleNonce = nil
+            return
+
+        case .success(let authorization):
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = credential.identityToken,
+                  let idToken = String(data: tokenData, encoding: .utf8),
+                  let nonce = pendingAppleNonce else {
+                notice = "Apple sign in did not complete. Try again."
+                pendingAppleNonce = nil
+                return
+            }
+
+            isWorking = true
+            notice = nil
+            do {
+                try await repository.signInWithApple(idToken: idToken, nonce: nonce)
+                await routeAfterSignIn(fromLogin: fromLogin)
+            } catch {
+                notice = error.localizedDescription
+            }
+            pendingAppleNonce = nil
+            isWorking = false
+        }
+    }
+
+    /// Apple requires an unguessable, single-use nonce per authorization.
+    private static func randomNonce(length: Int = 32) -> String {
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._")
+        var bytes = [UInt8](repeating: 0, count: length)
+        guard SecRandomCopyBytes(kSecRandomDefault, length, &bytes) == errSecSuccess else {
+            // The CSPRNG failing is not recoverable; a predictable nonce would
+            // silently weaken the exchange, so fail loudly instead.
+            preconditionFailure("Unable to generate a secure nonce")
+        }
+        return String(bytes.map { charset[Int($0) % charset.count] })
+    }
+
+    private static func sha256(_ input: String) -> String {
+        SHA256.hash(data: Data(input.utf8))
+            .map { String(format: "%02x", $0) }
+            .joined()
     }
 
     // MARK: Profile completion

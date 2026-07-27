@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Returning user sign in: one Google button, nothing else to remember.
+/// Returning user sign in: Google or Apple, nothing else to remember.
 struct LoginView: View {
     @Bindable var model: AuthModel
 
@@ -32,7 +32,7 @@ struct LoginView: View {
                     Text("Welcome back")
                         .font(TPCFont.sectionTitle)
                         .foregroundStyle(TPCColor.textPrimary)
-                    Text("Sign in with the Google account you used before, and your data is right where you left it.")
+                    Text("Sign in with the account you used before, and your data is right where you left it.")
                         .font(TPCFont.body)
                         .foregroundStyle(TPCColor.textSecondary)
                         .multilineTextAlignment(.center)
@@ -59,6 +59,9 @@ struct LoginView: View {
                 .buttonStyle(.rivaPrimary)
                 .disabled(model.isWorking)
                 .padding(.horizontal, TPCSpacing.screenMargin)
+
+                AppleSignInButton(model: model, fromLogin: true)
+                    .padding(.horizontal, TPCSpacing.screenMargin)
 
                 Button("New to TPC? Get started") {
                     model.getStarted()
