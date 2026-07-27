@@ -47,13 +47,24 @@ Model defaults to `claude-sonnet-5`; override with `RIVA_SCAN_MODEL`.
 
 ## Current production state
 
-Prod is still running the **old OpenAI `gpt-5.2`** code. The Claude-only
-rewrite is **local/uncommitted**. To ship it: ensure `ANTHROPIC_API_KEY` is set
-in Render (done), push the mirror, Manual Deploy, then verify:
+Mirror `main` is at **`bf64b1f`** — "Add AI companion chat (/v1/chat) and
+dashboard streak", deployed 2026-07-27. Prod runs the **Claude-only** pipeline
+(the earlier OpenAI `gpt-5.2` note is obsolete) and serves all four
+`/v1/chat*` routes plus `streak_days` on `/v1/dashboard`.
 
 ```bash
 curl -s https://riva-snap.onrender.com/healthz
-# expect: {"provider":"anthropic","model":"claude-sonnet-5",...}
+# {"provider":"anthropic","model":"claude-sonnet-5",...}
+curl -s -o /dev/null -w '%{http_code}\n' -X POST \
+     https://riva-snap.onrender.com/v1/chat -d '{"query":"hi"}'
+# 401 — the auth gate. A 405 means the chat router is NOT deployed: the
+# static "/" mount is answering an unrouted POST.
 ```
 
-The V2 / CalorieMama work is also local/uncommitted and deliberately unshipped.
+Deliberately **not** in the mirror, and local-only by choice: `app/volumetric/`
+(the debug ARKit pipeline — `main.py` guards its import, so its absence just
+logs a warning), the eval harness extras, and `tests/` with `pytest.ini` /
+`ruff.toml` / `requirements-dev.txt`. Tests live in `Riva-App`; the mirror
+carries runtime code only.
+
+The V2 / CalorieMama endpoint (`POST /v2/scan`) **is** live in prod.

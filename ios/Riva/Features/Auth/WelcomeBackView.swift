@@ -20,14 +20,7 @@ struct WelcomeBackView: View {
             .ignoresSafeArea()
 
             VStack(spacing: TPCSpacing.lg) {
-                Image("RivaLogo")
-                    .resizable()
-                    .renderingMode(.template)
-                    .scaledToFit()
-                    .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .frame(width: 96, height: 96)
-                    .background(.white.opacity(0.16), in: Circle())
+                TPCSeal(size: 96)
                     .scaleEffect(appeared ? 1 : 0.6)
                     .opacity(appeared ? 1 : 0)
 

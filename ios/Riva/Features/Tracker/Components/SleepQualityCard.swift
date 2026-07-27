@@ -78,7 +78,7 @@ struct SleepQualityCard: View {
 
 #Preview {
     SleepQualityCard(sleep: MockTrackerRepository.dashboard().sleep) {}
-        .frame(width: 170, height: 200)
+        .frame(width: 170)
         .padding()
         .background(TPCColor.background)
 }

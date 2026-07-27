@@ -75,7 +75,7 @@ struct SnapScanView: View {
 
     private var header: some View {
         HStack {
-            Text("Riva Snap")
+            Text("TPC Snap")
                 .font(TPCFont.sectionTitle)
                 .foregroundStyle(TPCColor.textPrimary)
             Spacer()

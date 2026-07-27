@@ -47,7 +47,7 @@ struct PrivacySheet: View {
 
     private var content: some View {
         VStack(spacing: TPCSpacing.md) {
-            Text("Your data lives in a private account in the Riva backend, isolated per user and reachable only from this device's sign in. It is never sold or shared for advertising. You can take a full copy or erase everything whenever you like.")
+            Text("Your data lives in a private account in The Peptide Company backend, isolated per user and reachable only from this device's sign in. It is never sold or shared for advertising. You can take a full copy or erase everything whenever you like.")
                 .font(TPCFont.body)
                 .foregroundStyle(TPCColor.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)

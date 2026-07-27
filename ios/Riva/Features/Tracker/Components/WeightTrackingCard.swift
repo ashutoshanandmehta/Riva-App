@@ -1,8 +1,9 @@
 import Charts
 import SwiftUI
 
-/// Weight Tracking card: monthly trend chart, weekly/total deltas, and goal
-/// progress toward the target weight. Leads the Tracker tab.
+/// Weight Tracking card: monthly trend chart plus weekly and total deltas.
+/// Leads the Tracker tab. Journey progress toward the target weight lives on
+/// Home, so it is deliberately absent here.
 struct WeightTrackingCard: View {
     let summary: WeightSummary
     let onDetails: () -> Void
@@ -13,7 +14,6 @@ struct WeightTrackingCard: View {
                 header
                 chart
                 statTiles
-                goalProgress
             }
         }
     }
@@ -127,44 +127,6 @@ struct WeightTrackingCard: View {
         }
     }
 
-    // MARK: Goal progress
-
-    private var goalProgress: some View {
-        VStack(alignment: .leading, spacing: TPCSpacing.xs) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
-                    Text("Goal progress")
-                        .rivaOverline()
-                    HStack(alignment: .firstTextBaseline, spacing: 5) {
-                        Text(RivaFormat.weight(summary.currentLbs))
-                            .font(TPCFont.metricXL)
-                            .foregroundStyle(TPCColor.textPrimary)
-                        Text("lbs")
-                            .font(TPCFont.metricUnit)
-                            .foregroundStyle(TPCColor.textSecondary)
-                    }
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: TPCSpacing.xxs) {
-                    Text("Target")
-                        .rivaOverline()
-                    Text("\(RivaFormat.weight(summary.targetLbs).replacingOccurrences(of: ".0", with: "")) lbs")
-                        .font(TPCFont.captionEmphasized)
-                        .foregroundStyle(TPCColor.brand)
-                }
-            }
-
-            RivaProgressBar(progress: summary.goalProgress)
-
-            HStack {
-                Text("\(Int((summary.goalProgress * 100).rounded()))% complete")
-                Spacer()
-                Text("\(RivaFormat.weight(summary.lbsToGo)) lbs to go")
-            }
-            .font(.system(size: 11.5))
-            .foregroundStyle(TPCColor.textSecondary)
-        }
-    }
 }
 
 #Preview {

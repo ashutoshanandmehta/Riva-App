@@ -333,7 +333,7 @@ struct ARFoodCaptureView: View {
     // MARK: - Shared chrome
 
     /// Aligned header used on both screens: back button (top-left), then the
-    /// "Riva Snap V3" title + 3D badge. `tint` flips to white over the camera.
+    /// "TPC Snap V3" title + 3D badge. `tint` flips to white over the camera.
     private func topBar(onBack: @escaping () -> Void, tint: Color) -> some View {
         HStack(spacing: TPCSpacing.sm) {
             Button(action: onBack) {
@@ -346,7 +346,7 @@ struct ARFoodCaptureView: View {
             .accessibilityLabel("Back")
 
             HStack(spacing: TPCSpacing.xs) {
-                Text("Riva Snap V3")
+                Text("TPC Snap V3")
                     .font(TPCFont.sectionTitle)
                     .foregroundStyle(tint)
                 RivaBadge(text: "3D", style: .brand)
@@ -490,7 +490,7 @@ struct ARFoodCaptureView: View {
                 Spacer()
                 DetailEmptyState(
                     systemImage: "arkit",
-                    message: "Riva Snap V3 needs a device with ARKit. Build to a physical iPhone to try it."
+                    message: "TPC Snap V3 needs a device with ARKit. Build to a physical iPhone to try it."
                 )
                 Spacer()
             }

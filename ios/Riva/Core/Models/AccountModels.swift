@@ -96,7 +96,7 @@ struct GoalsUpdate: Encodable, Sendable {
     var wellnessMinutesGoal: Int?
 }
 
-/// The onboarding "What brings you to Riva?" choices, one per
+/// The onboarding "What brings you to The Peptide Company?" choices, one per
 /// `health_goals` flag in the database.
 enum OnboardingGoal: String, Sendable, Identifiable, CaseIterable {
     case weightMgmt = "weight_mgmt"

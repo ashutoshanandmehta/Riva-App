@@ -1,13 +1,13 @@
 import SwiftUI
 
-/// "Calories today" card — conic ring showing calories remaining, macro bars
-/// for nutrients from the snapshot, and a quick "+ Log food" button.
+/// "Calories today" card — a ring showing calories remaining, macro bars for
+/// every other nutrient in the snapshot, and a quick "+ Log food" button.
 struct CaloriesTodayCard: View {
     let nutrients: [NutrientProgress]
     let onLogFood: () -> Void
 
     private var calories: NutrientProgress? { nutrients.first { $0.title == "Calories" } }
-    private var others: [NutrientProgress] { nutrients.filter { $0.title != "Calories" } }
+    private var macros: [NutrientProgress] { nutrients.filter { $0.title != "Calories" } }
 
     var body: some View {
         TPCCard {
@@ -17,15 +17,8 @@ struct CaloriesTodayCard: View {
                         .font(TPCFont.sectionTitle)
                         .foregroundStyle(TPCColor.textPrimary)
                     Spacer()
-                    Button(action: onLogFood) {
-                        Text("+ Log food")
-                            .font(TPCFont.captionEmphasized)
-                            .foregroundStyle(TPCColor.textOnInversePrimary)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(TPCColor.surfaceInverse, in: Capsule())
-                    }
-                    .buttonStyle(.plain)
+                    Button("+ Log food", action: onLogFood)
+                        .buttonStyle(.tpcInverse)
                 }
 
                 if let cal = calories {
@@ -43,21 +36,26 @@ struct CaloriesTodayCard: View {
             progress: cal.progress,
             size: 92,
             lineWidth: 10,
-            tint: TPCColor.brand,
+            tint: TPCColor.brandDeep,
             track: TPCColor.fillNeutral
         ) {
-            VStack(spacing: 1) {
-                Text(remainingText(cal))
+            VStack(spacing: 0) {
+                Text(NutrientProgress.format(cal.remaining))
                     .font(TPCFont.metricL)
                     .foregroundStyle(TPCColor.textPrimary)
-                    .minimumScaleFactor(0.7)
-                Text("LEFT")
-                    .font(.system(size: 8, weight: .bold))
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(1)
+                Text("kcal left")
+                    .font(TPCFont.caption)
                     .foregroundStyle(TPCColor.textTertiary)
-                    .kerning(0.8)
             }
+            .padding(.horizontal, 6)
         }
-        .accessibilityLabel("Calories: \(cal.valueText) eaten, \(cal.targetText)")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            "Calories: \(cal.valueText) eaten \(cal.targetText), "
+            + "\(NutrientProgress.format(cal.remaining)) left"
+        )
     }
 
     private func macroStack(_ cal: NutrientProgress) -> some View {
@@ -71,48 +69,42 @@ struct CaloriesTodayCard: View {
                     .foregroundStyle(TPCColor.textSecondary)
             }
 
-            ForEach(others) { nutrient in
-                macroBar(nutrient)
+            ForEach(macros) { macro in
+                macroBar(macro)
             }
         }
     }
 
-    private func macroBar(_ nutrient: NutrientProgress) -> some View {
+    private func macroBar(_ macro: NutrientProgress) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(nutrient.title)
-                    .font(.system(size: 11, weight: .bold))
+                Text(macro.title)
+                    .font(TPCFont.captionEmphasized)
                     .foregroundStyle(TPCColor.textSecondary)
                 Spacer()
-                Text("\(nutrient.valueText) \(nutrient.targetText)")
-                    .font(.system(size: 11, weight: .bold))
+                Text(macro.pairText)
+                    .font(TPCFont.captionEmphasized)
                     .foregroundStyle(TPCColor.textSecondary)
             }
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(TPCColor.fillNeutral)
-                    Capsule()
-                        .fill(nutrient.title == "Protein" ? TPCColor.brandDeep : TPCColor.brand)
-                        .frame(width: geo.size.width * nutrient.progress)
-                }
-            }
-            .frame(height: 5)
+            TPCProgressBar(
+                progress: macro.progress,
+                height: 6,
+                tint: tint(for: macro.title),
+                track: TPCColor.fillNeutral
+            )
         }
+        .accessibilityElement(children: .combine)
     }
 
-    private func remainingText(_ cal: NutrientProgress) -> String {
-        let goal = goalNumber(from: cal.targetText)
-        let eaten = numberValue(from: cal.valueText)
-        let left = max(0, goal - eaten)
-        return left > 999 ? "\(Int(left / 1000))k" : "\(Int(left))"
-    }
-
-    private func goalNumber(from text: String) -> Double {
-        text.split(whereSeparator: { !$0.isNumber }).first.flatMap { Double($0) } ?? 0
-    }
-
-    private func numberValue(from text: String) -> Double {
-        text.split(whereSeparator: { !$0.isNumber }).first.flatMap { Double($0) } ?? 0
+    /// A nutrient the server adds later still renders — it just falls back to
+    /// the brand gold rather than getting its own token.
+    private func tint(for title: String) -> Color {
+        switch title {
+        case "Protein": TPCColor.macroProtein
+        case "Carbs":   TPCColor.macroCarbs
+        case "Fiber":   TPCColor.macroFiber
+        default:        TPCColor.brand
+        }
     }
 }
 

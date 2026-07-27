@@ -80,7 +80,7 @@ struct NotificationsSheet: View {
             }
 
             if model.permissionDenied {
-                Text("Notifications for Riva are turned off. Allow them in Settings to get this reminder.")
+                Text("Notifications for The Peptide Company are turned off. Allow them in Settings to get this reminder.")
                     .font(TPCFont.footnote)
                     .foregroundStyle(TPCColor.textSecondary)
             }

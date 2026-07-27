@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		AA0000000000000000000004 /* Riva.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Riva.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000004 /* The Peptide Company.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Peptide Company.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		18F8C4DE301649C2006C35E1 /* Exceptions for "Riva" folder in "Riva" target */ = {
+		AA0000000000000000000010 /* Exceptions for "Riva" folder in "The Peptide Company" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = AA0000000000000000000005 /* Riva */;
+			target = AA0000000000000000000005 /* The Peptide Company */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -24,7 +24,7 @@
 		AA0000000000000000000001 /* Riva */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				18F8C4DE301649C2006C35E1 /* Exceptions for "Riva" folder in "Riva" target */,
+				AA0000000000000000000010 /* Exceptions for "Riva" folder in "The Peptide Company" target */,
 			);
 			path = Riva;
 			sourceTree = "<group>";
@@ -53,7 +53,7 @@
 		AA0000000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000004 /* Riva.app */,
+				AA0000000000000000000004 /* The Peptide Company.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA0000000000000000000005 /* Riva */ = {
+		AA0000000000000000000005 /* The Peptide Company */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA000000000000000000000E /* Build configuration list for PBXNativeTarget "Riva" */;
+			buildConfigurationList = AA000000000000000000000E /* Build configuration list for PBXNativeTarget "The Peptide Company" */;
 			buildPhases = (
 				AA0000000000000000000007 /* Sources */,
 				AA0000000000000000000008 /* Frameworks */,
@@ -76,11 +76,11 @@
 			fileSystemSynchronizedGroups = (
 				AA0000000000000000000001 /* Riva */,
 			);
-			name = Riva;
+			name = "The Peptide Company";
 			packageProductDependencies = (
 			);
-			productName = Riva;
-			productReference = AA0000000000000000000004 /* Riva.app */;
+			productName = "The Peptide Company";
+			productReference = AA0000000000000000000004 /* The Peptide Company.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -98,7 +98,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA000000000000000000000F /* Build configuration list for PBXProject "Riva" */;
+			buildConfigurationList = AA000000000000000000000F /* Build configuration list for PBXProject "The Peptide Company" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -112,7 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA0000000000000000000005 /* Riva */,
+				AA0000000000000000000005 /* The Peptide Company */,
 			);
 		};
 /* End PBXProject section */
@@ -143,14 +143,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Riva/Riva.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = TCW3JM44ZF;
+				DEVELOPMENT_TEAM = WDA4QZ9934;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Riva/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Riva;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Riva uses the camera to scan meals, drinks, and water so you can log them instantly.";
+				INFOPLIST_KEY_CFBundleDisplayName = TPC;
+				INFOPLIST_KEY_NSCameraUsageDescription = "The Peptide Company uses the camera to scan meals, drinks, and water so you can log them instantly.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -175,14 +176,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Riva/Riva.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = TCW3JM44ZF;
+				DEVELOPMENT_TEAM = WDA4QZ9934;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Riva/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Riva;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Riva uses the camera to scan meals, drinks, and water so you can log them instantly.";
+				INFOPLIST_KEY_CFBundleDisplayName = TPC;
+				INFOPLIST_KEY_NSCameraUsageDescription = "The Peptide Company uses the camera to scan meals, drinks, and water so you can log them instantly.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -327,7 +329,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA000000000000000000000E /* Build configuration list for PBXNativeTarget "Riva" */ = {
+		AA000000000000000000000E /* Build configuration list for PBXNativeTarget "The Peptide Company" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA000000000000000000000A /* Debug */,
@@ -336,7 +338,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA000000000000000000000F /* Build configuration list for PBXProject "Riva" */ = {
+		AA000000000000000000000F /* Build configuration list for PBXProject "The Peptide Company" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA000000000000000000000C /* Debug */,

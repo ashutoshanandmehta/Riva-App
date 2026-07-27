@@ -27,8 +27,6 @@ struct CalorieCard: View {
                         .foregroundStyle(TPCColor.textSecondary)
                 }
 
-                Spacer()
-
                 HStack(alignment: .center, spacing: TPCSpacing.sm) {
                     VStack(alignment: .leading, spacing: TPCSpacing.xs) {
                         RivaProgressBar(progress: calorie.progress, height: 7)
@@ -40,7 +38,6 @@ struct CalorieCard: View {
                     RivaQuickAddButton(accessibilityLabel: "Add calories", action: onAdd)
                 }
             }
-            .frame(maxHeight: .infinity, alignment: .top)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
@@ -51,7 +48,7 @@ struct CalorieCard: View {
 
 #Preview {
     CalorieCard(calorie: MockTrackerRepository.dashboard().calorie, onOpen: {}, onAdd: {})
-        .frame(width: 170, height: 155)
+        .frame(width: 170)
         .padding()
         .background(TPCColor.background)
 }

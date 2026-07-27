@@ -11,16 +11,23 @@ struct MedicationView: View {
     }
 
     var body: some View {
-        ScrollView {
-            switch viewModel.state {
-            case .loading:
-                LoadingStateView(message: "Loading your plan…")
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
+        VStack(spacing: 0) {
+            // Pinned: the brand bar stays put while the tab scrolls under it.
+            BrandTopBar(onSettings: { appModel.showProfile() })
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+
+            ScrollView {
+                switch viewModel.state {
+                case .loading:
+                    LoadingStateView(message: "Loading your plan…")
+                case .failed(let message):
+                    ErrorStateView(message: message) {
+                        Task { await viewModel.load() }
+                    }
+                case .loaded(let dashboard):
+                    content(dashboard)
                 }
-            case .loaded(let dashboard):
-                content(dashboard)
             }
         }
         .background(TPCColor.background)
@@ -36,10 +43,6 @@ struct MedicationView: View {
 
     private func content(_ dashboard: MedicationDashboard) -> some View {
         LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
-            BrandTopBar {
-                appModel.showProfile()
-            }
-
             header(dashboard)
 
             CurrentDoseCard(titration: dashboard.titration, nextDose: dashboard.nextDose)

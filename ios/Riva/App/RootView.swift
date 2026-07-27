@@ -92,7 +92,7 @@ struct RootView: View {
                 )
             }
             tabPage(.companion) {
-                CompanionView()
+                CompanionView(repository: dependencies.companionRepository)
             }
             tabPage(.medication) {
                 MedicationView(repository: dependencies.medicationRepository)

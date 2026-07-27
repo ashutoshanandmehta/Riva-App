@@ -78,6 +78,14 @@ enum TPCColor {
     static let warning = Color(hex: 0xC8A454)
     static let danger = Color(hex: 0xA5391F)
 
+    // MARK: Macros
+
+    /// Macro bar fills on the Home calories card — one token per macro so the
+    /// card never picks a colour by matching on a nutrient's name.
+    static let macroProtein = brandDeep
+    static let macroCarbs = accentGold
+    static let macroFiber = danger
+
     // MARK: Wellness (kept for WellnessView until redesigned)
 
     static let heroCard = surfaceInverse

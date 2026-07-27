@@ -1,28 +1,24 @@
 import SwiftUI
 
-/// Top of the Home screen: TPC brand bar, then greeting + streak chip.
+/// Top of the Home screen's scrolling content: greeting + streak chip. The TPC
+/// brand bar sits above it, pinned by `HomeView`.
 struct HomeHeader: View {
     let userName: String
     let streak: Int
-    let onSettings: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: TPCSpacing.sm) {
-            BrandTopBar(onSettings: onSettings)
+        HStack(alignment: .center, spacing: TPCSpacing.sm) {
+            Text("Hey \(userName) — ")
+                .font(TPCFont.screenTitle)
+                .foregroundStyle(TPCColor.textPrimary)
+            + Text("how's today going?")
+                .font(TPCFont.screenTitle)
+                .foregroundStyle(TPCColor.textSecondary)
 
-            HStack(alignment: .center, spacing: TPCSpacing.sm) {
-                Text("Hey \(userName) — ")
-                    .font(TPCFont.screenTitle)
-                    .foregroundStyle(TPCColor.textPrimary)
-                + Text("how's today going?")
-                    .font(TPCFont.screenTitle)
-                    .foregroundStyle(TPCColor.textSecondary)
+            Spacer(minLength: 0)
 
-                Spacer(minLength: 0)
-
-                if streak > 0 {
-                    streakChip
-                }
+            if streak > 0 {
+                streakChip
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -44,7 +40,7 @@ struct HomeHeader: View {
 }
 
 #Preview {
-    HomeHeader(userName: "Alex", streak: 42) {}
+    HomeHeader(userName: "Alex", streak: 42)
         .padding()
         .background(TPCColor.background)
 }

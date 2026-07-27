@@ -52,7 +52,7 @@ struct ProteinGoalCard: View {
 
 #Preview {
     ProteinGoalCard(protein: MockTrackerRepository.dashboard().protein, onOpen: {}, onAdd: {})
-        .frame(width: 170, height: 155)
+        .frame(width: 170)
         .padding()
         .background(TPCColor.background)
 }

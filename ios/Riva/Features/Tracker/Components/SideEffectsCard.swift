@@ -57,7 +57,7 @@ struct SideEffectsCard: View {
 
 #Preview {
     SideEffectsCard(report: MockTrackerRepository.dashboard().sideEffect, onOpen: {}, onAdd: {})
-        .frame(width: 170, height: 200)
+        .frame(width: 170)
         .padding()
         .background(TPCColor.background)
 }

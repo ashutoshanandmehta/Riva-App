@@ -8,38 +8,61 @@ import SwiftUI
 struct HomeView: View {
     @Environment(AppModel.self) private var appModel
     @State private var viewModel: HomeViewModel
-    private let todoRepository: any TodoRepository
+    /// Owned here, not by `TodoSection`, so the "Knocked out today" counter and
+    /// the to-do card read the same list — one fetch, and ticking a to-do moves
+    /// both at once.
+    @State private var todoViewModel: TodoListViewModel
+    /// Set by "Let's go ›"; the reader inside the scroll view acts on it and
+    /// clears it. A flag rather than a direct call because the proxy only
+    /// exists inside the `ScrollViewReader`.
+    @State private var scrollToPlan = false
 
-    @State private var todoDone = 0
-    @State private var todoTotal = 0
+    /// Scroll target for "Let's go ›".
+    private static let planAnchor = "home.todaysPlan"
 
     init(repository: any HomeRepository, todoRepository: any TodoRepository) {
         _viewModel = State(initialValue: HomeViewModel(repository: repository))
-        self.todoRepository = todoRepository
+        _todoViewModel = State(initialValue: TodoListViewModel(repository: todoRepository))
     }
 
     var body: some View {
-        ScrollView {
-            switch viewModel.state {
-            case .loading:
-                LoadingStateView(message: "Loading your day…")
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
+        VStack(spacing: 0) {
+            // Pinned: the brand bar stays put while the tab scrolls under it.
+            BrandTopBar(onSettings: { appModel.showProfile() })
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+
+            ScrollViewReader { proxy in
+                ScrollView {
+                    switch viewModel.state {
+                    case .loading:
+                        LoadingStateView(message: "Loading your day…")
+                    case .failed(let message):
+                        ErrorStateView(message: message) {
+                            Task { await viewModel.load() }
+                        }
+                    case .loaded(let snapshot):
+                        content(snapshot)
+                    }
                 }
-            case .loaded(let snapshot):
-                content(snapshot)
+                .onChange(of: scrollToPlan) {
+                    guard scrollToPlan else { return }
+                    withAnimation { proxy.scrollTo(Self.planAnchor, anchor: .top) }
+                    scrollToPlan = false
+                }
             }
         }
         .background(TPCColor.background)
         .contentMargins(.bottom, TPCLayout.tabBarClearance, for: .scrollContent)
         .refreshable { await refresh() }
         .task { await refresh() }
+        // A scan or quick log can also satisfy a to-do, so the card refetches
+        // alongside the dashboard.
         .onChange(of: appModel.dashboardRevision) {
             if let totals = appModel.pendingTotals {
                 viewModel.apply(totals: totals)
             }
-            Task { await viewModel.load() }
+            Task { await refresh() }
         }
     }
 
@@ -47,17 +70,20 @@ struct HomeView: View {
 
     private func content(_ snapshot: HomeSnapshot) -> some View {
         LazyVStack(spacing: TPCSpacing.md) {
-            HomeHeader(
-                userName: snapshot.user.firstName,
-                streak: 0,
-                onSettings: { appModel.showProfile() }
-            )
+            HomeHeader(userName: snapshot.user.firstName, streak: snapshot.streakDays)
 
-            weekStrip
+            weekStrip(snapshot.week)
 
             todayCard
 
             todaysPlanSection
+
+            // Journey progress frames the day's numbers that follow. Absent
+            // until the user sets a goal weight — an invented target reads as
+            // failure.
+            if let goal = snapshot.goal {
+                TPCCard { GoalProgressSection(goal: goal) }
+            }
 
             CaloriesTodayCard(nutrients: snapshot.nutrients) {
                 appModel.open(snapAction: .food)
@@ -73,15 +99,15 @@ struct HomeView: View {
 
     // MARK: Week strip
 
-    private var weekStrip: some View {
+    private func weekStrip(_ days: [HomeDayStatus]) -> some View {
         HStack(spacing: 8) {
-            ForEach(currentWeekDays(), id: \.offset) { item in
-                weekDayCell(item)
+            ForEach(days) { day in
+                weekDayCell(day)
             }
         }
     }
 
-    private func weekDayCell(_ item: WeekDayItem) -> some View {
+    private func weekDayCell(_ item: HomeDayStatus) -> some View {
         VStack(spacing: 6) {
             Text(item.letter)
                 .font(.system(size: 9, weight: .bold))
@@ -92,7 +118,7 @@ struct HomeView: View {
             ZStack {
                 Circle()
                     .fill(item.isToday ? TPCColor.brand : TPCColor.fillNeutral)
-                if item.isPast {
+                if item.isLogged {
                     Text("✓")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(TPCColor.positive)
@@ -131,7 +157,7 @@ struct HomeView: View {
                             .foregroundStyle(TPCColor.textOnInverseSecondary)
 
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text("\(todoDone)")
+                            Text("\(todoViewModel.completedCount)")
                                 .font(TPCFont.metricXL)
                                 .foregroundStyle(TPCColor.textOnInversePrimary)
                             Text("/ \(todoTotal > 0 ? "\(todoTotal)" : "–")")
@@ -143,7 +169,7 @@ struct HomeView: View {
                     Spacer()
 
                     Button {
-                        // Scroll to today's plan — companion shortcut for now
+                        scrollToPlan = true
                     } label: {
                         Text("Let's go ›")
                             .font(TPCFont.captionEmphasized)
@@ -157,7 +183,7 @@ struct HomeView: View {
 
                 if todoTotal > 0 {
                     TPCProgressBar(
-                        progress: todoTotal > 0 ? Double(todoDone) / Double(todoTotal) : 0,
+                        progress: Double(todoViewModel.completedCount) / Double(todoTotal),
                         height: 6,
                         tint: TPCColor.accentGold
                     )
@@ -168,22 +194,18 @@ struct HomeView: View {
 
     // MARK: Today's plan
 
+    /// No "See all": `TodoCard` already lists every open to-do, so a second
+    /// screen would show the same rows twice.
     private var todaysPlanSection: some View {
         VStack(alignment: .leading, spacing: TPCSpacing.sm) {
-            HStack {
-                Text("Today's plan")
-                    .font(TPCFont.sectionTitle)
-                    .foregroundStyle(TPCColor.textPrimary)
-                Spacer()
-                Button("See all") {
-                    // Full todo list — wired when DetailScreen.todoList is added
-                }
-                .font(TPCFont.captionEmphasized)
-                .foregroundStyle(TPCColor.accentLink)
-            }
+            Text("Today's plan")
+                .font(TPCFont.sectionTitle)
+                .foregroundStyle(TPCColor.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            TodoSection(repository: todoRepository)
+            TodoSection(viewModel: todoViewModel)
         }
+        .id(Self.planAnchor)
     }
 
     // MARK: Stat tiles
@@ -200,7 +222,7 @@ struct HomeView: View {
                 icon: "⚖️",
                 iconBg: TPCColor.fillNeutral,
                 label: "Weight today",
-                value: "— lbs"
+                value: snapshot.weightTodayLbs.map { "\(RivaFormat.weight($0)) lbs" } ?? "— lbs"
             )
         }
     }
@@ -270,24 +292,13 @@ struct HomeView: View {
 
     // MARK: Helpers
 
+    /// The card and the counter share one to-do fetch; `TodoListViewModel`
+    /// resolves "done today" server-side, so there is no day math here.
+    private var todoTotal: Int { todoViewModel.todos.count }
+
     private func refresh() async {
         await viewModel.load()
-        await loadTodoSummary()
-    }
-
-    private func loadTodoSummary() async {
-        guard let todos = try? await todoRepository.todos() else { return }
-        let today = Calendar.current.startOfDay(for: .now)
-        let relevant = todos.filter { todo in
-            switch todo.repeatRule {
-            case .daily: return true
-            case .once:
-                guard let due = todo.dueDate else { return false }
-                return due == DateFormatter.yyyyMMdd.string(from: .now)
-            }
-        }
-        todoDone = relevant.filter(\.isDone).count
-        todoTotal = relevant.count
+        await todoViewModel.load()
     }
 
     private func nextShotLabel(_ shot: ScheduledShot) -> String {
@@ -295,44 +306,6 @@ struct HomeView: View {
         formatter.dateFormat = "EEE"
         return "\(formatter.string(from: shot.date)) · \(RivaFormat.doseMg(shot.doseMg))"
     }
-
-    // MARK: Week strip model
-
-    private struct WeekDayItem {
-        let offset: Int
-        let letter: String
-        let isToday: Bool
-        let isPast: Bool
-    }
-
-    private func currentWeekDays() -> [WeekDayItem] {
-        var cal = Calendar.current
-        cal.firstWeekday = 2 // Monday
-        let today = cal.startOfDay(for: .now)
-        let weekday = cal.component(.weekday, from: today)
-        let daysFromMonday = (weekday + 5) % 7
-        guard let monday = cal.date(byAdding: .day, value: -daysFromMonday, to: today) else { return [] }
-        let letters = ["M", "T", "W", "T", "F", "S", "S"]
-        return (0..<7).map { offset in
-            let day = cal.date(byAdding: .day, value: offset, to: monday) ?? monday
-            return WeekDayItem(
-                offset: offset,
-                letter: letters[offset],
-                isToday: cal.isDate(day, inSameDayAs: today),
-                isPast: day < today
-            )
-        }
-    }
-}
-
-// MARK: - DateFormatter helper
-
-private extension DateFormatter {
-    static let yyyyMMdd: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
 }
 
 #Preview {

@@ -1,16 +1,20 @@
 import SwiftUI
 
-/// Wraps the to-do card with its own view model and editor sheet, so Home
-/// stays a plain list of cards and to-do state never leaks into `AppModel`.
+/// Wraps the to-do card and its editor sheet, so Home stays a plain list of
+/// cards and to-do state never leaks into `AppModel`.
+///
+/// The view model is injected rather than owned: Home reads the same list for
+/// its "Knocked out today" counter, so one fetch serves both and a toggle here
+/// moves the counter there.
 struct TodoSection: View {
     @Environment(AppModel.self) private var appModel
     @Environment(\.scenePhase) private var scenePhase
-    @State private var viewModel: TodoListViewModel
+    private let viewModel: TodoListViewModel
     @State private var isEditing = false
     @State private var editorTarget: EditorTarget?
 
-    init(repository: any TodoRepository) {
-        _viewModel = State(initialValue: TodoListViewModel(repository: repository))
+    init(viewModel: TodoListViewModel) {
+        self.viewModel = viewModel
     }
 
     /// Identifies which editor is open. A nil `todo` means "Set a to-do".
@@ -38,13 +42,12 @@ struct TodoSection: View {
                     .onTapGesture { viewModel.dismissError() }
             }
         }
-        .task { await viewModel.load() }
-        // A scan or quick log can satisfy a to-do, and the daily reset lands at
-        // local midnight — both invisible to a warm app without this. Reloading
-        // also re-arms the notifications for whatever reopened.
-        .onChange(of: appModel.dashboardRevision) {
-            Task { await viewModel.load() }
-        }
+        // First load and post-write reloads are driven by the owner (Home), so
+        // the shared view model is fetched once per refresh, not twice.
+        //
+        // The daily reset lands at local midnight, which is invisible to a warm
+        // app without this. Reloading also re-arms the notifications for
+        // whatever reopened.
         .onChange(of: scenePhase) {
             guard scenePhase == .active else { return }
             Task { await viewModel.load() }
@@ -117,9 +120,12 @@ struct TodoSection: View {
 }
 
 #Preview {
+    // Home owns the load in the app; the preview stands in for that owner.
+    let viewModel = TodoListViewModel(repository: MockTodoRepository())
     ScrollView {
-        TodoSection(repository: MockTodoRepository())
+        TodoSection(viewModel: viewModel)
             .padding()
+            .task { await viewModel.load() }
     }
     .background(TPCColor.background)
     .environment(AppModel())

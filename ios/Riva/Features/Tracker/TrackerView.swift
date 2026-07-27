@@ -40,16 +40,23 @@ struct TrackerView: View {
     }
 
     private var dashboard: some View {
-        ScrollView {
-            switch viewModel.state {
-            case .loading:
-                LoadingStateView(message: "Loading your tracker…")
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
+        VStack(spacing: 0) {
+            // Pinned: the brand bar stays put while the tab scrolls under it.
+            BrandTopBar(onSettings: { appModel.showProfile() })
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+
+            ScrollView {
+                switch viewModel.state {
+                case .loading:
+                    LoadingStateView(message: "Loading your tracker…")
+                case .failed(let message):
+                    ErrorStateView(message: message) {
+                        Task { await viewModel.load() }
+                    }
+                case .loaded(let dashboard):
+                    content(dashboard)
                 }
-            case .loaded(let dashboard):
-                content(dashboard)
             }
         }
         .background(TPCColor.background)
@@ -69,11 +76,9 @@ struct TrackerView: View {
     // MARK: Loaded
 
     private func content(_ dashboard: TrackerDashboard) -> some View {
-        LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
-            BrandTopBar {
-                appModel.showProfile()
-            }
-
+        // Cards size to their content, as on every other tab — a pinned height
+        // squeezes the "… remaining" rows and truncates them mid-word.
+        LazyVStack(alignment: .leading, spacing: TPCSpacing.lg) {
             WeightTrackingCard(summary: dashboard.weight) {
                 appModel.activeDetail = .weightHistory
             }
@@ -83,9 +88,8 @@ struct TrackerView: View {
                 onOpen: { appModel.activeDetail = .caloriesHistory },
                 onAdd: { appModel.activeQuickLog = .calories }
             )
-            .frame(height: 120)
 
-            HStack(spacing: TPCSpacing.md) {
+            HStack(spacing: TPCSpacing.lg) {
                 HydrationCard(
                     hydration: dashboard.hydration,
                     onOpen: { appModel.activeDetail = .hydrationHistory },
@@ -97,9 +101,8 @@ struct TrackerView: View {
                     onAdd: { appModel.activeQuickLog = .protein }
                 )
             }
-            .frame(height: 155)
 
-            HStack(spacing: TPCSpacing.md) {
+            HStack(spacing: TPCSpacing.lg) {
                 SideEffectsCard(
                     report: dashboard.sideEffect,
                     onOpen: { appModel.activeDetail = .sideEffectsHistory },
@@ -109,7 +112,6 @@ struct TrackerView: View {
                     appModel.activeQuickLog = .sleep
                 }
             }
-            .frame(height: 200)
 
             Button {
                 path.append(.weeklySummary)

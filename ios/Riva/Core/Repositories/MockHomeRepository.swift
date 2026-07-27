@@ -33,11 +33,34 @@ struct MockHomeRepository: HomeRepository {
                 cycleDays: 7
             ),
             nutrients: [
-                NutrientProgress(title: "Protein", valueText: "95g", targetText: "of 110g", progress: 95.0 / 110.0),
-                NutrientProgress(title: "Water", valueText: "6", targetText: "of 8 glasses", progress: 6.0 / 8.0),
-                NutrientProgress(title: "Calories", valueText: "1450", targetText: "of 2000 kcal", progress: 1450.0 / 2000.0),
-            ]
+                NutrientProgress(title: "Calories", value: 1450, goal: 2000, unit: " kcal"),
+                NutrientProgress(title: "Protein", value: 95, goal: 110, unit: "g"),
+                NutrientProgress(title: "Carbs", value: 104, goal: 150, unit: "g"),
+                NutrientProgress(title: "Fiber", value: 18, goal: 28, unit: "g"),
+            ],
+            week: week(now: now),
+            streakDays: 12,
+            weightTodayLbs: 164.2,
+            goal: WeightGoalProgress(currentLbs: 164.2, targetLbs: 145, progress: 0.65)
         )
+    }
+
+    /// Every day up to today logged, the rest of the week still open — the
+    /// wireframe's week strip.
+    private static func week(now: Date) -> [HomeDayStatus] {
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2  // Monday
+        let today = calendar.startOfDay(for: now)
+        let daysFromMonday = (calendar.component(.weekday, from: today) + 5) % 7
+        let letters = ["M", "T", "W", "T", "F", "S", "S"]
+        return (0..<7).map { offset in
+            HomeDayStatus(
+                dayKey: "week-day-\(offset)",
+                letter: letters[offset],
+                isToday: offset == daysFromMonday,
+                isLogged: offset < daysFromMonday
+            )
+        }
     }
 
     /// Two days out at 9:54 PM — keeps the "2d left" ring of the wireframe true

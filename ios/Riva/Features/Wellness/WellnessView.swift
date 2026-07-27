@@ -24,16 +24,23 @@ struct WellnessView: View {
     }
 
     var body: some View {
-        ScrollView {
-            switch viewModel.state {
-            case .loading:
-                LoadingStateView(message: "Loading your practices…")
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
+        VStack(spacing: 0) {
+            // Pinned: the brand bar stays put while the tab scrolls under it.
+            BrandTopBar(onSettings: { appModel.showProfile() })
+                .padding(.horizontal, TPCSpacing.screenMargin)
+                .padding(.top, TPCSpacing.xs)
+
+            ScrollView {
+                switch viewModel.state {
+                case .loading:
+                    LoadingStateView(message: "Loading your practices…")
+                case .failed(let message):
+                    ErrorStateView(message: message) {
+                        Task { await viewModel.load() }
+                    }
+                case .loaded(let dashboard):
+                    content(dashboard)
                 }
-            case .loaded(let dashboard):
-                content(dashboard)
             }
         }
         .background(TPCColor.background)
@@ -65,8 +72,6 @@ struct WellnessView: View {
 
     private func content(_ dashboard: WellnessDashboard) -> some View {
         LazyVStack(alignment: .leading, spacing: TPCSpacing.md) {
-            BrandTopBar(onSettings: { appModel.showProfile() })
-
             Text("How would you like\nto feel today?")
                 .font(TPCFont.screenTitle)
                 .foregroundStyle(TPCColor.textPrimary)
