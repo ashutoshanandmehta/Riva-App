@@ -209,3 +209,89 @@ Consequence: The Apple flow no longer gets Apple's own button behaviour for
 free. If App Review ever objects, reverting is `SignInWithAppleButton` back in
 the button body — `AppleAuthSession` is the only other file involved and
 `AuthModel` needs no change either way.
+
+## 2026-07-31 — Inline item editing on the scan result card: derive the edited scan, do not mutate it
+
+Context: A scan is one Claude vision call plus USDA grounding, so it is confidently
+wrong some of the time. The only recourse on the result card was "Try another
+photo", which discards every correct item to fix one wrong one and costs a second
+paid scan. The fix is a pencil on each item row that expands it in place, offers
+replacements, and swaps just that item.
+
+Decision: The card never mutates the scan. `ScanResultCard` holds
+`@State editableItems: [ScanItem]` seeded from `scan.items`, renders from it, and
+derives `editedScan = scan.replacingItems(editableItems)` — a new value with
+`totals` and `nutritionDayDelta` recomputed. `onAccept` changed from `() -> Void`
+to `(ScanResult) -> Void`, so the tiles and the log read the same derivation.
+`replacingItems` returns `self` when the items are unchanged. Replacement
+candidates come from `POST /v1/anthropic/food-search` **on our own backend**
+(bearer token, `BackendEnvironment.scanServiceURL`) behind a
+`FoodReplacementService` protocol; the app has no Anthropic key and never talks to
+a provider directly. Its response carries name, portion, calories, protein and
+`matched` only, so a replaced item gets `carbGrams: 0`, `fiberGrams: 0` and zeroed
+`extended`. The volumetric/AR beta passes no service and stays read-only.
+
+Rationale: `ScanItem` and `ScanResult` are all-`let`, and `ScanResult.totals` /
+`nutritionDayDelta` are **stored fields, not computed** — editing items does not
+touch them. `APIScanRepository.accept` sends `nutritionDayDelta` to `POST /v1/log`,
+so a card that edited only its own display would have shown corrected totals while
+logging the original meal. Deriving one `ScanResult` and handing it to `onAccept`
+makes "what you see" and "what gets logged" the same object by construction. The
+`items != self.items` guard exists so an untouched scan still logs the server's own
+assembled integers byte-for-byte, rather than a client re-sum that could drift.
+Zeroing carbs and fibre beats carrying them over from the food the user just
+rejected: stale macros read as measured, and a wrong number is worse than a missing
+one.
+
+Consequence: **The backend route does not exist yet.** The live host answers it with
+405 (the static `/` mount catches the unrouted POST), and
+`APIFoodReplacementService` maps 404/405 to "Food search is not available yet." so
+the editor shows that one line instead of a raw "Method Not Allowed". The client is
+complete and inert until the route lands — do not treat the pencil as shippable
+before then. Second consequence: swapping an item under-logs that item's carbs and
+fibre for the day. Calories and protein — all the card and both dashboards surface
+— stay correct. Adding those fields to the endpoint later is purely additive on
+both sides, and is the fix if carb/fibre accuracy ever matters.
+
+**Superseded in part on 2026-08-01** (see the next entry): the route shipped as
+`POST /v1/food-search`, it returns the full macro set, and `ScanItem.replaced` no
+longer zeroes carbs and fibre. Everything above about deriving rather than mutating
+the scan still holds.
+
+## 2026-08-01 — `POST /v1/food-search`: USDA prices, Claude only names and decomposes
+
+Context: the inline editor shipped against a protocol and a mock, so the route it
+calls had to exist. The hard part is not search, it is what to do when USDA has no
+entry — which is the common case for exactly the foods a scan gets wrong (branded
+and non-Western dishes). "Maggi" is absent from FoodData Central; wheat flour and
+palm oil are not.
+
+Decision: `app/food_search.py` prices every candidate against USDA first, and only
+then falls back to Claude — which is asked for a **recipe**, not for nutrition. The
+ingredients it names are looked up in USDA and summed, so the model supplies
+proportions and the database supplies numbers. At most two text-only
+structured-output calls (name alternatives, decompose misses), and **zero** when the
+user types a food USDA already knows. A typed search returns exactly one result so
+the client can apply it without a picker; an empty search returns up to six.
+`matched` stays false for a recipe-composed dish even when every ingredient
+grounded, because the proportions are still the model's.
+
+Rationale: this is the scan pipeline's own principle — "grounded numbers beat clever
+numbers: LLM identifies, USDA prices" — applied one level deeper. Asking Claude for
+a dish's calories directly would have been one call instead of two and materially
+worse: a language model's memory of a nutrition label is not a measurement, whereas
+its knowledge of what goes into a dish is exactly the kind of thing it is reliable
+about. The recipe is treated as a statement of proportions and rescaled onto the
+stated portion, because a model that lists 700 g of ingredients for a 70 g cake is
+right about the composition and wrong about the scale.
+
+Consequence: three guards exist because their absence was demonstrated, not
+imagined. Every suggestion passes `plausibility.gate_grams` — the same per-food-class
+clamp every scanned item gets — because an edited item reaches `POST /v1/log` by the
+identical path and `LogRequest` has no bounds of its own; without it a client-sent
+`original_grams` of 1,000,000 produced 3.6 million calories. Portions are sanitised
+against NaN, infinity and negatives before they scale anything. Recipe composition,
+including the ingredient lookups, is wrapped so a malformed FDC body cannot 500 a
+request that already holds good USDA matches. Second consequence: **not deployed.**
+The mirror push and Render Manual Deploy are still pending, so the editor keeps
+showing "Food search is not available yet." until they happen.

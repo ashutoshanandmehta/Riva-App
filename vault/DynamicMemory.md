@@ -547,3 +547,24 @@ Changed files:
 - [2026-07-27] failure in `mcp__supabase__execute_sql`: {"error":{"name":"HttpException","message":"Failed to run sql query: ERROR:  42703: column \"day\" does not exist\nLINE 1: select user_id, day, weight_lbs, created_at, updated_at, deleted_at from weights order by created_at desc limit 10;\n                        ^\n"}}
 
 - [2026-07-27] failure in `Bash`: Exit code 1 total 8 drwxr-xr-x  3 khedar  staff  96 Jul 27 13:25 . drwxr-xr-x@ 3 khedar  staff  96 Jul 27 13:25 .. -rw-r--r--  1 khedar  staff  83 Jul 27 13:25 contents.xcworkspacedata # Xcode build/ DerivedData/ *.xcuserstate xcuserdata/ *.xcscmblueprint *.xccheckout  # Swift Package Manager .swiftpm/ .build/  # macOS .DS_Store  # Python __pycache__/ *.pyc .venv/ .pytest_cache/ .ruff_cache/  # Cl
+
+## Session ended 2026-07-30T20:47:24Z
+  f29c6cc Add email and Apple sign-in, and the maintain-weight goal
+  95b5f38 Show snap-logged calories and protein on the dashboards
+  347783b Merge branch 'chat-companion'
+  bb370fc Update index.html
+  0a7e10e Merge origin/main (TPC redesign, PR #4) into the chat companion branch
+
+- [2026-08-01] failure in `Bash`: Exit code 127 (eval):1: no such file or directory: .venv/bin/ruff (eval):1: no such file or directory: .venv/bin/python
+
+- [2026-08-01] failure in `Bash`: Exit code 1 ARCHITECTURE.md README.md app eval prompts pytest.ini render.yaml requirements-dev.txt requirements.txt ruff.toml scripts serving supabase tests web --- --- which ruff not found pytest not found /Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/khedar/.local/bin/uv
+
+- [2026-08-01] failure in `Bash`: Exit code 1 sed: backend/tests/test_chat_endpoint.py: No such file or directory
+
+- [2026-08-01] failure in `Bash`: Exit code 1 COMMAND     PID   USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME python3.1 80954 khedar   10u  IPv4 0xc01e63e02d030ac9      0t0  TCP *:8000 (LISTEN) --- ps --- khedar           80736  35.3  0.2 435438256  30128   ??  S    11:32AM   0:00.35 /System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd khedar           81402  30.0  0.2 435389376  34416   ?? 
+
+- [2026-08-01] failure in `Bash`: Exit code 127 ugrep: warning: app/plausibility.py: No such file or directory ugrep: warning: app/plausibility.py: No such file or directory (eval):1: no such file or directory: .venv/bin/python
+
+- [2026-08-01] failure in `Bash`: Exit code 128 fatal: not a git repository: '/Users/khedar/Riva-App/backend/.git-snap' --- log --- fatal: not a git repository: '/Users/khedar/Riva-App/backend/.git-snap'
+
+- [2026-08-01] failure in `Bash`: Exit code 127 mirror blobs:       50 === DIFFERS or MISSING locally === (eval):7: command not found: git CHANGED        .env.example (eval):7: command not found: git CHANGED        .gitignore (eval):7: command not found: git CHANGED        ARCHITECTURE.md (eval):7: command not found: git CHANGED        README.md (eval):7: command not found: git CHANGED        app/__init__.py (eval):7: command not 

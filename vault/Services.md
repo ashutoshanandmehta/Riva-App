@@ -31,7 +31,29 @@ External providers and integrations. Current state.
 - **Key:** `FDC_API_KEY` (defaults to `DEMO_KEY` if unset).
 - **Known bug:** FDC search returns HTTP 400 on **parenthetical queries**
   (e.g. `"Roasted sweet potato (with oil)"`). Grounding is best-effort, so this
-  silently drops the match rather than failing the scan. Fix is an open TODO.
+  silently drops the match rather than failing the scan. Fix is an open TODO for
+  the scan path; `food_search._query` already strips brackets on its own queries.
+
+## Claude + USDA together (food search)
+
+- **Role:** `POST /v1/food-search` (`app/food_search.py`) — replacement
+  candidates for one mis-detected scan item, behind the inline editor on the
+  result card.
+- **The fallback that matters:** USDA prices every candidate first. For a dish
+  FoodData Central has no entry for — branded and non-Western foods, i.e. most
+  of what a scan gets wrong — Claude is asked for a **recipe**, and its
+  *ingredients* are then priced against USDA and summed. The model supplies
+  proportions, the database supplies numbers. The sum is rescaled onto the
+  stated portion, so a recipe that overshoots cannot inflate the total.
+- **Cost:** zero model calls when the typed food is one USDA knows; one when it
+  is not; one or two on the suggest path. Both calls are text-only structured
+  outputs via `vision.make_client`, mirroring `suggestions.py`.
+- **Model:** `RIVA_FOOD_SEARCH_MODEL`, else the `claude-sonnet-5` default.
+- **Fail-soft:** a naming failure falls back to the detected item, a recipe
+  failure drops those candidates; neither fails a request that already carries
+  USDA matches. Every result passes `plausibility.gate_grams`, the same clamp a
+  scanned item gets, because an edited item is logged by the same path.
+- **Not deployed** as of 2026-08-01: the live host still answers 405.
 
 ## CalorieMama (v2, local/uncommitted)
 

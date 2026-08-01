@@ -65,17 +65,21 @@ final class SnapScanViewModel {
         }
     }
 
-    func accept() async {
-        guard case .result(let scan) = stage else { return }
-        stage = .saving(scan)
+    /// Logs the reviewed scan. The result card supplies it rather than the
+    /// stage payload, because the user may have corrected an item in place —
+    /// `edited` is what they actually saw, and so is what gets logged. Both
+    /// failure paths return to `edited` so a retry keeps those corrections.
+    func accept(_ edited: ScanResult) async {
+        guard case .result = stage else { return }
+        stage = .saving(edited)
         do {
-            let totals = try await scanRepository.accept(scan)
-            stage = .saved(totals, loggedWater: scan.scanType == .water)
+            let totals = try await scanRepository.accept(edited)
+            stage = .saved(totals, loggedWater: edited.scanType == .water)
         } catch ScanServiceError.signInRequired {
-            stage = .result(scan)
+            stage = .result(edited)
             errorMessage = "Could not connect to your account. Check your connection and try again."
         } catch {
-            stage = .result(scan)
+            stage = .result(edited)
             errorMessage = error.localizedDescription
         }
     }
@@ -103,8 +107,9 @@ final class SnapScanViewModel {
         photo = image
         await scan()
         if UserDefaults.standard.bool(forKey: "riva.scanAutoAccept"),
-           case .result = stage {
-            await accept()
+           case .result(let scan) = stage {
+            // The self-test never edits, so the raw result is the reviewed one.
+            await accept(scan)
         }
         #endif
     }

@@ -59,6 +59,10 @@ flowchart TD
     MAIN --> PL["plausibility.py<br/>mass gates + class resolution"]
     PL --> FC["food_classes.json<br/>class table, density, bounds"]
     VIS --> PR["prompts/scan_v1.md"]
+    MAIN --> FS["food_search.py<br/>/v1/food-search: USDA first,<br/>Claude recipe on a miss"]
+    FS --> VIS
+    FS --> GRO
+    FS --> PL
     
     MAIN -.->|lazy import| VR["volumetric.routes<br/>/v1/scan/volumetric"]
     VR --> VP["volumetric.pipeline<br/>end-to-end orchestration"]

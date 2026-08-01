@@ -416,7 +416,9 @@ struct ARFoodCaptureView: View {
                     scan: scan,
                     errorMessage: model.confirmError,
                     isSaving: false,
-                    onAccept: { Task { await model.confirmAndLog() } },
+                    // No replacement service: the volumetric beta reviews a
+                    // portion, not a food list, so its rows stay read-only.
+                    onAccept: { _ in Task { await model.confirmAndLog() } },
                     onScanAgain: { model.retake() }
                 )
             }
@@ -435,7 +437,7 @@ struct ARFoodCaptureView: View {
                     scan: scan,
                     errorMessage: nil,
                     isSaving: true,
-                    onAccept: {},
+                    onAccept: { _ in },
                     onScanAgain: {}
                 )
             }

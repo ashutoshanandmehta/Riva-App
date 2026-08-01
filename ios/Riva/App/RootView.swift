@@ -60,7 +60,8 @@ struct RootView: View {
         .fullScreenCover(item: $appModel.activeScanMode) { mode in
             SnapScanView(
                 mode: mode,
-                scanRepository: dependencies.scanRepository
+                scanRepository: dependencies.scanRepository,
+                replacementService: dependencies.foodReplacementService
             ) { totals in
                 appModel.activeScanMode = nil
                 appModel.applyLoggedTotals(totals)

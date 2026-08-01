@@ -19,6 +19,9 @@ struct TPCStatTile: View {
                 Text(value)
                     .font(TPCFont.metricM)
                     .foregroundStyle(TPCColor.positive)
+                    // Rolls the digits when the value changes inside an
+                    // animation. Inert for callers whose value never animates.
+                    .contentTransition(.numericText())
                 Text(unit)
                     .font(TPCFont.metricUnit)
                     .foregroundStyle(TPCColor.textSecondary)

@@ -3,12 +3,45 @@ import SwiftUI
 /// Review screen for a completed scan: what was detected, the numbers, and
 /// Accept. Mirrors the approved wireframe: item rows with source badges,
 /// then Calories and Protein tiles.
+///
+/// Items are editable in place. The scan result itself is never mutated — the
+/// card holds an editable copy of the items, derives the totals from it, and
+/// hands the derived result to `onAccept`, so what gets logged is what is on
+/// screen.
 struct ScanResultCard: View {
     let scan: ScanResult
     let errorMessage: String?
     let isSaving: Bool
-    let onAccept: () -> Void
+    /// `nil` makes the item rows read-only (the volumetric beta passes nothing).
+    let replacementService: (any FoodReplacementService)?
+    let onAccept: (ScanResult) -> Void
     let onScanAgain: () -> Void
+
+    @State private var editableItems: [ScanItem]
+    @State private var editingIndex: Int?
+
+    init(
+        scan: ScanResult,
+        errorMessage: String?,
+        isSaving: Bool,
+        replacementService: (any FoodReplacementService)? = nil,
+        onAccept: @escaping (ScanResult) -> Void,
+        onScanAgain: @escaping () -> Void
+    ) {
+        self.scan = scan
+        self.errorMessage = errorMessage
+        self.isSaving = isSaving
+        self.replacementService = replacementService
+        self.onAccept = onAccept
+        self.onScanAgain = onScanAgain
+        _editableItems = State(initialValue: scan.items)
+    }
+
+    /// The scan as edited. Identical to `scan` until the user changes something,
+    /// so an untouched result still logs the server's own numbers.
+    private var editedScan: ScanResult {
+        scan.replacingItems(editableItems)
+    }
 
     var body: some View {
         ScrollView {
@@ -39,6 +72,11 @@ struct ScanResultCard: View {
             .padding(.horizontal, TPCSpacing.screenMargin)
             .padding(.top, TPCSpacing.xs)
             .padding(.bottom, TPCSpacing.xl)
+        }
+        // A fresh scan landing in the same slot must not keep the old edits.
+        .onChange(of: scan) { _, new in
+            editableItems = new.items
+            editingIndex = nil
         }
     }
 
@@ -128,40 +166,25 @@ struct ScanResultCard: View {
                         .foregroundStyle(TPCColor.textSecondary)
                 }
 
-                ForEach(Array(scan.items.enumerated()), id: \.offset) { index, item in
+                // Index identity is safe here: editing replaces an item in
+                // place, so the row count never changes.
+                ForEach(Array(editableItems.enumerated()), id: \.offset) { index, item in
                     if index > 0 {
                         Divider().overlay(TPCColor.fillNeutral)
                     }
-                    itemRow(item)
+                    EditableScanItemRow(
+                        item: item,
+                        context: FoodReplacementContext(
+                            replacing: index,
+                            in: editableItems,
+                            plate: scan.plate
+                        ),
+                        service: isSaving ? nil : replacementService,
+                        isExpanded: editingIndex == index,
+                        onToggleEdit: { toggleEditing(index) },
+                        onReplace: { replace(index, with: $0) }
+                    )
                 }
-            }
-        }
-    }
-
-    private func itemRow(_ item: ScanItem) -> some View {
-        HStack(alignment: .top, spacing: TPCSpacing.sm) {
-            VStack(alignment: .leading, spacing: TPCSpacing.xxs) {
-                Text(item.name.capitalized)
-                    .font(TPCFont.cardTitle)
-                    .foregroundStyle(TPCColor.textPrimary)
-                Text("\(item.portionDesc), about \(Int(item.portionGrams.rounded()))g")
-                    .font(TPCFont.footnote)
-                    .foregroundStyle(TPCColor.textSecondary)
-                // Plain language over jargon: "matched" only means anything if
-                // you already know the numbers come from the USDA database.
-                RivaBadge(
-                    text: item.matched ? "USDA data" : "Our best guess",
-                    style: item.matched ? .brand : .neutral
-                )
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: TPCSpacing.xxs) {
-                Text("\(item.calories)")
-                    .font(TPCFont.metricM)
-                    .foregroundStyle(TPCColor.textPrimary)
-                Text("kcal")
-                    .font(TPCFont.metricUnit)
-                    .foregroundStyle(TPCColor.textSecondary)
             }
         }
     }
@@ -171,15 +194,34 @@ struct ScanResultCard: View {
             RivaStatTile(
                 caption: "Calories",
                 systemImage: "flame",
-                value: scan.totals.calories.formatted(),
+                value: editedScan.totals.calories.formatted(),
                 unit: "kcal"
             )
             RivaStatTile(
                 caption: "Protein",
                 systemImage: "fork.knife",
-                value: "\(scan.totals.proteinGrams)",
+                value: "\(editedScan.totals.proteinGrams)",
                 unit: "g"
             )
+        }
+    }
+
+    // MARK: Editing
+
+    /// Only one row edits at a time — opening another closes the first.
+    private func toggleEditing(_ index: Int) {
+        withAnimation(.snappy(duration: 0.28)) {
+            editingIndex = editingIndex == index ? nil : index
+        }
+    }
+
+    /// Swaps one item and closes the editor. The totals tiles read from
+    /// `editedScan`, so they re-roll inside this same animation.
+    private func replace(_ index: Int, with suggestion: FoodSuggestion) {
+        guard editableItems.indices.contains(index) else { return }
+        withAnimation(.snappy(duration: 0.28)) {
+            editableItems[index] = editableItems[index].replaced(with: suggestion)
+            editingIndex = nil
         }
     }
 
@@ -187,7 +229,7 @@ struct ScanResultCard: View {
         VStack(spacing: TPCSpacing.sm) {
             if scan.scanType != .notFood {
                 Button {
-                    onAccept()
+                    onAccept(editedScan)
                 } label: {
                     if isSaving {
                         ProgressView().tint(TPCColor.textOnBrand)
@@ -231,7 +273,21 @@ struct ScanResultCard: View {
             scan: MockScanRepository.sampleMeal,
             errorMessage: nil,
             isSaving: false,
-            onAccept: {},
+            replacementService: MockFoodReplacementService(),
+            onAccept: { _ in },
+            onScanAgain: {}
+        )
+    }
+}
+
+#Preview("Read only") {
+    ZStack {
+        TPCColor.background.ignoresSafeArea()
+        ScanResultCard(
+            scan: MockScanRepository.sampleMeal,
+            errorMessage: nil,
+            isSaving: false,
+            onAccept: { _ in },
             onScanAgain: {}
         )
     }

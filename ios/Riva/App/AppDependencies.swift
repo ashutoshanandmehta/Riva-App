@@ -11,6 +11,9 @@ struct AppDependencies {
     let trackerRepository: any TrackerRepository
     let authRepository: any AuthRepository
     let scanRepository: any ScanRepository
+    /// Backs the inline item editor on the scan result card: replacements for
+    /// a food the scan read wrongly, so a correction costs no second scan.
+    let foodReplacementService: any FoodReplacementService
     let logRepository: any LogRepository
     let accountRepository: any AccountRepository
     let wellnessRepository: any WellnessRepository
@@ -41,6 +44,7 @@ struct AppDependencies {
             trackerRepository: APITrackerRepository(service: dashboards),
             authRepository: auth,
             scanRepository: APIScanRepository(auth: auth),
+            foodReplacementService: APIFoodReplacementService(auth: auth),
             logRepository: APILogRepository(auth: auth),
             accountRepository: APIAccountRepository(auth: auth),
             wellnessRepository: APIWellnessRepository(service: dashboards, auth: auth),

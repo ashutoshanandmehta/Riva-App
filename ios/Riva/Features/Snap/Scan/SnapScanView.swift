@@ -9,14 +9,19 @@ struct SnapScanView: View {
     /// dashboards update with it rather than waiting on a refetch.
     let onClose: (DayTotals?) -> Void
 
+    /// Powers the inline item editor on the result card.
+    private let replacementService: any FoodReplacementService
+
     @State private var model: SnapScanViewModel
     @State private var libraryItem: PhotosPickerItem?
     @State private var isCameraPresented = false
 
     init(mode: ScanMode,
          scanRepository: any ScanRepository,
+         replacementService: any FoodReplacementService,
          onClose: @escaping (DayTotals?) -> Void) {
         self.onClose = onClose
+        self.replacementService = replacementService
         _model = State(initialValue: SnapScanViewModel(
             mode: mode,
             scanRepository: scanRepository
@@ -40,15 +45,18 @@ struct SnapScanView: View {
                         scan: scan,
                         errorMessage: model.errorMessage,
                         isSaving: false,
-                        onAccept: { Task { await model.accept() } },
+                        replacementService: replacementService,
+                        onAccept: { edited in Task { await model.accept(edited) } },
                         onScanAgain: { model.scanAgain() }
                     )
                 case .saving(let scan):
+                    // `scan` here is the edited result the card handed back, so
+                    // the saving card rebuilds showing the corrected items.
                     ScanResultCard(
                         scan: scan,
                         errorMessage: nil,
                         isSaving: true,
-                        onAccept: {},
+                        onAccept: { _ in },
                         onScanAgain: {}
                     )
                 case .saved(let totals, let loggedWater):
@@ -292,6 +300,7 @@ struct SnapScanView: View {
 #Preview("Scan flow") {
     SnapScanView(
         mode: .food,
-        scanRepository: MockScanRepository()
+        scanRepository: MockScanRepository(),
+        replacementService: MockFoodReplacementService()
     ) { _ in }
 }

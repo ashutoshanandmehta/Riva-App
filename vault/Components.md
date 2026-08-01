@@ -55,6 +55,17 @@ Canonical catalogue of reusable SwiftUI components. Types live under
 - **`RivaStatTile`** — `DesignSystem/Components/RivaStatTile.swift`
   Compact tinted single-stat tile.
   Init: `RivaStatTile(caption:, systemImage:, value:, unit:)`.
+  The value `Text` carries `.contentTransition(.numericText())`, so callers that change
+  the value inside `withAnimation` get rolling digits for free.
+- **`EditableScanItemRow`** — `Features/Snap/Scan/EditableScanItemRow.swift`
+  One detected item on the scan result card, with an inline editor behind a pencil.
+  Expanding shows replacement candidates, a search field, and "Get new results";
+  picking one calls `onReplace` and the parent collapses the row.
+  Init: `EditableScanItemRow(item:, context:, service:, isExpanded:, onToggleEdit:, onReplace:)`.
+  `service: nil` renders the row read-only (no pencil) — how the volumetric beta uses it.
+  Owns its own search/suggestions/loading/error state; the parent owns only which row is
+  open. Build `context` with `FoodReplacementContext(replacing: index, in: items, plate:)`,
+  which supplies the original name, the plate, and the sibling item names.
 - **`SettingsRow`** — `Features/Profile/Components/SettingsRow.swift`
   Settings list row: icon chip + title + optional subtitle + chevron.
   Init: `SettingsRow(systemImage:, title:, subtitle: String?, action:)`.
