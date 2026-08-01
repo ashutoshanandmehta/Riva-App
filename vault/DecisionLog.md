@@ -292,6 +292,7 @@ identical path and `LogRequest` has no bounds of its own; without it a client-se
 `original_grams` of 1,000,000 produced 3.6 million calories. Portions are sanitised
 against NaN, infinity and negatives before they scale anything. Recipe composition,
 including the ingredient lookups, is wrapped so a malformed FDC body cannot 500 a
-request that already holds good USDA matches. Second consequence: **not deployed.**
-The mirror push and Render Manual Deploy are still pending, so the editor keeps
-showing "Food search is not available yet." until they happen.
+request that already holds good USDA matches. Second consequence: **deployed
+2026-08-01** as mirror `4198853`, verified by `/openapi.json` carrying
+`/v1/food-search` and an unauthenticated POST returning 401 rather than the 405
+the static mount used to answer with.

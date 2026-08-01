@@ -85,17 +85,18 @@ struct LandingView: View {
         }
     }
 
-    // MARK: Progress dots
+    // MARK: Progressdots
 
     private var progressDots: some View {
         HStack(spacing: 7) {
-            ForEach(0..<heroImages.count, id: \.self) { i in
+            ForEach(heroImages.indices, id: \.self) { i in
                 Capsule()
-                    .fill(i == heroIndex
-                          ? TPCColor.accentPale
-                          : TPCColor.accentPale.opacity(0.28))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 3)
+                    .fill(
+                        i == heroIndex
+                        ? TPCColor.accentPale
+                        : TPCColor.accentPale.opacity(0.28)
+                    )
+                    .frame(width: 70, height: 3)
                     .animation(.easeInOut(duration: 0.4), value: heroIndex)
             }
         }
