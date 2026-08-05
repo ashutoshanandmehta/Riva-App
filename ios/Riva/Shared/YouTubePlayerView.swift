@@ -63,8 +63,7 @@ struct YouTubePlayerView: UIViewRepresentable {
                 playsinline: 1,
                 rel: 0,
                 modestbranding: 1,
-                fs: 1,
-                origin: 'https://www.youtube.com'
+                fs: 1
               }
             });
           }
