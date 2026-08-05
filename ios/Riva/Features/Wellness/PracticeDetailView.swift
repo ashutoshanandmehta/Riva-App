@@ -68,12 +68,33 @@ struct PracticeDetailView: View {
                     .rivaOverline(TPCColor.brand)
 
                 if let videoID = practice.videoID {
-                    YouTubePlayerView(videoID: videoID)
-                        .aspectRatio(16 / 9, contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous))
+                    Button {
+                        let url = URL(string: "https://www.youtube.com/watch?v=\(videoID)")
+                        if let url { openURL(url) }
+                    } label: {
+                        ZStack {
+                            AsyncImage(url: URL(string: "https://img.youtube.com/vi/\(videoID)/hqdefault.jpg")) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable().aspectRatio(contentMode: .fill)
+                                default:
+                                    Color.black
+                                }
+                            }
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(Color.red)
+                                    .frame(width: 56, height: 40)
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: TPCRadius.tile, style: .continuous))
 
-                    // Fallback for videos whose owner blocks embedding: opens
-                    // the YouTube app / browser so the session is still usable.
                     Button {
                         let url = URL(string: "https://www.youtube.com/watch?v=\(videoID)")
                         if let url { openURL(url) }
