@@ -27,11 +27,15 @@ struct CompanionView: View {
             Divider()
                 .overlay(TPCColor.surfaceOutline)
 
-            chatArea
+            if mode == .care {
+                CareTeamView()
+            } else {
+                chatArea
 
-            quickChipsRow
+                quickChipsRow
 
-            inputArea
+                inputArea
+            }
         }
         .background(TPCColor.background)
         .contentMargins(.bottom, 0, for: .scrollContent)
@@ -55,20 +59,21 @@ struct CompanionView: View {
 
             Spacer()
 
-            Menu {
-                Button("New chat", systemImage: "square.and.pencil") {
-                    model.startNewConversation()
+            if mode == .ai {
+                Menu {
+                    Button("New chat", systemImage: "square.and.pencil") {
+                        model.startNewConversation()
+                    }
+                    .disabled(model.isThinking)
+                } label: {
+                    Text("⋯")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(TPCColor.textTertiary)
+                        .frame(width: 36, height: 36)
                 }
-                .disabled(model.isThinking)
-                // Care team options land here when that backend is ready.
-            } label: {
-                Text("⋯")
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundStyle(TPCColor.textTertiary)
-                    .frame(width: 36, height: 36)
+                .buttonStyle(.plain)
+                .accessibilityLabel("Conversation options")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Conversation options")
         }
     }
 
@@ -107,6 +112,9 @@ struct CompanionView: View {
             .onChange(of: model.isThinking) {
                 withAnimation { proxy.scrollTo("bottom", anchor: .bottom) }
             }
+            // Care team unmounts this ScrollView; coming back would otherwise
+            // reopen at the top of the transcript.
+            .onAppear { proxy.scrollTo("bottom", anchor: .bottom) }
             // Tapping or dragging the transcript puts the keyboard away —
             // `.vertical` text fields have no return key to submit with.
             .scrollDismissesKeyboard(.interactively)
@@ -121,7 +129,7 @@ struct CompanionView: View {
             if message.role == .user { Spacer(minLength: 44) }
 
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 10) {
-                bubble(message)
+                CompanionBubble(text: message.text, isUser: message.role == .user)
                 if let preview = message.writePreview {
                     confirmCard(preview)
                 }
@@ -131,33 +139,6 @@ struct CompanionView: View {
             if message.role == .bot { Spacer(minLength: 44) }
         }
         .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
-    }
-
-    private func bubble(_ message: CompanionMessage) -> some View {
-        let isUser = message.role == .user
-        return Text(message.text)
-            .font(TPCFont.body)
-            .foregroundStyle(isUser ? TPCColor.textOnInversePrimary : TPCColor.textPrimary)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(
-                isUser ? TPCColor.surfaceInverse : TPCColor.surface,
-                in: UnevenRoundedRectangle(
-                    topLeadingRadius: 20, bottomLeadingRadius: isUser ? 20 : 6,
-                    bottomTrailingRadius: isUser ? 6 : 20, topTrailingRadius: 20
-                )
-            )
-            .overlay(
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 20, bottomLeadingRadius: isUser ? 20 : 6,
-                    bottomTrailingRadius: isUser ? 6 : 20, topTrailingRadius: 20
-                )
-                .strokeBorder(
-                    isUser ? TPCColor.surfaceInverse : TPCColor.surfaceOutline,
-                    lineWidth: 1
-                )
-            )
-            .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
     }
 
     // MARK: Write confirmation

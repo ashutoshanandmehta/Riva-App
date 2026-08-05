@@ -32,3 +32,39 @@ enum CompanionCopy {
             + "check-ins. Ask me anything, or tell me something to save."
     )
 }
+
+// MARK: - Care team
+
+struct CareTeamMember: Identifiable {
+    let id = UUID()
+    let name: String
+    let role: String
+    let systemImage: String
+    let intro: String
+}
+
+enum CareTeamCopy {
+    /// Care team messaging has no backend yet — these are introductions, not a
+    /// live thread. Copy promises nothing beyond "when messaging opens".
+    static let members: [CareTeamMember] = [
+        CareTeamMember(
+            name: "Dr. Amara Chen",
+            role: "Clinician",
+            systemImage: "stethoscope",
+            intro: "Hi — I'm the clinician on your care team. When messaging opens, "
+                + "I'll be the one reading your weight trend, your shot log and anything "
+                + "you flag as a side effect before a dose changes. Until then, anything "
+                + "urgent goes to your own prescriber or urgent care."
+        ),
+        CareTeamMember(
+            name: "Maya Ellis",
+            role: "Wellness coach",
+            systemImage: "sparkles",
+            intro: "I'm your wellness coach. The day-to-day is my patch — hitting your "
+                + "protein, meals that stay down, sleep, and the small habits that make "
+                + "the shots easier. Bring me the messy questions when messaging opens."
+        )
+    ]
+
+    static let footnote = "Care team messaging isn't open yet — this is a preview of who you'll be talking to."
+}
